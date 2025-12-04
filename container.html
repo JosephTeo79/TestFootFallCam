@@ -8,64 +8,49 @@
 </head>
 <body>
 
-   
 <div id="container">
 
-
-
-
-
+  <!-- 左侧菜单 -->
   <div id="left-pane">
-  
-	<div class="header-title">
-		<img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
-		<span> Retail Pro Prism </span>
-	</div>
-	  
-  
+    <div class="header-title">
+      <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
+      <span> Retail Pro Prism </span>
+    </div>
+    
     <ul>
       <li><span class="caret"><img src="./icon/folder.jpg" class="image">FootFallCam Gallery Video</span>
-    
-      </li>
-	  
-	 <li><a href="#" data-url="Features_Benefits/Portal.pdf" class="nav-link"><img src="./icon/pdf.png" class="image">Portal</a></li>
-
-      <li><span class="caret"><img src="./icon/folder.jpg" class="image">Introduction（Local）</span>
-       
-      </li>
-	  
-
-	 
-	  
-	
-	  <li></li>
-	  
-   
-  
-
-
+        <ul class="nested">
+          <!-- 这里可以放子菜单 -->
         </ul>
       </li>
-	  
-	   
-	
-	  
-	  
+
+      <li><a href="#" data-url="Features_Benefits/Portal.pdf" class="nav-link"><img src="./icon/pdf.png" class="image">Portal</a></li>
+
+      <li><span class="caret"><img src="./icon/folder.jpg" class="image">Introduction（Local）</span>
+        <ul class="nested">
+          <!-- 新增 Open Register 菜单项 -->
+          <li><a href="open_register.html" target="contentFrame">Open Register</a></li>
+          <!-- future submenu items 可继续添加 -->
+        </ul>
+      </li>
     </ul>
-	
-	<h2 class="footer-title">Foot Fall Cam Demo</h2>
+
+    <h2 class="footer-title">Foot Fall Cam Demo</h2>
   </div>
 
+  <!-- 分隔条 -->
   <div id="divider"></div>
 
+  <!-- 右侧 iframe -->
   <div id="right-pane">
-    <div id="tab-bar"></div>
-    <div id="tab-content"></div>
+    <iframe id="contentFrame" name="contentFrame" src="index.html"></iframe>
   </div>
+
 </div>
 
 <script src="js/treeview.js"></script>
 <script src="js/tab.js"></script>
 <script src="js/shortcut.js"></script>
+
 </body>
 </html>
