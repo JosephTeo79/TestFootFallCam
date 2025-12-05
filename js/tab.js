@@ -49,7 +49,7 @@ async function openTab(title, url) {
 
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 2 }); // 可调 scale
+                const viewport = page.getViewport({ scale: 2 });
                 const canvas = document.createElement("canvas");
 
                 canvas.width = viewport.width * dpr;
@@ -64,22 +64,37 @@ async function openTab(title, url) {
                 contentElem.appendChild(canvas);
             }
 
-        }else if (url.endsWith(".mp4")) {
+        } else if (url.endsWith(".mp4")) {
             const response = await fetch(url);
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
-        
+
+            // 自定义播放器容器
+            const videoContainer = document.createElement("div");
+            videoContainer.style.width = "100%";
+            videoContainer.style.textAlign = "center";
+
             const video = document.createElement("video");
             video.src = blobUrl;
-            video.controls = true;
             video.style.width = "100%";
             video.style.height = "auto";
             video.setAttribute("playsinline", "true");
-        
-            // 禁用右键下载
+
+            // 禁用右键
             video.addEventListener("contextmenu", e => e.preventDefault());
-        
-            contentElem.appendChild(video);
+
+            // 自定义播放按钮
+            const playBtn = document.createElement("button");
+            playBtn.textContent = "Play / Pause";
+            playBtn.style.marginTop = "5px";
+            playBtn.addEventListener("click", () => {
+                if (video.paused) video.play();
+                else video.pause();
+            });
+
+            videoContainer.appendChild(video);
+            videoContainer.appendChild(playBtn);
+            contentElem.appendChild(videoContainer);
 
         } else {
             // 普通 HTML 用 iframe
