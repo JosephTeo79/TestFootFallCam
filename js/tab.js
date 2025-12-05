@@ -1,9 +1,37 @@
-// js/tab.js
 const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
-// 打开一个 Tab
+function renderPDF(url, container) {
+    fetch(url)
+        .then(res => res.arrayBuffer())
+        .then(data => pdfjsLib.getDocument({ data }).promise)
+        .then(pdf => {
+            container.innerHTML = ''; // 清空内容
+            for (let i = 1; i <= pdf.numPages; i++) {
+                pdf.getPage(i).then(page => {
+                    const scale = 1.5;
+                    const viewport = page.getViewport({ scale });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    canvas.style.display = "block";
+                    canvas.style.margin = "10px auto";
+
+                    const context = canvas.getContext('2d');
+                    page.render({ canvasContext: context, viewport: viewport });
+
+                    container.appendChild(canvas);
+                });
+            }
+        })
+        .catch(err => {
+            console.error('Failed to load PDF:', err);
+            container.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
+        });
+}
+
 function openTab(title, url) {
     if (openTabs[title]) {
         setActiveTab(title);
@@ -16,7 +44,7 @@ function openTab(title, url) {
     tab.dataset.title = title;
 
     const tabText = document.createElement("span");
-    tabText.textContent = title; // Tab 显示名字
+    tabText.textContent = title;
     tab.appendChild(tabText);
 
     const closeBtn = document.createElement("button");
@@ -36,13 +64,11 @@ function openTab(title, url) {
     let contentElem;
 
     if (url.endsWith(".pdf")) {
-        contentElem = document.createElement("div");
-        contentElem.style.overflowY = "auto";
-        contentElem.style.height = "100%";
-
-        renderPDF(url, contentElem); // 使用一次性加载 PDF 方法
+        contentElem = document.createElement('div');
+        contentElem.style.overflowY = 'auto';
+        contentElem.style.height = '100%';
+        renderPDF(url, contentElem); // 渲染多页 PDF
     } else {
-        // iframe 用于非 PDF 文件
         contentElem = document.createElement("iframe");
         contentElem.className = "tab-frame";
         contentElem.dataset.title = title;
@@ -69,7 +95,6 @@ function openTab(title, url) {
     setActiveTab(title);
 }
 
-// 设置激活 Tab
 function setActiveTab(title) {
     Object.values(openTabs).forEach(({ tab, iframe }) => {
         tab.classList.remove("active");
@@ -80,7 +105,6 @@ function setActiveTab(title) {
     openTabs[title].iframe.style.display = "block";
 }
 
-// 关闭 Tab
 function closeTab(title) {
     if (!openTabs[title]) return;
     const { tab, iframe } = openTabs[title];
@@ -89,43 +113,7 @@ function closeTab(title) {
     delete openTabs[title];
 
     const remaining = Object.keys(openTabs);
-    if (remaining.length > 0) {
-        setActiveTab(remaining[remaining.length - 1]);
-    }
-}
-
-// PDF 渲染函数（一次性加载 ArrayBuffer）
-async function renderPDF(url, container) {
-    try {
-        const pdfjsLib = window.pdfjsLib;
-        if (!pdfjsLib) throw new Error("PDF.js not loaded");
-
-        // fetch PDF 整个文件
-        const response = await fetch(url);
-        const arrayBuffer = await response.arrayBuffer();
-
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
-        for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const scale = 1.5;
-            const viewport = page.getViewport({ scale });
-
-            const canvas = document.createElement("canvas");
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            canvas.style.display = "block";
-            canvas.style.margin = "20px auto";
-
-            const context = canvas.getContext("2d");
-            await page.render({ canvasContext: context, viewport: viewport }).promise;
-
-            container.appendChild(canvas);
-        }
-    } catch (err) {
-        console.error("PDF rendering error:", err);
-        container.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
-    }
+    if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
 }
 
 // 初始化菜单事件
