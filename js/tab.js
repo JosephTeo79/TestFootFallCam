@@ -45,21 +45,23 @@ async function openTab(title, url) {
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
 
-                // === 动态计算 scale 自适应 tab-content 宽度 ===
+                const containerWidth = contentElem.clientWidth || tabContent.clientWidth;
                 const viewport = page.getViewport({ scale: 1 });
-                const desiredWidth = contentElem.clientWidth || tabContent.clientWidth;
-                const scale = desiredWidth / viewport.width;
+                
+                const devicePixelRatio = window.devicePixelRatio || 1;
+                const scale = containerWidth / viewport.width * devicePixelRatio;
                 const scaledViewport = page.getViewport({ scale });
 
                 const canvas = document.createElement("canvas");
                 canvas.width = scaledViewport.width;
                 canvas.height = scaledViewport.height;
+                canvas.style.width = (scaledViewport.width / devicePixelRatio) + "px";
+                canvas.style.height = (scaledViewport.height / devicePixelRatio) + "px";
 
                 const context = canvas.getContext("2d");
+                context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
                 await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
 
-                canvas.style.width = "100%";      // 自适应宽度显示
-                canvas.style.height = "auto";     // 高度自动
                 contentElem.appendChild(canvas);
             }
         } catch (err) {
