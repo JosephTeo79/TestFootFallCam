@@ -8,7 +8,7 @@ function openTab(title, url) {
         return;
     }
 
-    // 创建 Tab
+    // 创建 Tab 按钮
     const tab = document.createElement("div");
     tab.className = "tab";
     tab.dataset.title = title;
@@ -31,14 +31,13 @@ function openTab(title, url) {
     tabBar.appendChild(tab);
 
     // 创建内容区域
-    let contentElem = document.createElement("div");
+    const contentElem = document.createElement("div");
     contentElem.style.overflowY = "auto";
     contentElem.style.height = "100%";
 
     if (url.endsWith(".pdf")) {
-        // 渲染 PDF 多页
-        const loadingTask = pdfjsLib.getDocument(url);
-        loadingTask.promise.then(pdf => {
+        // PDF.js 渲染 PDF 多页
+        pdfjsLib.getDocument(url).promise.then(pdf => {
             for (let i = 1; i <= pdf.numPages; i++) {
                 pdf.getPage(i).then(page => {
                     const scale = 1.5;
@@ -47,7 +46,6 @@ function openTab(title, url) {
                     const canvas = document.createElement("canvas");
                     canvas.width = viewport.width;
                     canvas.height = viewport.height;
-
                     const context = canvas.getContext("2d");
                     page.render({ canvasContext: context, viewport: viewport });
 
@@ -58,7 +56,7 @@ function openTab(title, url) {
             contentElem.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
         });
     } else {
-        // 其他 iframe 内容
+        // iframe 用于非 PDF
         const iframe = document.createElement("iframe");
         iframe.src = url;
         iframe.style.width = "100%";
@@ -95,6 +93,7 @@ function closeTab(title) {
     }
 }
 
+// 初始化菜单点击事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
         link.addEventListener("click", function(e) {
