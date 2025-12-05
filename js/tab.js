@@ -105,5 +105,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    openTab('Introduction', 'introduction.html');
+
 });
