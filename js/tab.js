@@ -43,6 +43,11 @@ async function openTab(title, url) {
             const numPages = pdf.numPages;
             const dpr = window.devicePixelRatio || 1;
 
+
+            
+        
+            
+
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
                 const viewport = page.getViewport({ scale: 3}); // 可以调大 scale
@@ -51,8 +56,9 @@ async function openTab(title, url) {
                 // 高分屏处理
                 canvas.width = viewport.width * dpr;
                 canvas.height = viewport.height * dpr;
-                canvas.style.width = viewport.width + "px";
-                canvas.style.height = viewport.height + "px";
+                // CSS 宽度用 100%，保证自适应父容器
+                canvas.style.width = "100%";
+                canvas.style.height = "auto";
 
                 const ctx = canvas.getContext("2d");
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
