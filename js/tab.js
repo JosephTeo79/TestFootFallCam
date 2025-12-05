@@ -15,7 +15,7 @@ function openTab(title, url) {
     tab.dataset.title = title;
 
     const tabText = document.createElement("span");
-    tabText.textContent = title;
+    tabText.textContent = title; // 这里是 Tab 显示的名字
     tab.appendChild(tabText);
 
     const closeBtn = document.createElement("button");
@@ -31,7 +31,7 @@ function openTab(title, url) {
 
     tabBar.appendChild(tab);
 
-    // === PDF.js 渲染 PDF ===
+    // === 创建内容区域 ===
     let contentElem;
 
     if (url.endsWith(".pdf")) {
@@ -40,15 +40,11 @@ function openTab(title, url) {
         contentElem.style.height = "100%";
 
         try {
-            const pdfjsLib = window['pdfjs-dist/build/pdf'];
+            const pdfjsLib = window.pdfjsLib;
             if (!pdfjsLib) throw new Error("PDF.js not loaded");
 
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
-
-            console.log(`Loading PDF: ${url}`);  // 调试信息
-
+            // worker 已在 HTML 设置，不要再设置
             pdfjsLib.getDocument(url).promise.then(pdf => {
-                console.log(`PDF loaded, total pages: ${pdf.numPages}`);
                 for (let i = 1; i <= pdf.numPages; i++) {
                     pdf.getPage(i).then(page => {
                         const scale = 1.5;
@@ -57,7 +53,6 @@ function openTab(title, url) {
                         const canvas = document.createElement("canvas");
                         canvas.width = viewport.width;
                         canvas.height = viewport.height;
-
                         const context = canvas.getContext("2d");
                         page.render({ canvasContext: context, viewport: viewport });
 
@@ -77,7 +72,7 @@ function openTab(title, url) {
         }
 
     } else {
-        // 非 PDF 文件仍用 iframe
+        // iframe 用于非 PDF
         contentElem = document.createElement("iframe");
         contentElem.className = "tab-frame";
         contentElem.dataset.title = title;
@@ -109,11 +104,13 @@ function setActiveTab(title) {
         tab.classList.remove("active");
         iframe.style.display = "none";
     });
+    if (!openTabs[title]) return; // 避免 undefined
     openTabs[title].tab.classList.add("active");
     openTabs[title].iframe.style.display = "block";
 }
 
 function closeTab(title) {
+    if (!openTabs[title]) return;
     const { tab, iframe } = openTabs[title];
     tab.remove();
     iframe.remove();
@@ -125,6 +122,7 @@ function closeTab(title) {
     }
 }
 
+// 初始化菜单事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
         link.addEventListener("click", function(e) {
@@ -135,6 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 页面加载后自动打开 introduction.html
+    // 自动打开 introduction.html
     openTab('Introduction', 'introduction.html');
 });
