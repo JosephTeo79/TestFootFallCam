@@ -18,13 +18,11 @@ function openTab(title, url) {
     tabText.textContent = title;
     tab.appendChild(tabText);
 
-    // 关闭按钮 ❌
     const closeBtn = document.createElement("button");
     closeBtn.textContent = "×";
     closeBtn.className = "close-btn";
     tab.appendChild(closeBtn);
 
-    // === 事件 ===
     tabText.addEventListener("click", () => setActiveTab(title));
     closeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -33,32 +31,67 @@ function openTab(title, url) {
 
     tabBar.appendChild(tab);
 
-    // === iframe ===
-    const iframe = document.createElement("iframe");
-    iframe.className = "tab-frame";
-    iframe.dataset.title = title;
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    iframe.frameBorder = "0";
-    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-    iframe.allowFullscreen = true;
+    // === PDF.js 渲染 PDF 替代 iframe ===
+    let contentElem;
 
-    // 如果是 YouTube embed 链接，确保用 https://www.youtube.com/embed/ 格式
-    if (url.includes("youtube.com")) {
-        // 可选：直接替换原来的 embed URL 确保兼容
-        let embedUrl = url;
-        if (!url.includes("/embed/")) {
-            // 转换普通 youtube 链接为 embed
-            const videoIdMatch = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]{11})/);
-            if (videoIdMatch) embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}`;
-        }
-        iframe.src = embedUrl;
+    if (url.endsWith(".pdf")) {
+        contentElem = document.createElement("div");
+        contentElem.id = `pdf-container-${title}`;
+        contentElem.style.overflowY = "auto";
+        contentElem.style.height = "100%";
+
+        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+        pdfjsLib.getDocument(url).promise.then(pdf => {
+            const totalPages = pdf.numPages;
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.getPage(i).then(page => {
+                    const scale = 1.5;
+                    const viewport = page.getViewport({ scale });
+
+                    const canvas = document.createElement("canvas");
+                    canvas.style.display = "block";
+                    canvas.style.margin = "20px auto";
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+
+                    const context = canvas.getContext("2d");
+                    page.render({ canvasContext: context, viewport: viewport });
+
+                    contentElem.appendChild(canvas);
+                });
+            }
+        }).catch(err => {
+            contentElem.innerHTML = '<p style="color:red;">Failed to load PDF.</p>';
+            console.error(err);
+        });
+
     } else {
-        iframe.src = url;
+        // 非 PDF 仍使用 iframe
+        contentElem = document.createElement("iframe");
+        contentElem.className = "tab-frame";
+        contentElem.dataset.title = title;
+        contentElem.style.width = "100%";
+        contentElem.style.height = "100%";
+        contentElem.frameBorder = "0";
+        contentElem.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        contentElem.allowFullscreen = true;
+
+        if (url.includes("youtube.com")) {
+            let embedUrl = url;
+            if (!url.includes("/embed/")) {
+                const videoIdMatch = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]{11})/);
+                if (videoIdMatch) embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}`;
+            }
+            contentElem.src = embedUrl;
+        } else {
+            contentElem.src = url;
+        }
     }
 
-    tabContent.appendChild(iframe);
-    openTabs[title] = { tab, iframe };
+    tabContent.appendChild(contentElem);
+    openTabs[title] = { tab, iframe: contentElem };
     setActiveTab(title);
 }
 
