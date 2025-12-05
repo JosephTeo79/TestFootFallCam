@@ -30,11 +30,9 @@ async function openTab(title, url) {
 
     tabBar.appendChild(tab);
 
-    // === 创建内容区域 ===
+    // === 创建内容容器 ===
     const contentElem = document.createElement("div");
-    contentElem.style.flex = "1";
-    contentElem.style.overflow = "auto";  // 外层统一滚动
-    contentElem.style.width = "100%";
+    contentElem.style.overflowY = "auto"; // 外层统一滚动
     contentElem.style.height = "100%";
 
     if (url.endsWith(".pdf")) {
@@ -49,7 +47,7 @@ async function openTab(title, url) {
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
                 const context = canvas.getContext("2d");
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
+                await page.render({ canvasContext: context, viewport }).promise;
 
                 contentElem.appendChild(canvas);
             }
@@ -58,12 +56,14 @@ async function openTab(title, url) {
             console.error(err);
         }
     } else {
+        // HTML iframe
         const iframe = document.createElement("iframe");
         iframe.src = url;
         iframe.style.width = "100%";
         iframe.style.height = "100%";
         iframe.style.border = "none";
-        iframe.style.overflow = "hidden"; // 禁止 iframe 内部滚动
+        iframe.style.overflow = "hidden"; // 隐藏内部滚动条
+        iframe.setAttribute("scrolling", "no"); // 兼容旧浏览器
         contentElem.appendChild(iframe);
     }
 
