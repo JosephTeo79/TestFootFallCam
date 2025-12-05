@@ -11,12 +11,16 @@ if (url.endsWith(".pdf") && !/IR_/.test(url)) {
     });
 }
 
-if (url.endsWith(".mp4")) {
-    // 不改 URL
+if (url.endsWith(".mp4") && !/IR_/.test(url)) {
+    url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => {
+        return `IR_${name}.${ext}`;
+    });
 }
 
-if (url.endsWith(".html")) {
-    // iframe src = url
+if (url.endsWith(".html") && !/IR_/.test(url)) {
+    url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => {
+        return `IR_${name}.${ext}`;
+    });
 }
 
     
@@ -162,5 +166,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // 自动打开 Introduction
-    openTab('Introduction', 'IR_introduction.html');
+    openTab('Introduction', 'introduction.html');
 });
