@@ -23,7 +23,7 @@ async function openTab(title, url) {
     tab.appendChild(closeBtn);
 
     tabText.addEventListener("click", () => setActiveTab(title));
-    closeBtn.addEventListener("click", (e) => {
+    closeBtn.addEventListener("click", e => {
         e.stopPropagation();
         closeTab(title);
     });
@@ -39,31 +39,29 @@ async function openTab(title, url) {
 
     if (url.endsWith(".pdf")) {
         try {
-            const pdf = await pdfjsLib.getDocument(url).promise;
+            const response = await fetch(url);       // fetch 隐藏真实 URL
+            const pdfData = await response.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
             const numPages = pdf.numPages;
+            const dpr = window.devicePixelRatio || 1;
 
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
-
-                const containerWidth = contentElem.clientWidth || tabContent.clientWidth;
-                const viewport = page.getViewport({ scale: 1 });
-                
-                const devicePixelRatio = window.devicePixelRatio || 1;
-                const scale = containerWidth / viewport.width * devicePixelRatio;
-                const scaledViewport = page.getViewport({ scale });
-
+                const viewport = page.getViewport({ scale: 2 }); // 调大 scale 提高清晰度
                 const canvas = document.createElement("canvas");
-                canvas.width = scaledViewport.width;
-                canvas.height = scaledViewport.height;
-                canvas.style.width = (scaledViewport.width / devicePixelRatio) + "px";
-                canvas.style.height = (scaledViewport.height / devicePixelRatio) + "px";
 
-                const context = canvas.getContext("2d");
-                context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-                await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
+                canvas.width = viewport.width * dpr;
+                canvas.height = viewport.height * dpr;
+                canvas.style.width = "100%";
+                canvas.style.height = "auto";
 
+                const ctx = canvas.getContext("2d");
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                await page.render({ canvasContext: ctx, viewport }).promise;
                 contentElem.appendChild(canvas);
             }
+
         } catch (err) {
             contentElem.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
             console.error(err);
@@ -73,6 +71,7 @@ async function openTab(title, url) {
         iframe.src = url;
         iframe.style.width = "100%";
         iframe.style.height = "100%";
+        iframe.style.flex = "1";
         iframe.frameBorder = "0";
         contentElem.appendChild(iframe);
     }
@@ -89,7 +88,7 @@ function setActiveTab(title) {
     });
     if (!openTabs[title]) return;
     openTabs[title].tab.classList.add("active");
-    openTabs[title].iframe.style.display = "block";
+    openTabs[title].iframe.style.display = "flex";
 }
 
 function closeTab(title) {
@@ -112,6 +111,4 @@ document.addEventListener("DOMContentLoaded", () => {
             openTab(title, url);
         });
     });
-
-    openTab('Introduction', 'introduction.html');
 });
