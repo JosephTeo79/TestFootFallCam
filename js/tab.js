@@ -32,9 +32,10 @@ async function openTab(title, url) {
 
     // === 创建内容区域 ===
     const contentElem = document.createElement("div");
+    contentElem.style.flex = "1";           
+    contentElem.style.display = "flex";
+    contentElem.style.flexDirection = "column";
     contentElem.style.overflowY = "auto";
-    contentElem.style.height = "100%";
-    contentElem.style.padding = "10px";
 
     if (url.endsWith(".pdf")) {
         try {
@@ -49,12 +50,6 @@ async function openTab(title, url) {
                 const canvas = document.createElement("canvas");
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
-
-                // 自适应宽度显示
-                canvas.style.width = "100%";
-                canvas.style.height = "auto";
-                canvas.style.display = "block";
-                canvas.style.marginBottom = "20px";
 
                 const context = canvas.getContext("2d");
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
@@ -100,7 +95,6 @@ function closeTab(title) {
     if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
 }
 
-// 初始化菜单点击事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
         link.addEventListener("click", function(e) {
@@ -111,6 +105,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 自动打开 introduction.html
     openTab('Introduction', 'introduction.html');
 });
