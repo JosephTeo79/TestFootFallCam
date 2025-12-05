@@ -49,7 +49,7 @@ async function openTab(title, url) {
 
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 2 });
+                const viewport = page.getViewport({ scale: 2 }); // 可调 scale
                 const canvas = document.createElement("canvas");
 
                 canvas.width = viewport.width * dpr;
@@ -65,11 +65,11 @@ async function openTab(title, url) {
             }
 
         } else if (url.endsWith(".mp4")) {
+            // MP4: fetch + Blob + URL.createObjectURL
             const response = await fetch(url);
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
 
-            // 自定义播放器容器
             const videoContainer = document.createElement("div");
             videoContainer.style.width = "100%";
             videoContainer.style.textAlign = "center";
@@ -79,11 +79,13 @@ async function openTab(title, url) {
             video.style.width = "100%";
             video.style.height = "auto";
             video.setAttribute("playsinline", "true");
+            video.controlsList = "nodownload"; // 禁用下载按钮
+            video.preload = "metadata";
 
             // 禁用右键
             video.addEventListener("contextmenu", e => e.preventDefault());
 
-            // 自定义播放按钮
+            // 自定义播放/暂停按钮
             const playBtn = document.createElement("button");
             playBtn.textContent = "Play / Pause";
             playBtn.style.marginTop = "5px";
@@ -97,7 +99,7 @@ async function openTab(title, url) {
             contentElem.appendChild(videoContainer);
 
         } else {
-            // 普通 HTML 用 iframe
+            // 普通 HTML 页面
             const iframe = document.createElement("iframe");
             iframe.src = url;
             iframe.style.width = "100%";
