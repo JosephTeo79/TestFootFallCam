@@ -8,7 +8,7 @@ async function openTab(title, url) {
         return;
     }
 
-    // === 创建 Tab 按钮 ===
+    // 创建 tab 按钮
     const tab = document.createElement("div");
     tab.className = "tab";
     tab.dataset.title = title;
@@ -23,24 +23,22 @@ async function openTab(title, url) {
     tab.appendChild(closeBtn);
 
     tabText.addEventListener("click", () => setActiveTab(title));
-    closeBtn.addEventListener("click", (e) => {
+    closeBtn.addEventListener("click", e => {
         e.stopPropagation();
         closeTab(title);
     });
 
     tabBar.appendChild(tab);
 
-    // === 创建内容区域 ===
+    // 创建内容容器
     const contentElem = document.createElement("div");
-    contentElem.style.flex = "1"; // 填满 tab-content
+    contentElem.style.flex = "1";
     contentElem.style.overflowY = "auto";
 
     if (url.endsWith(".pdf")) {
         try {
             const pdf = await pdfjsLib.getDocument(url).promise;
-            const numPages = pdf.numPages;
-
-            for (let i = 1; i <= numPages; i++) {
+            for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const scale = 1.5;
                 const viewport = page.getViewport({ scale });
@@ -48,10 +46,6 @@ async function openTab(title, url) {
                 const canvas = document.createElement("canvas");
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
-                canvas.style.width = "100%"; // 横向撑满
-                canvas.style.height = "auto";
-                canvas.style.display = "block";
-                canvas.style.margin = "10px auto";
 
                 const context = canvas.getContext("2d");
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
@@ -67,9 +61,6 @@ async function openTab(title, url) {
         iframe.src = url;
         iframe.style.width = "100%";
         iframe.style.height = "100%";
-        iframe.style.flex = "1";
-        iframe.style.display = "block";
-        iframe.frameBorder = "0";
         contentElem.appendChild(iframe);
     }
 
@@ -85,7 +76,7 @@ function setActiveTab(title) {
     });
     if (!openTabs[title]) return;
     openTabs[title].tab.classList.add("active");
-    openTabs[title].iframe.style.display = "flex";
+    openTabs[title].iframe.style.display = "flex"; // flex 填满右侧区域
 }
 
 function closeTab(title) {
@@ -102,13 +93,14 @@ function closeTab(title) {
 // 初始化菜单点击事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
-        link.addEventListener("click", function(e) {
+        link.addEventListener("click", e => {
             e.preventDefault();
-            const url = this.getAttribute("data-url");
-            const title = this.textContent.trim();
+            const url = link.getAttribute("data-url");
+            const title = link.textContent.trim();
             openTab(title, url);
         });
     });
 
+    // 自动打开首页
     openTab('Introduction', 'introduction.html');
 });
