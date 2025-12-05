@@ -64,7 +64,7 @@ async function openTab(title, url) {
                 contentElem.appendChild(canvas);
             }
 
-        } } else if (url.endsWith(".mp4")) {
+        }  else if (url.endsWith(".mp4")) {
     const response = await fetch(url);
     const blob = await response.blob();
     const blobUrl = URL.createObjectURL(blob);
