@@ -5,7 +5,7 @@
 <title>Retail Pro Prism</title>
 <link rel="stylesheet" href="css/treeview.css">
 <link rel="stylesheet" href="css/style1.css">
-<link rel="stylesheet" href="css/tab-style.css"> <!-- Tab CSS 单独文件 -->
+<link rel="stylesheet" href="css/tab-style.css">
 </head>
 <body>
 <div id="container">
@@ -13,14 +13,16 @@
   <div id="left-pane">
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
-   
     </div>
     
     <ul>
       <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
       <li><span class="caret">Front Office</span>
         <ul class="nested">
-           <li><a href="#" data-url="FrontOffice/Open_Register.pdf" class="nav-link">Open Register</a></li>
+          <!-- 隐藏 PDF 链接 -->
+          <li style="display:none;">
+            <a href="#" data-url="FrontOffice/Open_Register.pdf" class="nav-link">Open Register</a>
+          </li>
         </ul>
       </li>
     </ul>
@@ -41,8 +43,8 @@
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 </script>
 
 <!-- JS 文件 -->
@@ -50,7 +52,15 @@
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
 
+<script>
+window.onload = function () {
+    // 自动打开 Introduction
+    openTab('Introduction', 'introduction.html');
 
+    // 直接打开 PDF，但用户看不到链接
+    // openTab('Open Register', 'FrontOffice/Open_Register.pdf');
+};
+</script>
 
 </body>
 </html>
