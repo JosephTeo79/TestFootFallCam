@@ -37,9 +37,10 @@ async function openTab(title, url) {
     contentElem.style.flexDirection = "column";
     contentElem.style.overflowY = "auto";
 
-    if (url.endsWith(".pdf")) {
-        try {
-            const response = await fetch(url);       // fetch 隐藏真实 URL
+    try {
+        if (url.endsWith(".pdf")) {
+            // 使用 fetch 隐藏真实 URL
+            const response = await fetch(url);
             const pdfData = await response.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
             const numPages = pdf.numPages;
@@ -47,7 +48,7 @@ async function openTab(title, url) {
 
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 2 }); // 调大 scale 提高清晰度
+                const viewport = page.getViewport({ scale: 2 }); // 高清
                 const canvas = document.createElement("canvas");
 
                 canvas.width = viewport.width * dpr;
@@ -62,18 +63,33 @@ async function openTab(title, url) {
                 contentElem.appendChild(canvas);
             }
 
-        } catch (err) {
-            contentElem.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
-            console.error(err);
+        } else if (url.endsWith(".mp4")) {
+            // 使用 fetch 获取 blob 隐藏真实 URL
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+
+            const video = document.createElement("video");
+            video.src = blobUrl;
+            video.controls = true;
+            video.style.width = "100%";
+            video.style.height = "auto";
+            video.setAttribute("playsinline", "true"); // 手机自适应
+            contentElem.appendChild(video);
+
+        } else {
+            // 普通 iframe
+            const iframe = document.createElement("iframe");
+            iframe.src = url;
+            iframe.style.width = "100%";
+            iframe.style.height = "100%";
+            iframe.style.flex = "1";
+            iframe.frameBorder = "0";
+            contentElem.appendChild(iframe);
         }
-    } else {
-        const iframe = document.createElement("iframe");
-        iframe.src = url;
-        iframe.style.width = "100%";
-        iframe.style.height = "100%";
-        iframe.style.flex = "1";
-        iframe.frameBorder = "0";
-        contentElem.appendChild(iframe);
+    } catch (err) {
+        contentElem.innerHTML = `<p style="color:red;">Failed to load content: ${err.message}</p>`;
+        console.error(err);
     }
 
     tabContent.appendChild(contentElem);
@@ -102,6 +118,7 @@ function closeTab(title) {
     if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
 }
 
+// 初始化菜单点击事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
         link.addEventListener("click", function(e) {
@@ -111,4 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
             openTab(title, url);
         });
     });
+
+    // 自动打开 Introduction
+    openTab('Introduction', 'introduction.html');
 });
