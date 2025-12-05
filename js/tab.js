@@ -32,29 +32,34 @@ async function openTab(title, url) {
 
     // === 创建内容区域 ===
     const contentElem = document.createElement("div");
-    contentElem.style.width = "100%";
-    contentElem.style.height = "100%";
-    contentElem.style.overflowY = "auto"; // 内部滚动
-    contentElem.style.display = "block";
+    contentElem.style.flex = "1";
+    contentElem.style.display = "flex";
+    contentElem.style.flexDirection = "column";
+    contentElem.style.overflowY = "auto";
 
     if (url.endsWith(".pdf")) {
         try {
             const pdf = await pdfjsLib.getDocument(url).promise;
-            for (let i = 1; i <= pdf.numPages; i++) {
+            const numPages = pdf.numPages;
+
+            for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
 
-                const desiredWidth = contentElem.clientWidth; // tab-content 宽度
+                // === 动态计算 scale 自适应 tab-content 宽度 ===
                 const viewport = page.getViewport({ scale: 1 });
-                const scale = desiredWidth / viewport.width; // 计算缩放比例适配宽度
+                const desiredWidth = contentElem.clientWidth || tabContent.clientWidth;
+                const scale = desiredWidth / viewport.width;
                 const scaledViewport = page.getViewport({ scale });
 
                 const canvas = document.createElement("canvas");
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
+                canvas.width = scaledViewport.width;
+                canvas.height = scaledViewport.height;
 
                 const context = canvas.getContext("2d");
-                await page.render({ canvasContext: context, viewport: viewport }).promise;
+                await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
 
+                canvas.style.width = "100%";      // 自适应宽度显示
+                canvas.style.height = "auto";     // 高度自动
                 contentElem.appendChild(canvas);
             }
         } catch (err) {
@@ -64,7 +69,9 @@ async function openTab(title, url) {
     } else {
         const iframe = document.createElement("iframe");
         iframe.src = url;
-        iframe.className = "tab-frame";
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.frameBorder = "0";
         contentElem.appendChild(iframe);
     }
 
