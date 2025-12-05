@@ -2,6 +2,7 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
+// 打开 Tab
 async function openTab(title, url) {
     if (openTabs[title]) {
         setActiveTab(title);
@@ -39,7 +40,7 @@ async function openTab(title, url) {
 
     try {
         if (url.endsWith(".pdf")) {
-            // 使用 fetch 隐藏真实 URL
+            // PDF: fetch 隐藏真实 URL + 高清渲染
             const response = await fetch(url);
             const pdfData = await response.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
@@ -48,7 +49,7 @@ async function openTab(title, url) {
 
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 2 }); // 高清
+                const viewport = page.getViewport({ scale: 2 }); // 可调 scale
                 const canvas = document.createElement("canvas");
 
                 canvas.width = viewport.width * dpr;
@@ -64,7 +65,7 @@ async function openTab(title, url) {
             }
 
         } else if (url.endsWith(".mp4")) {
-            // 使用 fetch 获取 blob 隐藏真实 URL
+            // MP4: fetch + Blob URL，防止直接下载
             const response = await fetch(url);
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
@@ -78,7 +79,7 @@ async function openTab(title, url) {
             contentElem.appendChild(video);
 
         } else {
-            // 普通 iframe
+            // 普通 HTML 用 iframe
             const iframe = document.createElement("iframe");
             iframe.src = url;
             iframe.style.width = "100%";
@@ -97,6 +98,7 @@ async function openTab(title, url) {
     setActiveTab(title);
 }
 
+// 切换 Tab
 function setActiveTab(title) {
     Object.values(openTabs).forEach(({ tab, iframe }) => {
         tab.classList.remove("active");
@@ -107,6 +109,7 @@ function setActiveTab(title) {
     openTabs[title].iframe.style.display = "flex";
 }
 
+// 关闭 Tab
 function closeTab(title) {
     if (!openTabs[title]) return;
     const { tab, iframe } = openTabs[title];
@@ -124,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         link.addEventListener("click", function(e) {
             e.preventDefault();
             const url = this.getAttribute("data-url");
-            const title = this.textContent.trim();
+            const title = this.getAttribute("data-title") || this.textContent.trim();
             openTab(title, url);
         });
     });
