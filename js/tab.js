@@ -2,13 +2,13 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
-function openTab(title, url) {
+async function openTab(title, url) {
     if (openTabs[title]) {
         setActiveTab(title);
         return;
     }
 
-    // 创建 Tab 按钮
+    // === 创建 Tab 按钮 ===
     const tab = document.createElement("div");
     tab.className = "tab";
     tab.dataset.title = title;
@@ -30,33 +30,35 @@ function openTab(title, url) {
 
     tabBar.appendChild(tab);
 
-    // 创建内容区域
+    // === 创建内容区域 ===
     const contentElem = document.createElement("div");
     contentElem.style.overflowY = "auto";
     contentElem.style.height = "100%";
 
     if (url.endsWith(".pdf")) {
-        // PDF.js 渲染 PDF 多页
-        pdfjsLib.getDocument(url).promise.then(pdf => {
-            for (let i = 1; i <= pdf.numPages; i++) {
-                pdf.getPage(i).then(page => {
-                    const scale = 1.5;
-                    const viewport = page.getViewport({ scale });
+        try {
+            const pdf = await pdfjsLib.getDocument(url).promise;
+            const numPages = pdf.numPages;
 
-                    const canvas = document.createElement("canvas");
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    const context = canvas.getContext("2d");
-                    page.render({ canvasContext: context, viewport: viewport });
+            for (let i = 1; i <= numPages; i++) {
+                const page = await pdf.getPage(i);
+                const scale = 1.5;
+                const viewport = page.getViewport({ scale });
 
-                    contentElem.appendChild(canvas);
-                });
+                const canvas = document.createElement("canvas");
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                const context = canvas.getContext("2d");
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                contentElem.appendChild(canvas);
             }
-        }).catch(err => {
+        } catch (err) {
             contentElem.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
-        });
+            console.error(err);
+        }
     } else {
-        // iframe 用于非 PDF
         const iframe = document.createElement("iframe");
         iframe.src = url;
         iframe.style.width = "100%";
@@ -88,9 +90,7 @@ function closeTab(title) {
     delete openTabs[title];
 
     const remaining = Object.keys(openTabs);
-    if (remaining.length > 0) {
-        setActiveTab(remaining[remaining.length - 1]);
-    }
+    if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
 }
 
 // 初始化菜单点击事件
