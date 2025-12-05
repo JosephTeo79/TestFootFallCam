@@ -35,36 +35,33 @@ async function openTab(title, url) {
     contentElem.style.flex = "1";
     contentElem.style.display = "flex";
     contentElem.style.flexDirection = "column";
-    contentElem.style.alignItems = "center"; // 居中防止裁掉
     contentElem.style.overflowY = "auto";
-    contentElem.style.padding = "0 5px"; // 左右留一点空间
 
     if (url.endsWith(".pdf")) {
         try {
             const pdf = await pdfjsLib.getDocument(url).promise;
             const numPages = pdf.numPages;
-            const dpr = window.devicePixelRatio || 1;
 
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 2 }); // 放大 scale 提高清晰度
+
+                const containerWidth = contentElem.clientWidth || tabContent.clientWidth;
+                const viewport = page.getViewport({ scale: 1 });
+                
+                const devicePixelRatio = window.devicePixelRatio || 1;
+                const scale = containerWidth / viewport.width * devicePixelRatio;
+                const scaledViewport = page.getViewport({ scale });
 
                 const canvas = document.createElement("canvas");
+                canvas.width = scaledViewport.width;
+                canvas.height = scaledViewport.height;
+                canvas.style.width = (scaledViewport.width / devicePixelRatio) + "px";
+                canvas.style.height = (scaledViewport.height / devicePixelRatio) + "px";
 
-                // 高分屏渲染
-                canvas.width = viewport.width * dpr;
-                canvas.height = viewport.height * dpr;
+                const context = canvas.getContext("2d");
+                context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+                await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
 
-                // CSS 宽度自适应父容器
-                canvas.style.width = "100%";
-                canvas.style.height = "auto";
-                canvas.style.display = "block";
-                canvas.style.marginBottom = "20px";
-
-                const ctx = canvas.getContext("2d");
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-                await page.render({ canvasContext: ctx, viewport }).promise;
                 contentElem.appendChild(canvas);
             }
         } catch (err) {
@@ -76,7 +73,6 @@ async function openTab(title, url) {
         iframe.src = url;
         iframe.style.width = "100%";
         iframe.style.height = "100%";
-        iframe.style.flex = "1";
         iframe.frameBorder = "0";
         contentElem.appendChild(iframe);
     }
@@ -93,7 +89,7 @@ function setActiveTab(title) {
     });
     if (!openTabs[title]) return;
     openTabs[title].tab.classList.add("active");
-    openTabs[title].iframe.style.display = "flex";
+    openTabs[title].iframe.style.display = "block";
 }
 
 function closeTab(title) {
@@ -107,7 +103,6 @@ function closeTab(title) {
     if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
 }
 
-// 初始化菜单点击事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
         link.addEventListener("click", function(e) {
@@ -118,6 +113,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 自动打开 Introduction
     openTab('Introduction', 'introduction.html');
 });
