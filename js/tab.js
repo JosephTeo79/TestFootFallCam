@@ -2,43 +2,13 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
-function renderPDF(url, container) {
-    fetch(url)
-        .then(res => res.arrayBuffer())
-        .then(data => pdfjsLib.getDocument({ data }).promise)
-        .then(pdf => {
-            container.innerHTML = ''; // 清空内容
-            for (let i = 1; i <= pdf.numPages; i++) {
-                pdf.getPage(i).then(page => {
-                    const scale = 1.5;
-                    const viewport = page.getViewport({ scale });
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    canvas.style.display = "block";
-                    canvas.style.margin = "10px auto";
-
-                    const context = canvas.getContext('2d');
-                    page.render({ canvasContext: context, viewport: viewport });
-
-                    container.appendChild(canvas);
-                });
-            }
-        })
-        .catch(err => {
-            console.error('Failed to load PDF:', err);
-            container.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
-        });
-}
-
-function openTab(title, url) {
+async function openTab(title, url) {
     if (openTabs[title]) {
         setActiveTab(title);
         return;
     }
 
-    // === 创建 Tab 按钮 ===
+    // 创建 Tab 按钮
     const tab = document.createElement("div");
     tab.className = "tab";
     tab.dataset.title = title;
@@ -53,41 +23,54 @@ function openTab(title, url) {
     tab.appendChild(closeBtn);
 
     tabText.addEventListener("click", () => setActiveTab(title));
-    closeBtn.addEventListener("click", (e) => {
+    closeBtn.addEventListener("click", e => {
         e.stopPropagation();
         closeTab(title);
     });
 
     tabBar.appendChild(tab);
 
-    // === 创建内容区域 ===
-    let contentElem;
+    // 创建内容区域
+    let contentElem = document.createElement("div");
+    contentElem.style.overflowY = "auto";
+    contentElem.style.height = "100%";
 
-    if (url.endsWith(".pdf")) {
-        contentElem = document.createElement('div');
-        contentElem.style.overflowY = 'auto';
-        contentElem.style.height = '100%';
-        renderPDF(url, contentElem); // 渲染多页 PDF
-    } else {
-        contentElem = document.createElement("iframe");
-        contentElem.className = "tab-frame";
-        contentElem.dataset.title = title;
-        contentElem.style.width = "100%";
-        contentElem.style.height = "100%";
-        contentElem.frameBorder = "0";
-        contentElem.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-        contentElem.allowFullscreen = true;
+    try {
+        if (url.endsWith(".pdf")) {
+            // Fetch 整个 PDF
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-        if (url.includes("youtube.com")) {
-            let embedUrl = url;
-            if (!url.includes("/embed/")) {
-                const videoIdMatch = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]{11})/);
-                if (videoIdMatch) embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}`;
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({ scale: 1.5 });
+
+                const canvas = document.createElement("canvas");
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                const context = canvas.getContext("2d");
+
+                await page.render({ canvasContext: context, viewport }).promise;
+                contentElem.appendChild(canvas);
             }
-            contentElem.src = embedUrl;
         } else {
-            contentElem.src = url;
+            // iframe 用于非 PDF
+            const iframe = document.createElement("iframe");
+            iframe.className = "tab-frame";
+            iframe.dataset.title = title;
+            iframe.style.width = "100%";
+            iframe.style.height = "100%";
+            iframe.frameBorder = "0";
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+            iframe.allowFullscreen = true;
+            iframe.src = url;
+
+            contentElem.appendChild(iframe);
         }
+    } catch (err) {
+        contentElem.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
+        console.error(err);
     }
 
     tabContent.appendChild(contentElem);
@@ -119,10 +102,10 @@ function closeTab(title) {
 // 初始化菜单事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
-        link.addEventListener("click", function(e) {
+        link.addEventListener("click", e => {
             e.preventDefault();
-            const url = this.getAttribute("data-url");
-            const title = this.textContent.trim();
+            const url = link.getAttribute("data-url");
+            const title = link.textContent.trim();
             openTab(title, url);
         });
     });
