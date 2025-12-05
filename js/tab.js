@@ -3,12 +3,108 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
+// 打开一个 Tab
+function openTab(title, url) {
+    if (openTabs[title]) {
+        setActiveTab(title);
+        return;
+    }
+
+    // === 创建 Tab 按钮 ===
+    const tab = document.createElement("div");
+    tab.className = "tab";
+    tab.dataset.title = title;
+
+    const tabText = document.createElement("span");
+    tabText.textContent = title; // Tab 显示名字
+    tab.appendChild(tabText);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "×";
+    closeBtn.className = "close-btn";
+    tab.appendChild(closeBtn);
+
+    tabText.addEventListener("click", () => setActiveTab(title));
+    closeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeTab(title);
+    });
+
+    tabBar.appendChild(tab);
+
+    // === 创建内容区域 ===
+    let contentElem;
+
+    if (url.endsWith(".pdf")) {
+        contentElem = document.createElement("div");
+        contentElem.style.overflowY = "auto";
+        contentElem.style.height = "100%";
+
+        renderPDF(url, contentElem); // 使用一次性加载 PDF 方法
+    } else {
+        // iframe 用于非 PDF 文件
+        contentElem = document.createElement("iframe");
+        contentElem.className = "tab-frame";
+        contentElem.dataset.title = title;
+        contentElem.style.width = "100%";
+        contentElem.style.height = "100%";
+        contentElem.frameBorder = "0";
+        contentElem.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        contentElem.allowFullscreen = true;
+
+        if (url.includes("youtube.com")) {
+            let embedUrl = url;
+            if (!url.includes("/embed/")) {
+                const videoIdMatch = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]{11})/);
+                if (videoIdMatch) embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}`;
+            }
+            contentElem.src = embedUrl;
+        } else {
+            contentElem.src = url;
+        }
+    }
+
+    tabContent.appendChild(contentElem);
+    openTabs[title] = { tab, iframe: contentElem };
+    setActiveTab(title);
+}
+
+// 设置激活 Tab
+function setActiveTab(title) {
+    Object.values(openTabs).forEach(({ tab, iframe }) => {
+        tab.classList.remove("active");
+        iframe.style.display = "none";
+    });
+    if (!openTabs[title]) return;
+    openTabs[title].tab.classList.add("active");
+    openTabs[title].iframe.style.display = "block";
+}
+
+// 关闭 Tab
+function closeTab(title) {
+    if (!openTabs[title]) return;
+    const { tab, iframe } = openTabs[title];
+    tab.remove();
+    iframe.remove();
+    delete openTabs[title];
+
+    const remaining = Object.keys(openTabs);
+    if (remaining.length > 0) {
+        setActiveTab(remaining[remaining.length - 1]);
+    }
+}
+
+// PDF 渲染函数（一次性加载 ArrayBuffer）
 async function renderPDF(url, container) {
     try {
         const pdfjsLib = window.pdfjsLib;
         if (!pdfjsLib) throw new Error("PDF.js not loaded");
 
-        const pdf = await pdfjsLib.getDocument(url).promise;
+        // fetch PDF 整个文件
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
@@ -32,86 +128,17 @@ async function renderPDF(url, container) {
     }
 }
 
-function openTab(title, url) {
-    if (openTabs[title]) {
-        setActiveTab(title);
-        return;
-    }
-
-    // === Tab 按钮 ===
-    const tab = document.createElement("div");
-    tab.className = "tab";
-    tab.dataset.title = title;
-
-    const tabText = document.createElement("span");
-    tabText.textContent = title;
-    tab.appendChild(tabText);
-
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "×";
-    closeBtn.className = "close-btn";
-    tab.appendChild(closeBtn);
-
-    tabText.addEventListener("click", () => setActiveTab(title));
-    closeBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        closeTab(title);
-    });
-
-    tabBar.appendChild(tab);
-
-    // === 内容区域 ===
-    let contentElem;
-    if (url.endsWith(".pdf")) {
-        contentElem = document.createElement("div");
-        contentElem.style.overflowY = "auto";
-        contentElem.style.height = "100%";
-        renderPDF(url, contentElem); // 异步渲染 PDF
-    } else {
-        contentElem = document.createElement("iframe");
-        contentElem.className = "tab-frame";
-        contentElem.dataset.title = title;
-        contentElem.style.width = "100%";
-        contentElem.style.height = "100%";
-        contentElem.frameBorder = "0";
-        contentElem.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-        contentElem.allowFullscreen = true;
-        contentElem.src = url.includes("youtube.com") ? `https://www.youtube.com/embed/${url.split("v=")[1]}` : url;
-    }
-
-    tabContent.appendChild(contentElem);
-    openTabs[title] = { tab, iframe: contentElem };
-    setActiveTab(title);
-}
-
-function setActiveTab(title) {
-    Object.values(openTabs).forEach(({ tab, iframe }) => {
-        tab.classList.remove("active");
-        iframe.style.display = "none";
-    });
-    if (!openTabs[title]) return;
-    openTabs[title].tab.classList.add("active");
-    openTabs[title].iframe.style.display = "block";
-}
-
-function closeTab(title) {
-    if (!openTabs[title]) return;
-    const { tab, iframe } = openTabs[title];
-    tab.remove();
-    iframe.remove();
-    delete openTabs[title];
-
-    const remaining = Object.keys(openTabs);
-    if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
-}
-
+// 初始化菜单事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
-        link.addEventListener("click", function (e) {
+        link.addEventListener("click", function(e) {
             e.preventDefault();
-            openTab(this.textContent.trim(), this.getAttribute("data-url"));
+            const url = this.getAttribute("data-url");
+            const title = this.textContent.trim();
+            openTab(title, url);
         });
     });
 
+    // 自动打开 introduction.html
     openTab('Introduction', 'introduction.html');
 });
