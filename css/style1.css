@@ -3,6 +3,7 @@ body, html {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
+  overflow: hidden; /* 禁止全局滚动条 */
 }
 
 #container {
@@ -12,9 +13,23 @@ body, html {
 
 #left-pane {
   width: 250px;
+  display: flex;
+  flex-direction: column;
   border-right: 1px solid #ccc;
-  overflow-y: auto;
+}
+
+#left-pane ul {
+  flex: 1;          /* 占满剩余空间 */
+  overflow-y: auto;  /* 左侧菜单滚动 */
+  margin: 0;
+  padding: 0;
+}
+
+.footer-title {
+  margin: 0;
   padding: 5px;
+  text-align: center;
+  flex-shrink: 0;    /* 不让 footer 收缩 */
 }
 
 #divider {
@@ -63,8 +78,9 @@ body, html {
 }
 
 #tab-content {
-  flex: 1;
+  flex: 1;            /* 占满右侧剩余空间 */
   display: flex;
+  overflow-y: auto;   /* 内容内部滚动 */
   background: #fff;
 }
 
