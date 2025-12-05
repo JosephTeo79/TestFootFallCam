@@ -5,10 +5,11 @@ const openTabs = {};
 // 打开 Tab
 async function openTab(title, url) {
 
-      // === 自动把 xxx.xxx → xxx_ABC.xxx ===
+if (url.endsWith(".pdf") && !/IR_/.test(url)) {
     url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => {
         return `IR_${name}.${ext}`;
     });
+}
 
     
     if (openTabs[title]) {
