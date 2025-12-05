@@ -45,7 +45,7 @@ async function openTab(title, url) {
 
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 1}); // 可以调大 scale
+                const viewport = page.getViewport({ scale: 3}); // 可以调大 scale
                 const canvas = document.createElement("canvas");
 
                 // 高分屏处理
