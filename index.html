@@ -5,99 +5,11 @@
 <title>Retail Pro Prism</title>
 <link rel="stylesheet" href="css/treeview.css">
 <link rel="stylesheet" href="css/style1.css">
-<style>
-  /* 主容器 */
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: sans-serif;
-  }
-
-  #container {
-    display: flex;
-    height: 100vh;
-  }
-
-  /* 左侧菜单 */
-  #left-pane {
-    width: 220px;
-    border-right: 1px solid #ccc;
-    overflow-y: auto;
-    padding: 5px;
-  }
-
-  /* 分隔条 */
-  #divider {
-    width: 1px;
-    background: #ccc;
-  }
-
-  /* 右侧容器 */
-  #right-pane {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Tab 栏 */
-  #tab-bar {
-    display: flex;
-    border-bottom: 1px solid #ccc;
-    height: 40px;
-    background: #f7f7f7;
-  }
-
-  .tab {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-bottom: none;
-    margin-right: 3px;
-    cursor: pointer;
-    background: #eee;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    position: relative;
-  }
-
-  .tab.active {
-    background: #fff;
-    font-weight: bold;
-  }
-
-  .close-btn {
-    margin-left: 8px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-  /* Tab 内容区域 */
-  #tab-content {
-    flex: 1;                   /* 占满右侧剩余空间 */
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    background: #fff;
-    padding: 10px;
-  }
-
-  /* PDF canvas */
-  canvas {
-    width: 100%;  /* 自适应宽度 */
-    height: auto;
-    display: block;
-    margin-bottom: 20px;
-  }
-</style>
+<link rel="stylesheet" href="css/tab-style.css"> <!-- Tab CSS 单独文件 -->
 </head>
 <body>
 
 <div id="container">
-
   <!-- 左侧菜单 -->
   <div id="left-pane">
     <div class="header-title">
@@ -120,6 +32,7 @@
   <!-- 分隔条 -->
   <div id="divider"></div>
 
+  <!-- 右侧区域 -->
   <div id="right-pane">
     <div id="tab-bar"></div>
     <div id="tab-content"></div>
@@ -133,7 +46,7 @@
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 </script>
 
-<!-- Tab JS -->
+<!-- JS 文件 -->
 <script src="js/tab.js"></script>
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
@@ -143,5 +56,6 @@ window.onload = function () {
     openTab('Introduction', 'introduction.html');
 };
 </script>
+
 </body>
 </html>
