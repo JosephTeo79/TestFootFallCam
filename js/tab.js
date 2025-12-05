@@ -12,9 +12,9 @@ if (url.endsWith(".pdf") && !/IR_/.test(url)) {
 }
 
 if (url.endsWith(".mp4") && !/IR_/.test(url)) {
- //   url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => {
-   //     return `IR_${name}.${ext}`;
-   // });
+    url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => {
+        return `IR_${name}.${ext}`;
+    });
 }
 
 if (url.endsWith(".html") && !/IR_/.test(url)) {
