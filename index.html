@@ -1,4 +1,4 @@
-il<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -18,17 +18,11 @@ il<!DOCTYPE html>
     </div>
     
     <ul>
-    
-
       <li><a href="#" data-url="introduction.html" class="nav-link"><img src="./icon/pdf.png" class="image">Introduction</a></li>
 
       <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
         <ul class="nested">
-          <!-- 新增 Open Register 菜单项 -->
-           <li><a href="#" data-url="FrontOffice/Open_Register.pdf"   class="nav-link"><img src="./icon/pdf.png" class="image">Open Register</a></li>
-       
-         
-          <!-- future submenu items 可继续添加 -->
+           <li><a href="#" data-url="FrontOffice/Open_Register.pdf" class="nav-link"><img src="./icon/pdf.png" class="image">Open Register</a></li>
         </ul>
       </li>
     </ul>
@@ -37,7 +31,7 @@ il<!DOCTYPE html>
   </div>
 
   <!-- 分隔条 -->
-<div id="divider"></div>
+  <div id="divider"></div>
 
   <div id="right-pane">
     <div id="tab-bar"></div>
@@ -48,16 +42,17 @@ il<!DOCTYPE html>
 <script src="js/treeview.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
-  // 设置 worker
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+  // PDF.js Worker 已在 CDN 设置
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 </script>
-  
+
 <script src="js/tab.js"></script>
 <script src="js/shortcut.js"></script>
-  <script>
-// 页面加载后，自动打开 introduction.html
+
+<script>
 window.onload = function () {
+    // 自动打开 introduction.html
     openTab('Introduction', 'introduction.html');
 };
 </script>
