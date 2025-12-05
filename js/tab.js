@@ -64,18 +64,21 @@ async function openTab(title, url) {
                 contentElem.appendChild(canvas);
             }
 
-        } else if (url.endsWith(".mp4")) {
-            // MP4: fetch + Blob URL，防止直接下载
+        }else if (url.endsWith(".mp4")) {
             const response = await fetch(url);
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
-
+        
             const video = document.createElement("video");
             video.src = blobUrl;
             video.controls = true;
             video.style.width = "100%";
             video.style.height = "auto";
-            video.setAttribute("playsinline", "true"); // 手机自适应
+            video.setAttribute("playsinline", "true");
+        
+            // 禁用右键下载
+            video.addEventListener("contextmenu", e => e.preventDefault());
+        
             contentElem.appendChild(video);
 
         } else {
