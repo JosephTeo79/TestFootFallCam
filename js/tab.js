@@ -1,20 +1,21 @@
+// js/tab.js
 const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
-async function openTab(title, url) {
+function openTab(title, url) {
     if (openTabs[title]) {
         setActiveTab(title);
         return;
     }
 
-    // 创建 Tab 按钮
+    // === 创建 Tab 按钮 ===
     const tab = document.createElement("div");
     tab.className = "tab";
     tab.dataset.title = title;
 
     const tabText = document.createElement("span");
-    tabText.textContent = title;
+    tabText.textContent = title; // Tab 显示名字
     tab.appendChild(tabText);
 
     const closeBtn = document.createElement("button");
@@ -23,54 +24,44 @@ async function openTab(title, url) {
     tab.appendChild(closeBtn);
 
     tabText.addEventListener("click", () => setActiveTab(title));
-    closeBtn.addEventListener("click", e => {
+    closeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         closeTab(title);
     });
 
     tabBar.appendChild(tab);
 
-    // 创建内容区域
-    let contentElem = document.createElement("div");
-    contentElem.style.overflowY = "auto";
-    contentElem.style.height = "100%";
+    // === 创建内容区域 ===
+    let contentElem;
 
-    try {
-        if (url.endsWith(".pdf")) {
-            // Fetch 整个 PDF
-            const response = await fetch(url);
-            const arrayBuffer = await response.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    if (url.endsWith(".pdf")) {
+        // 使用 iframe 显示 PDF，保证多页显示
+        contentElem = document.createElement("iframe");
+        contentElem.src = url;
+        contentElem.style.width = "100%";
+        contentElem.style.height = "100%";
+        contentElem.frameBorder = "0";
+    } else {
+        // iframe 用于非 PDF
+        contentElem = document.createElement("iframe");
+        contentElem.className = "tab-frame";
+        contentElem.dataset.title = title;
+        contentElem.style.width = "100%";
+        contentElem.style.height = "100%";
+        contentElem.frameBorder = "0";
+        contentElem.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        contentElem.allowFullscreen = true;
 
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 1.5 });
-
-                const canvas = document.createElement("canvas");
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                const context = canvas.getContext("2d");
-
-                await page.render({ canvasContext: context, viewport }).promise;
-                contentElem.appendChild(canvas);
+        if (url.includes("youtube.com")) {
+            let embedUrl = url;
+            if (!url.includes("/embed/")) {
+                const videoIdMatch = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]{11})/);
+                if (videoIdMatch) embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}`;
             }
+            contentElem.src = embedUrl;
         } else {
-            // iframe 用于非 PDF
-            const iframe = document.createElement("iframe");
-            iframe.className = "tab-frame";
-            iframe.dataset.title = title;
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.frameBorder = "0";
-            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-            iframe.allowFullscreen = true;
-            iframe.src = url;
-
-            contentElem.appendChild(iframe);
+            contentElem.src = url;
         }
-    } catch (err) {
-        contentElem.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
-        console.error(err);
     }
 
     tabContent.appendChild(contentElem);
@@ -96,16 +87,18 @@ function closeTab(title) {
     delete openTabs[title];
 
     const remaining = Object.keys(openTabs);
-    if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
+    if (remaining.length > 0) {
+        setActiveTab(remaining[remaining.length - 1]);
+    }
 }
 
 // 初始化菜单事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
-        link.addEventListener("click", e => {
+        link.addEventListener("click", function(e) {
             e.preventDefault();
-            const url = link.getAttribute("data-url");
-            const title = link.textContent.trim();
+            const url = this.getAttribute("data-url");
+            const title = this.textContent.trim();
             openTab(title, url);
         });
     });
