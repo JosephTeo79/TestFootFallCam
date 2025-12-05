@@ -47,6 +47,12 @@ il<!DOCTYPE html>
 
 <script src="js/treeview.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<script>
+  // PDF.js Worker
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+</script>
+  
 <script src="js/tab.js"></script>
 <script src="js/shortcut.js"></script>
   <script>
