@@ -64,39 +64,32 @@ async function openTab(title, url) {
                 contentElem.appendChild(canvas);
             }
 
-        } else if (url.endsWith(".mp4")) {
-            // MP4: fetch + Blob + URL.createObjectURL
-            const response = await fetch(url);
-            const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
+        } } else if (url.endsWith(".mp4")) {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
 
-            const videoContainer = document.createElement("div");
-            videoContainer.style.width = "100%";
-            videoContainer.style.textAlign = "center";
+    // 视频容器
+    const videoContainer = document.createElement("div");
+    videoContainer.style.width = "100%";
+    videoContainer.style.textAlign = "center";
 
-            const video = document.createElement("video");
-            video.src = blobUrl;
-            video.style.width = "100%";
-            video.style.height = "auto";
-            video.setAttribute("playsinline", "true");
-            video.controlsList = "nodownload"; // 禁用下载按钮
-            video.preload = "metadata";
+    const video = document.createElement("video");
+    video.src = blobUrl;
 
-            // 禁用右键
-            video.addEventListener("contextmenu", e => e.preventDefault());
+    // 必须要用 controls，不然点击没反应
+    video.controls = true;  
+    video.setAttribute("controlsList", "nodownload");
+    video.style.width = "100%";
+    video.style.height = "auto";
+    video.setAttribute("playsinline", "true");
 
-            // 自定义播放/暂停按钮
-            const playBtn = document.createElement("button");
-            playBtn.textContent = "Play / Pause";
-            playBtn.style.marginTop = "5px";
-            playBtn.addEventListener("click", () => {
-                if (video.paused) video.play();
-                else video.pause();
-            });
+    // 禁用右键
+    video.addEventListener("contextmenu", e => e.preventDefault());
 
-            videoContainer.appendChild(video);
-            videoContainer.appendChild(playBtn);
-            contentElem.appendChild(videoContainer);
+    videoContainer.appendChild(video);
+    contentElem.appendChild(videoContainer);
+
 
         } else {
             // 普通 HTML 页面
