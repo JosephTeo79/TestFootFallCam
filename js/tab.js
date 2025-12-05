@@ -31,44 +31,53 @@ function openTab(title, url) {
 
     tabBar.appendChild(tab);
 
-    // === PDF.js 渲染 PDF 替代 iframe ===
+    // === PDF.js 渲染 PDF ===
     let contentElem;
 
     if (url.endsWith(".pdf")) {
         contentElem = document.createElement("div");
-        contentElem.id = `pdf-container-${title}`;
         contentElem.style.overflowY = "auto";
         contentElem.style.height = "100%";
 
-        const pdfjsLib = window['pdfjs-dist/build/pdf'];
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
+        try {
+            const pdfjsLib = window['pdfjs-dist/build/pdf'];
+            if (!pdfjsLib) throw new Error("PDF.js not loaded");
 
-        pdfjsLib.getDocument(url).promise.then(pdf => {
-            const totalPages = pdf.numPages;
-            for (let i = 1; i <= totalPages; i++) {
-                pdf.getPage(i).then(page => {
-                    const scale = 1.5;
-                    const viewport = page.getViewport({ scale });
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
 
-                    const canvas = document.createElement("canvas");
-                    canvas.style.display = "block";
-                    canvas.style.margin = "20px auto";
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
+            console.log(`Loading PDF: ${url}`);  // 调试信息
 
-                    const context = canvas.getContext("2d");
-                    page.render({ canvasContext: context, viewport: viewport });
+            pdfjsLib.getDocument(url).promise.then(pdf => {
+                console.log(`PDF loaded, total pages: ${pdf.numPages}`);
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    pdf.getPage(i).then(page => {
+                        const scale = 1.5;
+                        const viewport = page.getViewport({ scale });
 
-                    contentElem.appendChild(canvas);
-                });
-            }
-        }).catch(err => {
-            contentElem.innerHTML = '<p style="color:red;">Failed to load PDF.</p>';
-            console.error(err);
-        });
+                        const canvas = document.createElement("canvas");
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+
+                        const context = canvas.getContext("2d");
+                        page.render({ canvasContext: context, viewport: viewport });
+
+                        contentElem.appendChild(canvas);
+                    }).catch(err => {
+                        console.error(`Error rendering page ${i}:`, err);
+                    });
+                }
+            }).catch(err => {
+                console.error("PDF loading error:", err);
+                contentElem.innerHTML = `<p style="color:red;">Failed to load PDF: ${err.message}</p>`;
+            });
+
+        } catch (err) {
+            console.error("PDF.js error:", err);
+            contentElem.innerHTML = `<p style="color:red;">PDF.js not loaded or error: ${err.message}</p>`;
+        }
 
     } else {
-        // 非 PDF 仍使用 iframe
+        // 非 PDF 文件仍用 iframe
         contentElem = document.createElement("iframe");
         contentElem.className = "tab-frame";
         contentElem.dataset.title = title;
@@ -125,4 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
             openTab(title, url);
         });
     });
+
+    // 页面加载后自动打开 introduction.html
+    openTab('Introduction', 'introduction.html');
 });
