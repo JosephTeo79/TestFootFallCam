@@ -38,7 +38,7 @@ function openTab(title, url) {
         return;
     }
 
-    // === 创建 Tab 按钮 ===
+    // === Tab 按钮 ===
     const tab = document.createElement("div");
     tab.className = "tab";
     tab.dataset.title = title;
@@ -60,7 +60,7 @@ function openTab(title, url) {
 
     tabBar.appendChild(tab);
 
-    // === 创建内容区域 ===
+    // === 内容区域 ===
     let contentElem;
     if (url.endsWith(".pdf")) {
         contentElem = document.createElement("div");
@@ -76,17 +76,7 @@ function openTab(title, url) {
         contentElem.frameBorder = "0";
         contentElem.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
         contentElem.allowFullscreen = true;
-
-        if (url.includes("youtube.com")) {
-            let embedUrl = url;
-            if (!url.includes("/embed/")) {
-                const videoIdMatch = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]{11})/);
-                if (videoIdMatch) embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}`;
-            }
-            contentElem.src = embedUrl;
-        } else {
-            contentElem.src = url;
-        }
+        contentElem.src = url.includes("youtube.com") ? `https://www.youtube.com/embed/${url.split("v=")[1]}` : url;
     }
 
     tabContent.appendChild(contentElem);
@@ -115,17 +105,13 @@ function closeTab(title) {
     if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
 }
 
-// 初始化菜单事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
         link.addEventListener("click", function (e) {
             e.preventDefault();
-            const url = this.getAttribute("data-url");
-            const title = this.textContent.trim();
-            openTab(title, url);
+            openTab(this.textContent.trim(), this.getAttribute("data-url"));
         });
     });
 
-    // 自动打开 introduction.html
     openTab('Introduction', 'introduction.html');
 });
