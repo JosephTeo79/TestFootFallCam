@@ -11,6 +11,14 @@ if (url.endsWith(".pdf") && !/IR_/.test(url)) {
     });
 }
 
+if (url.endsWith(".mp4")) {
+    // 不改 URL
+}
+
+if (url.endsWith(".html")) {
+    // iframe src = url
+}
+
     
     if (openTabs[title]) {
         setActiveTab(title);
@@ -154,5 +162,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // 自动打开 Introduction
-    openTab('Introduction', 'introduction.html');
+    openTab('Introduction', 'IR_introduction.html');
 });
