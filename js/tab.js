@@ -42,8 +42,11 @@ async function openTab(title, url) {
             const pdf = await pdfjsLib.getDocument(url).promise;
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
-                const scale = 1.5;
-                const viewport = page.getViewport({ scale });
+
+                const desiredWidth = contentElem.clientWidth; // tab-content 宽度
+                const viewport = page.getViewport({ scale: 1 });
+                const scale = desiredWidth / viewport.width; // 计算缩放比例适配宽度
+                const scaledViewport = page.getViewport({ scale });
 
                 const canvas = document.createElement("canvas");
                 canvas.width = viewport.width;
