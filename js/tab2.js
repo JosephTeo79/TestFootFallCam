@@ -75,9 +75,12 @@ async function openTab(title, url) {
     createTab(title, contentElem);
 }
 
-// 打开 data-resource（PDF + 链接 MP4）
+// 打开 data-resource（PDF + 视频播放在同一 Tab）
 async function openResourceTab(title, resource) {
-    if (openTabs[title]) { setActiveTab(title); return; }
+    if (openTabs[title]) {
+        setActiveTab(title);
+        return;
+    }
 
     const contentElem = document.createElement("div");
     contentElem.style.flex = "1";
@@ -86,8 +89,8 @@ async function openResourceTab(title, resource) {
     contentElem.style.overflowY = "auto";
 
     const pdfFiles = [
-        `IR_${resource}_0.pdf`, // 封面 PDF
-        `IR_${resource}.pdf`    // 封面图片 PDF
+        `IR_${resource}_0.pdf`, // 封面 PDF，点击播放视频
+        `IR_${resource}.pdf`    // 其他 PDF
     ];
 
     for (const pdfUrl of pdfFiles) {
@@ -97,6 +100,7 @@ async function openResourceTab(title, resource) {
                 contentElem.innerHTML += `<p style="color:red;">PDF not found: ${pdfUrl}</p>`;
                 continue;
             }
+
             const pdfData = await response.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
             const page = await pdf.getPage(1); // 只显示第一页
@@ -110,17 +114,20 @@ async function openResourceTab(title, resource) {
 
             contentElem.appendChild(canvas);
 
-            // 如果是封面 PDF，加点击播放视频事件
+            // 封面 PDF 点击播放视频
             if (pdfUrl.endsWith("_0.pdf")) {
                 canvas.style.cursor = "pointer";
                 canvas.addEventListener("click", () => {
-                    // 视频在同一 tab 播放，URL 不暴露
+                    // 移除封面 canvas
+                    canvas.remove();
+                    // 插入视频元素
                     const video = document.createElement("video");
-                    video.src = `IR_${resource}.mp4`; // 保存在内部
+                    video.src = `IR_${resource}.mp4`;
                     video.controls = true;
                     video.style.width = "100%";
                     video.style.height = "auto";
                     video.setAttribute("playsinline", "true");
+                    video.addEventListener("contextmenu", e => e.preventDefault());
                     contentElem.appendChild(video);
                 });
             }
@@ -132,8 +139,6 @@ async function openResourceTab(title, resource) {
 
     createTab(title, contentElem);
 }
-
-
 
 // 创建 Tab 按钮
 function createTab(title, contentElem) {
