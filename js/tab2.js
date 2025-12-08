@@ -85,30 +85,31 @@ async function openResourceTab(title, resource) {
 
         if (pdfFile.endsWith("_0.pdf")) {
             // 封面 PDF，不渲染，点击播放视频
-            const coverDiv = document.createElement("div");
-            coverDiv.textContent = pdfFile; // 可以换成“点击播放视频”或用背景图片
-            coverDiv.style.cursor = "pointer";
-            coverDiv.style.padding = "20px";
-            coverDiv.style.textAlign = "center";
-            coverDiv.style.border = "1px solid #ccc";
-            coverDiv.style.marginBottom = "10px";
-            coverDiv.style.backgroundColor = "#f0f0f0";
-
-            coverDiv.addEventListener("click", () => {
-                const video = document.createElement("video");
-                video.src = addIRToFilename(resource + ".mp4");
-                video.controls = true;
-                video.style.width = "100%";
-                video.style.height = "auto";
-                video.setAttribute("playsinline", "true");
-                contentElem.appendChild(video);
-
-                // 可选：点击后隐藏封面
-                coverDiv.style.display = "none";
-            });
-
-            contentElem.appendChild(coverDiv);
-        } else {
+                // 创建封面 div
+                const coverDiv = document.createElement("div");
+                coverDiv.style.width = "300px";
+                coverDiv.style.height = "200px";
+                coverDiv.style.margin = "0 auto 10px";
+                coverDiv.style.background = "#ccc url('thumbnail.jpg') center/cover no-repeat";
+                coverDiv.style.cursor = "pointer";
+                coverDiv.title = "Click to play video";
+                
+                // 点击播放视频
+                coverDiv.addEventListener("click", () => {
+                    const existingVideo = contentElem.querySelector("video");
+                    if (!existingVideo) {
+                        const video = document.createElement("video");
+                        video.src = `FrontOffice/IR_${resource}.mp4`; // 内部存储
+                        video.controls = true;
+                        video.style.width = "100%";
+                        video.style.maxHeight = "450px";
+                        video.setAttribute("playsinline", "true");
+                        contentElem.insertBefore(video, coverDiv.nextSibling);
+                    }
+                });
+                
+                contentElem.appendChild(coverDiv);
+         } else {
             // 其他 PDF 渲染成 canvas
             try {
                 const response = await fetch(pdfUrl);
