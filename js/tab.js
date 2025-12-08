@@ -2,15 +2,15 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
-// 打开普通 URL
+// 打开普通 URL（HTML / PDF / MP4）
 async function openTab(title, url) {
     if (openTabs[title]) {
         setActiveTab(title);
         return;
     }
 
-    // 自动加 IR_ 前缀
-    if (!/IR_/.test(url)) {
+    // 只对 PDF / MP4 自动加 IR_
+    if ((url.endsWith(".pdf") || url.endsWith(".mp4")) && !/IR_/.test(url)) {
         url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => `IR_${name}.${ext}`);
     }
 
@@ -23,6 +23,7 @@ async function openTab(title, url) {
     try {
         if (url.endsWith(".pdf")) {
             const response = await fetch(url);
+            if (!response.ok) throw new Error(`PDF not found: ${url}`);
             const pdfData = await response.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
             const numPages = pdf.numPages;
@@ -58,6 +59,7 @@ async function openTab(title, url) {
             videoContainer.appendChild(video);
             contentElem.appendChild(videoContainer);
         } else {
+            // HTML
             const iframe = document.createElement("iframe");
             iframe.src = url;
             iframe.style.width = "100%";
@@ -139,7 +141,7 @@ async function openResourceTab(title, resource) {
     createTab(title, contentElem);
 }
 
-// 创建 Tab 按钮和管理 openTabs
+// 创建 Tab 按钮
 function createTab(title, contentElem) {
     tabContent.appendChild(contentElem);
 
@@ -206,6 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 自动打开 Introduction
+    // 自动打开 Introduction（HTML 不加 IR_）
     openTab('Introduction', 'introduction.html');
 });
