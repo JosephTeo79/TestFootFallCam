@@ -89,15 +89,21 @@ async function openResourceTab(title, resource) {
     contentElem.style.overflowY = "auto";
 
     try {
-        // 生成视频链接
+        // 视频链接存储在 JS 内部，不暴露在 href
         const videoUrl = resource.replace(/([^\/]+)$/, "IR_$1.mp4");
         const videoLink = document.createElement("a");
-        videoLink.href = videoUrl;
+        videoLink.href = "#"; // 不显示真实路径
         videoLink.textContent = "Click here to play video";
-        videoLink.target = "_blank"; // 新标签打开
         videoLink.style.display = "block";
         videoLink.style.marginBottom = "10px";
         videoLink.style.fontWeight = "bold";
+
+        videoLink.addEventListener("click", function(e) {
+            e.preventDefault();
+            // 在当前 tab 内打开视频
+            openTab(title + " - Video", videoUrl);
+        });
+
         contentElem.appendChild(videoLink);
 
         // PDF 渲染
@@ -123,15 +129,16 @@ async function openResourceTab(title, resource) {
                 contentElem.appendChild(canvas);
             }
         } else {
-            contentElem.innerHTML += `<p style="color:red;">PDF not found: ${pdfUrl}</p>`;
+            contentElem.innerHTML += `<p style="color:red;">PDF not found</p>`;
         }
     } catch (err) {
-        contentElem.innerHTML += `<p style="color:red;">Failed to load PDF/video: ${err.message}</p>`;
+        contentElem.innerHTML += `<p style="color:red;">Failed to load PDF/video</p>`;
         console.error(err);
     }
 
     createTab(title, contentElem);
 }
+
 
 // 创建 Tab 按钮
 function createTab(title, contentElem) {
