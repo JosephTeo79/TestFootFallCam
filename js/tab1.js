@@ -44,7 +44,7 @@ async function openTab(title, url) {
             }
         } else if (url.endsWith(".mp4")) {
             const videoContainer = document.createElement("div");
-            videoContainer.style.width = "100%";
+            videoContainer.style.width = "80%";
             videoContainer.style.textAlign = "center";
 
             const video = document.createElement("video");
