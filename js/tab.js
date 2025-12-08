@@ -2,6 +2,11 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
+// 工具函数：给文件名加 IR_ 前缀，但不加目录
+function addIRPrefix(url) {
+    return url.replace(/([^\/]+)$/g, "IR_$1");
+}
+
 // 打开普通 URL（HTML / PDF / MP4）
 async function openTab(title, url) {
     if (openTabs[title]) {
@@ -9,9 +14,9 @@ async function openTab(title, url) {
         return;
     }
 
-    // 只对 PDF / MP4 自动加 IR_
-    if ((url.endsWith(".pdf") || url.endsWith(".mp4")|| url.endsWith(".html")) && !/IR_/.test(url)) {
-        url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => `IR_${name}.${ext}`);
+    // 只对文件加 IR_（HTML / PDF / MP4）
+    if ((url.endsWith(".pdf") || url.endsWith(".mp4") || url.endsWith(".html")) && !/IR_/.test(url)) {
+        url = addIRPrefix(url);
     }
 
     const contentElem = document.createElement("div");
@@ -76,8 +81,6 @@ async function openTab(title, url) {
     createTab(title, contentElem);
 }
 
-// 打开 data-resource（PDF + MP4）
-// 打开 data-resource（PDF + MP4）
 // 打开 data-resource（PDF + link to MP4）
 async function openResourceTab(title, resource) {
     if (openTabs[title]) {
@@ -92,20 +95,19 @@ async function openResourceTab(title, resource) {
     contentElem.style.overflowY = "auto";
 
     try {
-        // 生成视频链接
-        const videoUrl = resource.replace(/([^\/]+)$/, "IR_$1.mp4");
+        // 视频链接（点击播放）
+        const videoUrl = addIRPrefix(resource + ".mp4");
         const videoLink = document.createElement("a");
         videoLink.href = videoUrl;
         videoLink.textContent = "Click here to play video";
-        videoLink.target = "_blank"; // 新标签打开
+        videoLink.target = "_blank";
         videoLink.style.display = "block";
         videoLink.style.marginBottom = "10px";
         videoLink.style.fontWeight = "bold";
-
         contentElem.appendChild(videoLink);
 
         // PDF 渲染
-        const pdfUrl = resource.replace(/([^\/]+)$/, "IR_$1.pdf");
+        const pdfUrl = addIRPrefix(resource + ".pdf");
         const pdfResponse = await fetch(pdfUrl);
         if (pdfResponse.ok) {
             const pdfData = await pdfResponse.arrayBuffer();
@@ -129,9 +131,13 @@ async function openResourceTab(title, resource) {
         } else {
             contentElem.innerHTML += `<p style="color:red;">PDF not found: ${pdfUrl}</p>`;
         }
+    } catch (err) {
+        contentElem.innerHTML += `<p style="color:red;">Failed to load PDF/video: ${err.message}</p>`;
+        console.error(err);
     }
-}
 
+    createTab(title, contentElem);
+}
 
 // 创建 Tab 按钮
 function createTab(title, contentElem) {
