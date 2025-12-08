@@ -76,51 +76,67 @@ async function openResourceTab(title, resource) {
     contentElem.style.overflowY = "auto";
 
     const pdfFiles = [
-        resource + "_0.pdf", // 封面 PDF
+        resource + "_0.pdf", // 封面 PDF，只当触发视频
         resource + ".pdf"    // 其他 PDF
     ];
 
     for (const pdfFile of pdfFiles) {
         const pdfUrl = pdfFile.includes("/") ? pdfFile.replace(/([^\/]+)$/, "IR_$1") : "IR_" + pdfFile;
-        try {
-            const response = await fetch(pdfUrl);
-            if (!response.ok) {
-                contentElem.innerHTML += `<p style="color:red;">PDF not found: ${pdfUrl}</p>`;
-                continue;
-            }
-            const pdfData = await response.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-            const page = await pdf.getPage(1);
-            const viewport = page.getViewport({ scale: 2 });
-            const canvas = document.createElement("canvas");
-            canvas.width = viewport.width * window.devicePixelRatio;
-            canvas.height = viewport.height * window.devicePixelRatio;
-            const ctx = canvas.getContext("2d");
-            ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-            await page.render({ canvasContext: ctx, viewport }).promise;
-            contentElem.appendChild(canvas);
 
-            // 如果是封面 PDF，点击播放视频
-            if (pdfFile.endsWith("_0.pdf")) {
-                canvas.style.cursor = "pointer";
-                canvas.addEventListener("click", () => {
-                    const video = document.createElement("video");
-                    video.src = addIRToFilename(resource + ".mp4");
-                    video.controls = true;
-                    video.style.width = "100%";
-                    video.style.height = "auto";
-                    video.setAttribute("playsinline", "true");
-                    contentElem.appendChild(video);
-                });
+        if (pdfFile.endsWith("_0.pdf")) {
+            // 封面 PDF，不渲染，点击播放视频
+            const coverDiv = document.createElement("div");
+            coverDiv.textContent = pdfFile; // 可以换成“点击播放视频”或用背景图片
+            coverDiv.style.cursor = "pointer";
+            coverDiv.style.padding = "20px";
+            coverDiv.style.textAlign = "center";
+            coverDiv.style.border = "1px solid #ccc";
+            coverDiv.style.marginBottom = "10px";
+            coverDiv.style.backgroundColor = "#f0f0f0";
+
+            coverDiv.addEventListener("click", () => {
+                const video = document.createElement("video");
+                video.src = addIRToFilename(resource + ".mp4");
+                video.controls = true;
+                video.style.width = "100%";
+                video.style.height = "auto";
+                video.setAttribute("playsinline", "true");
+                contentElem.appendChild(video);
+
+                // 可选：点击后隐藏封面
+                coverDiv.style.display = "none";
+            });
+
+            contentElem.appendChild(coverDiv);
+        } else {
+            // 其他 PDF 渲染成 canvas
+            try {
+                const response = await fetch(pdfUrl);
+                if (!response.ok) {
+                    contentElem.innerHTML += `<p style="color:red;">PDF not found: ${pdfUrl}</p>`;
+                    continue;
+                }
+                const pdfData = await response.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 2 });
+                const canvas = document.createElement("canvas");
+                canvas.width = viewport.width * window.devicePixelRatio;
+                canvas.height = viewport.height * window.devicePixelRatio;
+                const ctx = canvas.getContext("2d");
+                ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+                await page.render({ canvasContext: ctx, viewport }).promise;
+                contentElem.appendChild(canvas);
+            } catch (err) {
+                contentElem.innerHTML += `<p style="color:red;">Failed to load PDF: ${pdfUrl}</p>`;
+                console.error(err);
             }
-        } catch (err) {
-            contentElem.innerHTML += `<p style="color:red;">Failed to load PDF: ${pdfUrl}</p>`;
-            console.error(err);
         }
     }
 
     createTab(title, contentElem);
 }
+
 
 // 创建 Tab
 function createTab(title, contentElem) {
