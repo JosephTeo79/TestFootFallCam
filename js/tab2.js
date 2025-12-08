@@ -2,20 +2,16 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
-// 只对文件名加 IR_，文件夹保持原样
-function addIRToFilename(url) {
-    return url.replace(/([^\/]+)$/, (match) => {
-        if (!/^IR_/.test(match)) return "IR_" + match;
-        return match;
-    });
-}
-
 // 打开普通 URL（HTML / PDF / MP4）
 async function openTab(title, url) {
-    if (openTabs[title]) { setActiveTab(title); return; }
+    if (openTabs[title]) {
+        setActiveTab(title);
+        return;
+    }
 
-    if ((url.endsWith(".pdf") || url.endsWith(".mp4") || url.endsWith(".html"))) {
-        url = addIRToFilename(url);
+    // 只对 PDF / MP4 / HTML 自动加 IR_（文件名，不加文件夹）
+    if ((url.endsWith(".pdf") || url.endsWith(".mp4") || url.endsWith(".html")) && !/IR_/.test(url)) {
+        url = url.replace(/([^\/]+)$/, "IR_$1");
     }
 
     const contentElem = document.createElement("div");
@@ -30,24 +26,38 @@ async function openTab(title, url) {
             if (!response.ok) throw new Error(`PDF not found: ${url}`);
             const pdfData = await response.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-            const page = await pdf.getPage(1); // 只显示第一页
-            const viewport = page.getViewport({ scale: 2 });
-            const canvas = document.createElement("canvas");
-            canvas.width = viewport.width * window.devicePixelRatio;
-            canvas.height = viewport.height * window.devicePixelRatio;
-            const ctx = canvas.getContext("2d");
-            ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-            await page.render({ canvasContext: ctx, viewport }).promise;
-            contentElem.appendChild(canvas);
+            const numPages = pdf.numPages;
+            const dpr = window.devicePixelRatio || 1;
+
+            for (let i = 1; i <= numPages; i++) {
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({ scale: 2 });
+                const canvas = document.createElement("canvas");
+                canvas.width = viewport.width * dpr;
+                canvas.height = viewport.height * dpr;
+                canvas.style.width = "100%";
+                canvas.style.height = "auto";
+                const ctx = canvas.getContext("2d");
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                await page.render({ canvasContext: ctx, viewport }).promise;
+                contentElem.appendChild(canvas);
+            }
         } else if (url.endsWith(".mp4")) {
+            const videoContainer = document.createElement("div");
+            videoContainer.style.width = "100%";
+            videoContainer.style.textAlign = "center";
+
             const video = document.createElement("video");
             video.src = url;
             video.controls = true;
+            video.setAttribute("controlsList", "nodownload");
             video.style.width = "100%";
             video.style.height = "auto";
             video.setAttribute("playsinline", "true");
             video.addEventListener("contextmenu", e => e.preventDefault());
-            contentElem.appendChild(video);
+
+            videoContainer.appendChild(video);
+            contentElem.appendChild(videoContainer);
         } else {
             const iframe = document.createElement("iframe");
             iframe.src = url;
@@ -65,9 +75,12 @@ async function openTab(title, url) {
     createTab(title, contentElem);
 }
 
-// 打开 data-resource（PDF 封面 + 视频，点击 PDF 封面播放视频）
+// 打开 data-resource（PDF + 链接 MP4）
 async function openResourceTab(title, resource) {
-    if (openTabs[title]) { setActiveTab(title); return; }
+    if (openTabs[title]) {
+        setActiveTab(title);
+        return;
+    }
 
     const contentElem = document.createElement("div");
     contentElem.style.flex = "1";
@@ -75,81 +88,72 @@ async function openResourceTab(title, resource) {
     contentElem.style.flexDirection = "column";
     contentElem.style.overflowY = "auto";
 
-    const pdfFiles = [
-        resource + "_0.pdf", // 封面 PDF，只当触发视频
-        resource + ".pdf"    // 其他 PDF
-    ];
+    try {
+        // 视频链接存储在 JS 内部，不暴露在 href
+        const videoUrl = resource.replace(/([^\/]+)$/, "IR_$1.mp4");
+        const videoLink = document.createElement("a");
+        videoLink.href = "#"; // 不显示真实路径
+        videoLink.textContent = "Click here to play video";
+        videoLink.style.display = "block";
+        videoLink.style.marginBottom = "10px";
+        videoLink.style.fontWeight = "bold";
 
-    for (const pdfFile of pdfFiles) {
-        const pdfUrl = pdfFile.includes("/") ? pdfFile.replace(/([^\/]+)$/, "IR_$1") : "IR_" + pdfFile;
-
-        if (pdfFile.endsWith("_0.pdf")) {
-               try {
-        const response = await fetch(pdfUrl);
-        if (!response.ok) throw new Error(`PDF not found: ${pdfUrl}`);
-        const pdfData = await response.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-        const page = await pdf.getPage(1);
-        const viewport = page.getViewport({ scale: 2 });
-        const canvas = document.createElement("canvas");
-        canvas.width = viewport.width * window.devicePixelRatio;
-        canvas.height = viewport.height * window.devicePixelRatio;
-        const ctx = canvas.getContext("2d");
-        ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-        await page.render({ canvasContext: ctx, viewport }).promise;
-        contentElem.appendChild(canvas);
-
-        // 点击 canvas 播放视频
-        canvas.style.cursor = "pointer";
-        canvas.title = "Click to play video";
-        canvas.addEventListener("click", () => {
-            const existingVideo = contentElem.querySelector("video");
+        videoLink.addEventListener("click", function(e) {
+            e.preventDefault();
+            // 检查是否已有 video 元素
+            let existingVideo = contentElem.querySelector("video");
             if (!existingVideo) {
                 const video = document.createElement("video");
-                video.src = `FrontOffice/IR_${resource}.mp4`;
+                video.src = videoUrl;
                 video.controls = true;
+                video.setAttribute("controlsList", "nodownload");
                 video.style.width = "100%";
-                video.style.maxHeight = "450px";
+                video.style.height = "auto";
                 video.setAttribute("playsinline", "true");
-                contentElem.insertBefore(video, canvas.nextSibling);
+                video.addEventListener("contextmenu", e => e.preventDefault());
+                // 插入在 PDF 内容前面
+                contentElem.insertBefore(video, contentElem.firstChild);
             }
         });
 
-    } catch (err) {
-        contentElem.innerHTML += `<p style="color:red;">Failed to load PDF: ${pdfUrl}</p>`;
-        console.error(err);
-    }
-         } else {
-            // 其他 PDF 渲染成 canvas
-            try {
-                const response = await fetch(pdfUrl);
-                if (!response.ok) {
-                    contentElem.innerHTML += `<p style="color:red;">PDF not found: ${pdfUrl}</p>`;
-                    continue;
-                }
-                const pdfData = await response.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-                const page = await pdf.getPage(1);
+        contentElem.appendChild(videoLink);
+
+        // PDF 渲染（保持不变）
+        const pdfUrl = resource.replace(/([^\/]+)$/, "IR_$1.pdf");
+        const pdfResponse = await fetch(pdfUrl);
+        if (pdfResponse.ok) {
+            const pdfData = await pdfResponse.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+            const numPages = pdf.numPages;
+            const dpr = window.devicePixelRatio || 1;
+
+            for (let i = 1; i <= numPages; i++) {
+                const page = await pdf.getPage(i);
                 const viewport = page.getViewport({ scale: 2 });
                 const canvas = document.createElement("canvas");
-                canvas.width = viewport.width * window.devicePixelRatio;
-                canvas.height = viewport.height * window.devicePixelRatio;
+                canvas.width = viewport.width * dpr;
+                canvas.height = viewport.height * dpr;
+                canvas.style.width = "100%";
+                canvas.style.height = "auto";
                 const ctx = canvas.getContext("2d");
-                ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 await page.render({ canvasContext: ctx, viewport }).promise;
                 contentElem.appendChild(canvas);
-            } catch (err) {
-                contentElem.innerHTML += `<p style="color:red;">Failed to load PDF: ${pdfUrl}</p>`;
-                console.error(err);
             }
+        } else {
+            contentElem.innerHTML += `<p style="color:red;">PDF not found</p>`;
         }
+    } catch (err) {
+        contentElem.innerHTML += `<p style="color:red;">Failed to load PDF/video</p>`;
+        console.error(err);
     }
 
     createTab(title, contentElem);
 }
 
 
-// 创建 Tab
+
+// 创建 Tab 按钮
 function createTab(title, contentElem) {
     tabContent.appendChild(contentElem);
 
@@ -167,7 +171,10 @@ function createTab(title, contentElem) {
     tab.appendChild(closeBtn);
 
     tabText.addEventListener("click", () => setActiveTab(title));
-    closeBtn.addEventListener("click", e => { e.stopPropagation(); closeTab(title); });
+    closeBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        closeTab(title);
+    });
 
     tabBar.appendChild(tab);
     openTabs[title] = { tab, iframe: contentElem };
