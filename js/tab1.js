@@ -43,24 +43,22 @@ async function openTab(title, url) {
                 contentElem.appendChild(canvas);
             }
         } else if (url.endsWith(".mp4")) {
+            // 普通 MP4 视频，宽度 80% + 居中
             const videoContainer = document.createElement("div");
-            videoContainer.style.width = "80%";
-            videoContainer.style.textAlign = "center";
+            videoContainer.style.display = "flex";
+            videoContainer.style.justifyContent = "center";
+            videoContainer.style.width = "100%";
 
             const video = document.createElement("video");
             video.src = url;
             video.controls = true;
             video.setAttribute("controlsList", "nodownload");
             video.style.width = "80%";
-            
             video.style.height = "auto";
-            video.style.display = "inline-block";  // ★ 居中关键
             video.setAttribute("playsinline", "true");
             video.addEventListener("contextmenu", e => e.preventDefault());
 
             videoContainer.appendChild(video);
-            videoContainer.style.textAlign = "center";
-            contentElem.style.alignItems = "flex-start"; // ★★★ 关键修正
             contentElem.appendChild(videoContainer);
         } else {
             const iframe = document.createElement("iframe");
@@ -107,18 +105,23 @@ async function openResourceTab(title, resource) {
             // 检查是否已有 video 元素
             let existingVideo = contentElem.querySelector("video");
             if (!existingVideo) {
+                // 容器包裹视频，用 flex 居中
+                const videoContainer = document.createElement("div");
+                videoContainer.style.display = "flex";
+                videoContainer.style.justifyContent = "center";
+                videoContainer.style.width = "100%";
+
                 const video = document.createElement("video");
                 video.src = videoUrl;
                 video.controls = true;
                 video.setAttribute("controlsList", "nodownload");
                 video.style.width = "80%";
                 video.style.height = "auto";
-                video.style.display = "inline-block";  // ★ 居中关键
                 video.setAttribute("playsinline", "true");
-                videoContainer.style.textAlign = "center";
                 video.addEventListener("contextmenu", e => e.preventDefault());
-                // 插入在 PDF 内容前面
-                contentElem.insertBefore(video, contentElem.firstChild);
+
+                videoContainer.appendChild(video);
+                contentElem.insertBefore(videoContainer, contentElem.firstChild);
             }
         });
 
@@ -156,8 +159,6 @@ async function openResourceTab(title, resource) {
 
     createTab(title, contentElem);
 }
-
-
 
 // 创建 Tab 按钮
 function createTab(title, contentElem) {
