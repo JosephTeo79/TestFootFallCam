@@ -207,5 +207,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // 自动打开 Introduction
-    openTab('Introduction', 'index.html');
+    openTab('Introduction', 'Introduction.html');
 });
