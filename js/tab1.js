@@ -52,11 +52,14 @@ async function openTab(title, url) {
             video.controls = true;
             video.setAttribute("controlsList", "nodownload");
             video.style.width = "80%";
+            
             video.style.height = "auto";
+            video.style.display = "inline-block";  // ★ 居中关键
             video.setAttribute("playsinline", "true");
             video.addEventListener("contextmenu", e => e.preventDefault());
 
             videoContainer.appendChild(video);
+            videoContainer.style.textAlign = "center";
             contentElem.style.alignItems = "flex-start"; // ★★★ 关键修正
             contentElem.appendChild(videoContainer);
         } else {
@@ -110,7 +113,9 @@ async function openResourceTab(title, resource) {
                 video.setAttribute("controlsList", "nodownload");
                 video.style.width = "80%";
                 video.style.height = "auto";
+                video.style.display = "inline-block";  // ★ 居中关键
                 video.setAttribute("playsinline", "true");
+                videoContainer.style.textAlign = "center";
                 video.addEventListener("contextmenu", e => e.preventDefault());
                 // 插入在 PDF 内容前面
                 contentElem.insertBefore(video, contentElem.firstChild);
