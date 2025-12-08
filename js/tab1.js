@@ -53,7 +53,7 @@ async function openTab(title, url) {
             video.src = url;
             video.controls = true;
             video.setAttribute("controlsList", "nodownload");
-            video.style.width = "80%";
+            video.style.width = "70%";
             video.style.height = "auto";
             video.setAttribute("playsinline", "true");
             video.addEventListener("contextmenu", e => e.preventDefault());
@@ -115,7 +115,7 @@ async function openResourceTab(title, resource) {
                 video.src = videoUrl;
                 video.controls = true;
                 video.setAttribute("controlsList", "nodownload");
-                video.style.width = "80%";
+                video.style.width = "70%";
                 video.style.height = "auto";
                 video.setAttribute("playsinline", "true");
                 video.addEventListener("contextmenu", e => e.preventDefault());
