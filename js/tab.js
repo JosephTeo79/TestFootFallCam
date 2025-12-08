@@ -78,6 +78,7 @@ async function openTab(title, url) {
 
 // 打开 data-resource（PDF + MP4）
 // 打开 data-resource（PDF + MP4）
+// 打开 data-resource（PDF + link to MP4）
 async function openResourceTab(title, resource) {
     if (openTabs[title]) {
         setActiveTab(title);
@@ -91,23 +92,17 @@ async function openResourceTab(title, resource) {
     contentElem.style.overflowY = "auto";
 
     try {
-        // 视频放第一行
+        // 生成视频链接
         const videoUrl = resource.replace(/([^\/]+)$/, "IR_$1.mp4");
-        const videoContainer = document.createElement("div");
-        videoContainer.style.width = "100%";
-        videoContainer.style.textAlign = "center";
-        videoContainer.style.marginBottom = "10px";
+        const videoLink = document.createElement("a");
+        videoLink.href = videoUrl;
+        videoLink.textContent = "Click here to play video";
+        videoLink.target = "_blank"; // 新标签打开
+        videoLink.style.display = "block";
+        videoLink.style.marginBottom = "10px";
+        videoLink.style.fontWeight = "bold";
 
-        const video = document.createElement("video");
-        video.src = videoUrl;
-        video.controls = true;
-        video.style.width = "100%";
-        video.style.height = "auto";
-        video.setAttribute("playsinline", "true");
-        video.addEventListener("contextmenu", e => e.preventDefault());
-
-        videoContainer.appendChild(video);
-        contentElem.appendChild(videoContainer);
+        contentElem.appendChild(videoLink);
 
         // PDF 渲染
         const pdfUrl = resource.replace(/([^\/]+)$/, "IR_$1.pdf");
@@ -134,13 +129,8 @@ async function openResourceTab(title, resource) {
         } else {
             contentElem.innerHTML += `<p style="color:red;">PDF not found: ${pdfUrl}</p>`;
         }
-    } catch (err) {
-        contentElem.innerHTML = `<p style="color:red;">Failed to load PDF/video: ${err.message}</p>`;
-        console.error(err);
     }
 
-    createTab(title, contentElem);
-}
 
 
 // 创建 Tab 按钮
