@@ -57,6 +57,7 @@ async function openTab(title, url) {
             video.addEventListener("contextmenu", e => e.preventDefault());
 
             videoContainer.appendChild(video);
+            contentElem.style.alignItems = "flex-start"; // ★★★ 关键修正
             contentElem.appendChild(videoContainer);
         } else {
             const iframe = document.createElement("iframe");
