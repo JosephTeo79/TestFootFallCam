@@ -2,34 +2,26 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
-// 打开 Tab
 async function openTab(title, url) {
 
-if (url.endsWith(".pdf") && !/IR_/.test(url)) {
-    url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => {
-        return `IR_${name}.${ext}`;
-    });
-}
+    // ============================
+    //  自動加 IR_ 前綴（pdf / mp4 / html）
+    // ============================
+    if (!/\/IR_/.test(url)) {
+        url = url.replace(/([^\/]+)\.([^\.]+)$/, (m, name, ext) => `IR_${name}.${ext}`);
+    }
 
-if (url.endsWith(".mp4") && !/IR_/.test(url)) {
-    url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => {
-        return `IR_${name}.${ext}`;
-    });
-}
+    console.log("FINAL URL = ", url);
 
-if (url.endsWith(".html") && !/IR_/.test(url)) {
-    url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => {
-        return `IR_${name}.${ext}`;
-    });
-}
-
-    
+    // 已存在 → 激活
     if (openTabs[title]) {
         setActiveTab(title);
         return;
     }
 
-    // === 创建 Tab 按钮 ===
+    // ============================
+    //  建立 TAB
+    // ============================
     const tab = document.createElement("div");
     tab.className = "tab";
     tab.dataset.title = title;
@@ -44,14 +36,14 @@ if (url.endsWith(".html") && !/IR_/.test(url)) {
     tab.appendChild(closeBtn);
 
     tabText.addEventListener("click", () => setActiveTab(title));
-    closeBtn.addEventListener("click", e => {
+    closeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         closeTab(title);
     });
 
     tabBar.appendChild(tab);
 
-    // === 创建内容区域 ===
+    // 内容容器
     const contentElem = document.createElement("div");
     contentElem.style.flex = "1";
     contentElem.style.display = "flex";
@@ -59,60 +51,73 @@ if (url.endsWith(".html") && !/IR_/.test(url)) {
     contentElem.style.overflowY = "auto";
 
     try {
+        // ============================
+        //          PDF
+        // ============================
         if (url.endsWith(".pdf")) {
-            // PDF: fetch 隐藏真实 URL + 高清渲染
+
             const response = await fetch(url);
+            if (!response.ok) throw new Error("PDF Load Failed");
+
             const pdfData = await response.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+
             const numPages = pdf.numPages;
             const dpr = window.devicePixelRatio || 1;
 
             for (let i = 1; i <= numPages; i++) {
                 const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 2 }); // 可调 scale
-                const canvas = document.createElement("canvas");
+                const viewport = page.getViewport({ scale: 2 });
 
+                const canvas = document.createElement("canvas");
                 canvas.width = viewport.width * dpr;
                 canvas.height = viewport.height * dpr;
                 canvas.style.width = "100%";
-                canvas.style.height = "auto";
 
                 const ctx = canvas.getContext("2d");
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
                 await page.render({ canvasContext: ctx, viewport }).promise;
+
                 contentElem.appendChild(canvas);
             }
 
-        }  else if (url.endsWith(".mp4")) {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
+        }
+        // ============================
+        //         MP4 影片
+        // ============================
+        else if (url.endsWith(".mp4")) {
 
-    // 视频容器
-    const videoContainer = document.createElement("div");
-    videoContainer.style.width = "100%";
-    videoContainer.style.textAlign = "center";
+            console.log("Fetching MP4: ", url);
 
-    const video = document.createElement("video");
-    video.src = blobUrl;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("MP4 Load Failed");
 
-    // 必须要用 controls，不然点击没反应
-    video.controls = true;  
-    video.setAttribute("controlsList", "nodownload");
-    video.style.width = "100%";
-    video.style.height = "auto";
-    video.setAttribute("playsinline", "true");
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
 
-    // 禁用右键
-    video.addEventListener("contextmenu", e => e.preventDefault());
+            const videoContainer = document.createElement("div");
+            videoContainer.style.width = "100%";
+            videoContainer.style.textAlign = "center";
 
-    videoContainer.appendChild(video);
-    contentElem.appendChild(videoContainer);
+            const video = document.createElement("video");
+            video.src = blobUrl;
+            video.controls = true;
+            video.setAttribute("controlsList", "nodownload");
+            video.style.width = "100%";
+            video.style.height = "auto";
+            video.setAttribute("playsinline", true);
 
+            video.addEventListener("contextmenu", (e) => e.preventDefault());
 
-        } else {
-            // 普通 HTML 页面
+            videoContainer.appendChild(video);
+            contentElem.appendChild(videoContainer);
+
+        }
+        // ============================
+        //     HTML (Iframe)
+        // ============================
+        else {
             const iframe = document.createElement("iframe");
             iframe.src = url;
             iframe.style.width = "100%";
@@ -121,9 +126,10 @@ if (url.endsWith(".html") && !/IR_/.test(url)) {
             iframe.frameBorder = "0";
             contentElem.appendChild(iframe);
         }
+
     } catch (err) {
-        contentElem.innerHTML = `<p style="color:red;">Failed to load content: ${err.message}</p>`;
         console.error(err);
+        contentElem.innerHTML = `<p style="color:red;">Failed to load content:<br>${err.message}</p>`;
     }
 
     tabContent.appendChild(contentElem);
@@ -131,40 +137,40 @@ if (url.endsWith(".html") && !/IR_/.test(url)) {
     setActiveTab(title);
 }
 
-// 切换 Tab
 function setActiveTab(title) {
     Object.values(openTabs).forEach(({ tab, iframe }) => {
         tab.classList.remove("active");
         iframe.style.display = "none";
     });
-    if (!openTabs[title]) return;
-    openTabs[title].tab.classList.add("active");
-    openTabs[title].iframe.style.display = "flex";
+    if (openTabs[title]) {
+        openTabs[title].tab.classList.add("active");
+        openTabs[title].iframe.style.display = "flex";
+    }
 }
 
-// 关闭 Tab
 function closeTab(title) {
     if (!openTabs[title]) return;
+
     const { tab, iframe } = openTabs[title];
     tab.remove();
     iframe.remove();
     delete openTabs[title];
 
     const remaining = Object.keys(openTabs);
-    if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
+    if (remaining.length > 0) {
+        setActiveTab(remaining[remaining.length - 1]);
+    }
 }
 
-// 初始化菜单点击事件
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
-        link.addEventListener("click", function(e) {
+        link.addEventListener("click", (e) => {
             e.preventDefault();
-            const url = this.getAttribute("data-url");
-            const title = this.getAttribute("data-title") || this.textContent.trim();
+            const url = link.getAttribute("data-url");
+            const title = link.getAttribute("data-title") || link.textContent.trim();
             openTab(title, url);
         });
     });
 
-    // 自动打开 Introduction
-    openTab('Introduction', 'introduction.html');
+    openTab("Introduction", "introduction.html");
 });
