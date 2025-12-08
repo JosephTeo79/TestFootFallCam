@@ -108,7 +108,7 @@ async function openResourceTab(title, resource) {
                 video.src = videoUrl;
                 video.controls = true;
                 video.setAttribute("controlsList", "nodownload");
-                video.style.width = "100%";
+                video.style.width = "80%";
                 video.style.height = "auto";
                 video.setAttribute("playsinline", "true");
                 video.addEventListener("contextmenu", e => e.preventDefault());
