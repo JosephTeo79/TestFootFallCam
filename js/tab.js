@@ -130,7 +130,7 @@ async function openResourceTab(title, resource) {
             contentElem.innerHTML += `<p style="color:red;">PDF not found: ${pdfUrl}</p>`;
         }
     }
-
+}
 
 
 // 创建 Tab 按钮
