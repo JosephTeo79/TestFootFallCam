@@ -77,6 +77,7 @@ async function openTab(title, url) {
 }
 
 // 打开 data-resource（PDF + MP4）
+// 打开 data-resource（PDF + MP4）
 async function openResourceTab(title, resource) {
     if (openTabs[title]) {
         setActiveTab(title);
@@ -91,7 +92,7 @@ async function openResourceTab(title, resource) {
 
     try {
         // 视频放第一行
-        const videoUrl = `IR_${resource}.mp4`;
+        const videoUrl = resource.replace(/([^\/]+)$/, "IR_$1.mp4");
         const videoContainer = document.createElement("div");
         videoContainer.style.width = "100%";
         videoContainer.style.textAlign = "center";
@@ -109,7 +110,7 @@ async function openResourceTab(title, resource) {
         contentElem.appendChild(videoContainer);
 
         // PDF 渲染
-        const pdfUrl = `IR_${resource}.pdf`;
+        const pdfUrl = resource.replace(/([^\/]+)$/, "IR_$1.pdf");
         const pdfResponse = await fetch(pdfUrl);
         if (pdfResponse.ok) {
             const pdfData = await pdfResponse.arrayBuffer();
@@ -140,6 +141,7 @@ async function openResourceTab(title, resource) {
 
     createTab(title, contentElem);
 }
+
 
 // 创建 Tab 按钮
 function createTab(title, contentElem) {
