@@ -89,40 +89,31 @@ async function openResourceTab(title, resource) {
     contentElem.style.overflowY = "auto";
 
     try {
-        // 视频链接存储在 JS 内部，不暴露在 href
-        const videoUrl = resource.replace(/([^\/]+)$/, "IR_$1.mp4");
-        const videoLink = document.createElement("a");
-        videoLink.href = "#"; // 不显示真实路径
-        videoLink.textContent = "Click here to play video";
-        videoLink.style.display = "block";
-        videoLink.style.marginBottom = "10px";
-        videoLink.style.fontWeight = "bold";
+        // 1️⃣ simple PDF
+        const simplePdfUrl = `IR_${resource}_0.pdf`;
+        const simpleResponse = await fetch(simplePdfUrl);
+        if (simpleResponse.ok) {
+            const pdfData = await simpleResponse.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+            const page = await pdf.getPage(1); // 只显示第一页
+            const viewport = page.getViewport({ scale: 2 });
+            const canvas = document.createElement("canvas");
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = viewport.width * dpr;
+            canvas.height = viewport.height * dpr;
+            canvas.style.width = "100%";
+            canvas.style.height = "auto";
+            const ctx = canvas.getContext("2d");
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            contentElem.appendChild(canvas);
+        }
 
-        videoLink.addEventListener("click", function(e) {
-            e.preventDefault();
-            // 检查是否已有 video 元素
-            let existingVideo = contentElem.querySelector("video");
-            if (!existingVideo) {
-                const video = document.createElement("video");
-                video.src = videoUrl;
-                video.controls = true;
-                video.setAttribute("controlsList", "nodownload");
-                video.style.width = "100%";
-                video.style.height = "auto";
-                video.setAttribute("playsinline", "true");
-                video.addEventListener("contextmenu", e => e.preventDefault());
-                // 插入在 PDF 内容前面
-                contentElem.insertBefore(video, contentElem.firstChild);
-            }
-        });
-
-        contentElem.appendChild(videoLink);
-
-        // PDF 渲染（保持不变）
-        const pdfUrl = resource.replace(/([^\/]+)$/, "IR_$1.pdf");
-        const pdfResponse = await fetch(pdfUrl);
-        if (pdfResponse.ok) {
-            const pdfData = await pdfResponse.arrayBuffer();
+        // 2️⃣ canvas PDF
+        const canvasPdfUrl = `IR_${resource}.pdf`;
+        const canvasResponse = await fetch(canvasPdfUrl);
+        if (canvasResponse.ok) {
+            const pdfData = await canvasResponse.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
             const numPages = pdf.numPages;
             const dpr = window.devicePixelRatio || 1;
@@ -140,17 +131,39 @@ async function openResourceTab(title, resource) {
                 await page.render({ canvasContext: ctx, viewport }).promise;
                 contentElem.appendChild(canvas);
             }
-        } else {
-            contentElem.innerHTML += `<p style="color:red;">PDF not found</p>`;
         }
+
+        // 3️⃣ 视频
+        const videoUrl = `IR_${resource}.mp4`;
+        const videoLink = document.createElement("a");
+        videoLink.href = "#";
+        videoLink.textContent = "Click here to play video";
+        videoLink.style.display = "block";
+        videoLink.style.margin = "10px 0";
+        videoLink.style.fontWeight = "bold";
+        videoLink.addEventListener("click", e => {
+            e.preventDefault();
+            if (!contentElem.querySelector("video")) {
+                const video = document.createElement("video");
+                video.src = videoUrl;
+                video.controls = true;
+                video.setAttribute("controlsList", "nodownload");
+                video.style.width = "100%";
+                video.style.height = "auto";
+                video.setAttribute("playsinline", "true");
+                video.addEventListener("contextmenu", e => e.preventDefault());
+                contentElem.appendChild(video);
+            }
+        });
+        contentElem.appendChild(videoLink);
+
     } catch (err) {
-        contentElem.innerHTML += `<p style="color:red;">Failed to load PDF/video</p>`;
+        contentElem.innerHTML += `<p style="color:red;">Failed to load resource</p>`;
         console.error(err);
     }
 
     createTab(title, contentElem);
 }
-
 
 
 // 创建 Tab 按钮
