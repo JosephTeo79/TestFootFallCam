@@ -2,13 +2,18 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
-// 打开 Tab
-async function openTab(title, resource, type = "pdf") {
-    // 自动生成 URL
-    let urlParts = resource.split("/");
-    const fileName = urlParts.pop();
-    urlParts.push(`IR_${fileName}.${type}`);
-    const url = urlParts.join("/");
+// === 打开普通 Tab ===
+async function openTab(title, url) {
+
+    if (url.endsWith(".pdf") && !/IR_/.test(url)) {
+        url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => `IR_${name}.${ext}`);
+    }
+    if (url.endsWith(".mp4") && !/IR_/.test(url)) {
+        url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => `IR_${name}.${ext}`);
+    }
+    if (url.endsWith(".html") && !/IR_/.test(url)) {
+        url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => `IR_${name}.${ext}`);
+    }
 
     if (openTabs[title]) {
         setActiveTab(title);
@@ -45,8 +50,7 @@ async function openTab(title, resource, type = "pdf") {
     contentElem.style.overflowY = "auto";
 
     try {
-        if (type === "pdf") {
-            // PDF 渲染
+        if (url.endsWith(".pdf")) {
             const response = await fetch(url);
             const pdfData = await response.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
@@ -57,7 +61,6 @@ async function openTab(title, resource, type = "pdf") {
                 const page = await pdf.getPage(i);
                 const viewport = page.getViewport({ scale: 2 });
                 const canvas = document.createElement("canvas");
-
                 canvas.width = viewport.width * dpr;
                 canvas.height = viewport.height * dpr;
                 canvas.style.width = "100%";
@@ -69,20 +72,7 @@ async function openTab(title, resource, type = "pdf") {
                 await page.render({ canvasContext: ctx, viewport }).promise;
                 contentElem.appendChild(canvas);
             }
-
-            // PDF 下加播放视频链接
-            const link = document.createElement("a");
-            link.href = "#";
-            link.textContent = "Play Video";
-            link.style.margin = "10px 0";
-            link.addEventListener("click", e => {
-                e.preventDefault();
-                openTab(title + "_video", resource, "mp4");
-            });
-            contentElem.appendChild(link);
-
-        } else if (type === "mp4") {
-            // 视频渲染
+        } else if (url.endsWith(".mp4")) {
             const response = await fetch(url);
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
@@ -102,9 +92,7 @@ async function openTab(title, resource, type = "pdf") {
 
             videoContainer.appendChild(video);
             contentElem.appendChild(videoContainer);
-
-        } else if (type === "html") {
-            // 普通 HTML
+        } else {
             const iframe = document.createElement("iframe");
             iframe.src = url;
             iframe.style.width = "100%";
@@ -123,7 +111,107 @@ async function openTab(title, resource, type = "pdf") {
     setActiveTab(title);
 }
 
-// 切换 Tab
+// === 打开资源 Tab (PDF + MP4) ===
+async function openResourceTab(title, resource) {
+    if (openTabs[title]) {
+        setActiveTab(title);
+        return;
+    }
+
+    const tab = document.createElement("div");
+    tab.className = "tab";
+    tab.dataset.title = title;
+
+    const tabText = document.createElement("span");
+    tabText.textContent = title;
+    tab.appendChild(tabText);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "×";
+    closeBtn.className = "close-btn";
+    tab.appendChild(closeBtn);
+
+    tabText.addEventListener("click", () => setActiveTab(title));
+    closeBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        closeTab(title);
+    });
+
+    tabBar.appendChild(tab);
+
+    const contentElem = document.createElement("div");
+    contentElem.style.flex = "1";
+    contentElem.style.display = "flex";
+    contentElem.style.flexDirection = "column";
+    contentElem.style.overflowY = "auto";
+
+    try {
+        // PDF
+        const pdfUrl = `${resource}.pdf`;
+        const response = await fetch(pdfUrl);
+        const pdfData = await response.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+        const numPages = pdf.numPages;
+        const dpr = window.devicePixelRatio || 1;
+
+        for (let i = 1; i <= numPages; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 2 });
+            const canvas = document.createElement("canvas");
+            canvas.width = viewport.width * dpr;
+            canvas.height = viewport.height * dpr;
+            canvas.style.width = "100%";
+            canvas.style.height = "auto";
+
+            const ctx = canvas.getContext("2d");
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            contentElem.appendChild(canvas);
+        }
+
+        // 视频按钮
+        const videoBtn = document.createElement("button");
+        videoBtn.textContent = "Play Video";
+        videoBtn.style.margin = "10px 0";
+        contentElem.appendChild(videoBtn);
+
+        videoBtn.addEventListener("click", async () => {
+            const mp4Url = `${resource}.mp4`;
+            const videoResponse = await fetch(mp4Url);
+            const blob = await videoResponse.blob();
+            const blobUrl = URL.createObjectURL(blob);
+
+            const videoContainer = document.createElement("div");
+            videoContainer.style.width = "100%";
+            videoContainer.style.textAlign = "center";
+
+            const video = document.createElement("video");
+            video.src = blobUrl;
+            video.controls = true;
+            video.setAttribute("controlsList", "nodownload");
+            video.style.width = "100%";
+            video.style.height = "auto";
+            video.setAttribute("playsinline", "true");
+            video.addEventListener("contextmenu", e => e.preventDefault());
+
+            videoContainer.appendChild(video);
+            contentElem.appendChild(videoContainer);
+
+            videoBtn.disabled = true;
+        });
+
+    } catch (err) {
+        contentElem.innerHTML = `<p style="color:red;">Failed to load content: ${err.message}</p>`;
+        console.error(err);
+    }
+
+    tabContent.appendChild(contentElem);
+    openTabs[title] = { tab, iframe: contentElem };
+    setActiveTab(title);
+}
+
+// === 切换 Tab ===
 function setActiveTab(title) {
     Object.values(openTabs).forEach(({ tab, iframe }) => {
         tab.classList.remove("active");
@@ -134,7 +222,7 @@ function setActiveTab(title) {
     openTabs[title].iframe.style.display = "flex";
 }
 
-// 关闭 Tab
+// === 关闭 Tab ===
 function closeTab(title) {
     if (!openTabs[title]) return;
     const { tab, iframe } = openTabs[title];
@@ -146,21 +234,22 @@ function closeTab(title) {
     if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
 }
 
-// 初始化菜单点击事件
+// === 初始化菜单点击事件 ===
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".nav-link").forEach(link => {
         link.addEventListener("click", function(e) {
             e.preventDefault();
-            const resource = this.getAttribute("data-resource");
             const title = this.getAttribute("data-title") || this.textContent.trim();
-            openTab(title, resource, "pdf"); // 默认打开 PDF
+            const resource = this.getAttribute("data-resource");
+            if (resource) {
+                openResourceTab(title, resource);
+            } else {
+                const url = this.getAttribute("data-url");
+                openTab(title, url);
+            }
         });
     });
 
-    // 自动打开 Introduction（如果有）
-    const intro = document.querySelector(".nav-link[data-url='introduction.html']");
-    if (intro) {
-        const resource = intro.getAttribute("data-url");
-        openTab('Introduction', resource, "html");
-    }
+    // 自动打开 Introduction
+    openTab('Introduction', 'introduction.html');
 });
