@@ -84,31 +84,41 @@ async function openResourceTab(title, resource) {
         const pdfUrl = pdfFile.includes("/") ? pdfFile.replace(/([^\/]+)$/, "IR_$1") : "IR_" + pdfFile;
 
         if (pdfFile.endsWith("_0.pdf")) {
-            // 封面 PDF，不渲染，点击播放视频
-                // 创建封面 div
-                const coverDiv = document.createElement("div");
-                coverDiv.style.width = "300px";
-                coverDiv.style.height = "200px";
-                coverDiv.style.margin = "0 auto 10px";
-                coverDiv.style.background = "#ccc url('thumbnail.jpg') center/cover no-repeat";
-                coverDiv.style.cursor = "pointer";
-                coverDiv.title = "Click to play video";
-                
-                // 点击播放视频
-                coverDiv.addEventListener("click", () => {
-                    const existingVideo = contentElem.querySelector("video");
-                    if (!existingVideo) {
-                        const video = document.createElement("video");
-                        video.src = `FrontOffice/IR_${resource}.mp4`; // 内部存储
-                        video.controls = true;
-                        video.style.width = "100%";
-                        video.style.maxHeight = "450px";
-                        video.setAttribute("playsinline", "true");
-                        contentElem.insertBefore(video, coverDiv.nextSibling);
-                    }
-                });
-                
-                contentElem.appendChild(coverDiv);
+               try {
+        const response = await fetch(pdfUrl);
+        if (!response.ok) throw new Error(`PDF not found: ${pdfUrl}`);
+        const pdfData = await response.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width * window.devicePixelRatio;
+        canvas.height = viewport.height * window.devicePixelRatio;
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        contentElem.appendChild(canvas);
+
+        // 点击 canvas 播放视频
+        canvas.style.cursor = "pointer";
+        canvas.title = "Click to play video";
+        canvas.addEventListener("click", () => {
+            const existingVideo = contentElem.querySelector("video");
+            if (!existingVideo) {
+                const video = document.createElement("video");
+                video.src = `FrontOffice/IR_${resource}.mp4`;
+                video.controls = true;
+                video.style.width = "100%";
+                video.style.maxHeight = "450px";
+                video.setAttribute("playsinline", "true");
+                contentElem.insertBefore(video, canvas.nextSibling);
+            }
+        });
+
+    } catch (err) {
+        contentElem.innerHTML += `<p style="color:red;">Failed to load PDF: ${pdfUrl}</p>`;
+        console.error(err);
+    }
          } else {
             // 其他 PDF 渲染成 canvas
             try {
