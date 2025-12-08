@@ -20,7 +20,6 @@ async function openTab(title, url) {
         return;
     }
 
-    // === 创建 Tab 按钮 ===
     const tab = document.createElement("div");
     tab.className = "tab";
     tab.dataset.title = title;
@@ -42,7 +41,6 @@ async function openTab(title, url) {
 
     tabBar.appendChild(tab);
 
-    // === 创建内容区域 ===
     const contentElem = document.createElement("div");
     contentElem.style.flex = "1";
     contentElem.style.display = "flex";
@@ -111,7 +109,7 @@ async function openTab(title, url) {
     setActiveTab(title);
 }
 
-// === 打开资源 Tab (PDF + MP4) ===
+// === 打开资源 Tab (视频按钮在最上方) ===
 async function openResourceTab(title, resource) {
     if (openTabs[title]) {
         setActiveTab(title);
@@ -146,31 +144,7 @@ async function openResourceTab(title, resource) {
     contentElem.style.overflowY = "auto";
 
     try {
-        // PDF
-        const pdfUrl = `${resource}.pdf`;
-        const response = await fetch(pdfUrl);
-        const pdfData = await response.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-        const numPages = pdf.numPages;
-        const dpr = window.devicePixelRatio || 1;
-
-        for (let i = 1; i <= numPages; i++) {
-            const page = await pdf.getPage(i);
-            const viewport = page.getViewport({ scale: 2 });
-            const canvas = document.createElement("canvas");
-            canvas.width = viewport.width * dpr;
-            canvas.height = viewport.height * dpr;
-            canvas.style.width = "100%";
-            canvas.style.height = "auto";
-
-            const ctx = canvas.getContext("2d");
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-            await page.render({ canvasContext: ctx, viewport }).promise;
-            contentElem.appendChild(canvas);
-        }
-
-        // 视频按钮
+        // === 视频按钮在最上方 ===
         const videoBtn = document.createElement("button");
         videoBtn.textContent = "Play Video";
         videoBtn.style.margin = "10px 0";
@@ -201,6 +175,30 @@ async function openResourceTab(title, resource) {
             videoBtn.disabled = true;
         });
 
+        // === 渲染 PDF ===
+        const pdfUrl = `${resource}.pdf`;
+        const response = await fetch(pdfUrl);
+        const pdfData = await response.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+        const numPages = pdf.numPages;
+        const dpr = window.devicePixelRatio || 1;
+
+        for (let i = 1; i <= numPages; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 2 });
+            const canvas = document.createElement("canvas");
+            canvas.width = viewport.width * dpr;
+            canvas.height = viewport.height * dpr;
+            canvas.style.width = "100%";
+            canvas.style.height = "auto";
+
+            const ctx = canvas.getContext("2d");
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            contentElem.appendChild(canvas);
+        }
+
     } catch (err) {
         contentElem.innerHTML = `<p style="color:red;">Failed to load content: ${err.message}</p>`;
         console.error(err);
@@ -211,7 +209,7 @@ async function openResourceTab(title, resource) {
     setActiveTab(title);
 }
 
-// === 切换 Tab ===
+// === Tab 切换 ===
 function setActiveTab(title) {
     Object.values(openTabs).forEach(({ tab, iframe }) => {
         tab.classList.remove("active");
