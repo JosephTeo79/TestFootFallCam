@@ -10,7 +10,7 @@ async function openTab(title, url) {
     }
 
     // 只对 PDF / MP4 自动加 IR_
-    if ((url.endsWith(".pdf") || url.endsWith(".mp4"))|| url.endsWith(".html")) && !/IR_/.test(url)) {
+    if ((url.endsWith(".pdf") || url.endsWith(".mp4")|| url.endsWith(".html")) && !/IR_/.test(url)) {
         url = url.replace(/([^\/]+)\.([^\.]+)$/, (match, name, ext) => `IR_${name}.${ext}`);
     }
 
