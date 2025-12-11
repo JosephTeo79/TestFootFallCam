@@ -13,9 +13,11 @@ body, html {
 
 #left-pane {
   width: 280px;
+  min-width: 280px !important; /* 防止 flex 压缩 */
   display: flex;
   flex-direction: column;
   border-right: 1px solid #ccc;
+  flex-shrink: 0 !important;   /* ← flex 不允许压缩 */
 }
 
 #left-pane ul {
