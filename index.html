@@ -30,9 +30,11 @@
       </li>
     </ul>
 
-    <!-- 左侧底部提示模块 -->
-    <div class="future-updates">
-      <div class="icon">🚀</div>
+    <!-- 新增模块：More Content Coming Soon -->
+    <div class="future-updates" style="margin-bottom: 20px;">
+      <div class="icon">
+        <div class="spinner"></div>
+      </div>
       <h2 class="title">More Content Coming Soon</h2>
       <p class="subtitle">Stay tuned for updates!</p>
     </div>
@@ -47,6 +49,39 @@
   <div id="right-pane">
     <div id="tab-bar"></div>
     <div id="tab-content">
-      <!-- 右侧默认内容或其他 Tab 内容 -->
+      <!-- 默认显示模块，可继续放右侧内容 -->
+      <div class="future-updates">
+        <div class="icon">
+          <div class="spinner"></div>
+        </div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
     </div>
-  </div
+  </div>
+</div>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+</script>
+
+<!-- JS 文件 -->
+<script src="js/tab1.js"></script>
+<script src="js/treeview.js"></script>
+<script src="js/shortcut.js"></script>
+
+<script>
+window.onload = function () {
+    // 自动打开 Introduction
+    openTab('Introduction', 'introduction.html');
+
+    // 直接打开 PDF，但用户看不到链接
+    // openTab('Open Register', 'FrontOffice/Open_Register.pdf');
+};
+</script>
+
+</body>
+</html>
