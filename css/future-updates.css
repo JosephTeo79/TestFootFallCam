@@ -1,36 +1,62 @@
+/* 左侧 flex 布局 */
+#left-pane {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 顶部菜单 + 底部模块 */
+  height: 100vh; /* 左侧满屏高度 */
+}
+
+#left-pane ul {
+  flex: 1; /* 菜单占剩余空间 */
+  overflow-y: auto; /* 可滚动 */
+}
+
+/* 提示模块 */
 .future-updates {
   text-align: center;
-  padding: 80px 20px;
+  padding: 10px 5px;
   font-family: 'Arial', sans-serif;
   color: #333;
   background-color: #f9f9f9;
-  border-radius: 12px;
-  max-width: 600px;
-  margin: 50px auto;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  max-width: 180px;
+  margin: 0 auto 10px auto;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
 }
 
+/* 动画图标 */
 .future-updates .icon {
-  margin-bottom: 20px;
+  display: inline-block;
+  font-size: 24px;
+  animation: swing 1.5s infinite alternate;
+  margin-bottom: 8px;
 }
 
-.future-updates .spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #ccc;
-  border-top-color: #007bff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
+@keyframes swing {
+  from { transform: rotate(-15deg); }
+  to { transform: rotate(15deg); }
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+/* 标题文字动画 */
+.future-updates .title {
+  font-size: 16px;
+  margin: 0;
+  animation: bounce 1.5s infinite alternate;
+}
 
-.future-updates .title { font-size: 28px; margin-bottom: 10px; color: #222; }
-.future-updates .subtitle { font-size: 16px; color: #666; }
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}
 
-@media (max-width: 480px) {
-  .future-updates { padding: 50px 10px; }
-  .future-updates .title { font-size: 22px; }
-  .future-updates .spinner { width: 40px; height: 40px; border-width: 4px; }
+.future-updates .subtitle {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* 左侧底部区域 */
+.bottom-area {
+  text-align: center;
+  padding-bottom: 10px;
 }
