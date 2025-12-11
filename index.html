@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="css/treeview.css">
 <link rel="stylesheet" href="css/style1.css">
 <link rel="stylesheet" href="css/tab-style.css">
+<link rel="stylesheet" href="css/future-updates.css"> <!-- 新增 -->
 </head>
 <body>
 <div id="container">
@@ -19,19 +20,24 @@
       <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
       <li><span class="caret">Front Office</span>
         <ul class="nested">
-           <li>
-           
+          <li>
             <a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">Login Logout</a>
           </li>
-
           <li>
-           
             <a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">Open Register</a>
           </li>
-  
         </ul>
       </li>
     </ul>
+
+    <!-- 新增模块：More Content Coming Soon -->
+    <div class="future-updates" style="margin-bottom: 20px;">
+      <div class="icon">
+        <div class="spinner"></div>
+      </div>
+      <h2 class="title">More Content Coming Soon</h2>
+      <p class="subtitle">Stay tuned for updates!</p>
+    </div>
 
     <h2 class="footer-title">Retail Pro Prism</h2>
   </div>
@@ -42,7 +48,16 @@
   <!-- 右侧区域 -->
   <div id="right-pane">
     <div id="tab-bar"></div>
-    <div id="tab-content"></div>
+    <div id="tab-content">
+      <!-- 默认显示模块，可继续放右侧内容 -->
+      <div class="future-updates">
+        <div class="icon">
+          <div class="spinner"></div>
+        </div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+    </div>
   </div>
 </div>
 
