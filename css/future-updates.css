@@ -1,69 +1,42 @@
-<!-- More Content Coming Soon 模块 -->
-<div class="future-updates">
-  <div class="icon">
-    <div class="spinner"></div>
-  </div>
-  <h2 class="title">More Content Coming Soon</h2>
-  <p class="subtitle">Stay tuned for updates!</p>
-</div>
-
-<style>
-/* 模块容器 */
 .future-updates {
   text-align: center;
-  padding: 80px 20px;
+  padding: 20px 10px;
   font-family: 'Arial', sans-serif;
   color: #333;
-  background-color: #f9f9f9; /* 可改背景色 */
-  border-radius: 12px;
-  max-width: 600px;
-  margin: 50px auto;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-/* 动画图标 */
-.future-updates .icon {
+  background-color: #f9f9f9;
+  border-radius: 10px;
   margin-bottom: 20px;
+  max-width: 180px; /* 左侧窄栏可用 */
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.future-updates .spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #ccc;
-  border-top-color: #007bff; /* 蓝色旋转条 */
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
+.future-updates .icon {
+  display: inline-block;
+  font-size: 24px;
+  animation: swing 1.5s infinite alternate;
+  margin-bottom: 8px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes swing {
+  from { transform: rotate(-15deg); }
+  to { transform: rotate(15deg); }
 }
 
-/* 标题和副标题 */
 .future-updates .title {
-  font-size: 28px;
-  margin-bottom: 10px;
-  color: #222;
+  font-size: 16px;
+  margin: 0;
+  animation: bounce 1.5s infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
 }
 
 .future-updates .subtitle {
-  font-size: 16px;
+  font-size: 12px;
   color: #666;
+  margin-top: 4px;
 }
-
-/* 响应式调整 */
-@media (max-width: 480px) {
-  .future-updates {
-    padding: 50px 10px;
-  }
-  .future-updates .title {
-    font-size: 22px;
-  }
-  .future-updates .spinner {
-    width: 40px;
-    height: 40px;
-    border-width: 4px;
-  }
-}
-</style>
