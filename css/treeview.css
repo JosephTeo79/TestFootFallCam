@@ -26,8 +26,8 @@ body, html {
 
 /* 左侧菜单 */
 #left-pane {
-  width: 280px;
-  min-width: 280px !important; /* 防止 flex 压缩 */
+  width: 480px;
+  min-width: 480px !important; /* 防止 flex 压缩 */
   
   border-right: 1px solid #ccc;
   display: flex;
