@@ -1,0 +1,69 @@
+<!-- More Content Coming Soon 模块 -->
+<div class="future-updates">
+  <div class="icon">
+    <div class="spinner"></div>
+  </div>
+  <h2 class="title">More Content Coming Soon</h2>
+  <p class="subtitle">Stay tuned for updates!</p>
+</div>
+
+<style>
+/* 模块容器 */
+.future-updates {
+  text-align: center;
+  padding: 80px 20px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #f9f9f9; /* 可改背景色 */
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 50px auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* 动画图标 */
+.future-updates .icon {
+  margin-bottom: 20px;
+}
+
+.future-updates .spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #ccc;
+  border-top-color: #007bff; /* 蓝色旋转条 */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 标题和副标题 */
+.future-updates .title {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.future-updates .subtitle {
+  font-size: 16px;
+  color: #666;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+  .future-updates {
+    padding: 50px 10px;
+  }
+  .future-updates .title {
+    font-size: 22px;
+  }
+  .future-updates .spinner {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+  }
+}
+</style>
