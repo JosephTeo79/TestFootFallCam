@@ -12,7 +12,7 @@ body, html {
 }
 
 #left-pane {
-  width: 300px;
+  width: 320px;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #ccc;
