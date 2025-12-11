@@ -27,6 +27,8 @@ body, html {
 /* 左侧菜单 */
 #left-pane {
   width: 320px;
+  min-width: 320px !important; /* 防止 flex 压缩 */
+  
   border-right: 1px solid #ccc;
   display: flex;
   flex-direction: column;
