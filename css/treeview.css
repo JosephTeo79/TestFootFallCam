@@ -125,3 +125,16 @@ body, html {
   height: 100%;
   border: none;
 }
+
+/* ---- 子菜单缩进修正（让 PDF icon 不与父级对齐） ---- */
+#left-pane ul .nested li a {
+  padding-left: 18px;     /* 子菜单内容整体右缩进 */
+  display: flex;          /* 图标 & 文字并排 */
+  align-items: center;    /* 图标垂直居中 */
+}
+
+/* 图标右边空隙确保一致 */
+#left-pane ul .nested li a .image {
+  margin-right: 6px;
+}
+
