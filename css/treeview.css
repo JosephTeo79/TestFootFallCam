@@ -26,7 +26,7 @@ body, html {
 
 /* 左侧菜单 */
 #left-pane {
-  width: 250px;
+  width: 320px;
   border-right: 1px solid #ccc;
   display: flex;
   flex-direction: column;
