@@ -6,8 +6,8 @@ const openTabs = {};
 const documents = [
     { id: "1", title: "Introduction", url: "introduction.html" },
     { id: "2", title: "POS Training Document", url: "FrontOffice/IR_POS_Training_Document.pdf" },
-    { id: "3", title: "Login Logout", url: "FrontOffice/IR_Login_Logout.html" },
-    { id: "4", title: "Open Register", url: "FrontOffice/IR_Open_Register.html" },
+    { id: "3", title: "Login Logout", url: "FrontOffice/IR_Login_Logout.pdf" },
+    { id: "4", title: "Open Register", url: "FrontOffice/IR_Open_Register.pdf" },
     // 可以继续添加
 ];
 
