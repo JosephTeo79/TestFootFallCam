@@ -6,6 +6,19 @@
 <script async src="https://cse.google.com/cse.js?cx=81ba2f28f25d04612"></script>
 </head>
 <body>
-  <div class="gcse-search"></div>
+  <div class="gcse-search" data-enableAutoComplete="true" data-linkTarget="_self"></div>
+
+  <script>
+    // 限制搜索只在本站
+    window.__gcse = {
+      parsetags: 'explicit',
+      callback: function() {
+        const element = google.search.cse.element.getElement('searchresults-only0');
+        if (element) {
+          element.execute('site:josephteo79.github.io');
+        }
+      }
+    };
+  </script>
 </body>
 </html>
