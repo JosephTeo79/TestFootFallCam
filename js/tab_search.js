@@ -2,6 +2,21 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
+// -------------------- 示例文档数据 & Lunr 索引 --------------------
+const documents = [
+    { id: "1", title: "Introduction", url: "introduction.html" },
+    { id: "2", title: "POS Training Document", url: "FrontOffice/IR_POS_Training_Document.pdf" },
+    { id: "3", title: "Login Logout", url: "FrontOffice/IR_Login_Logout.html" },
+    { id: "4", title: "Open Register", url: "FrontOffice/IR_Open_Register.html" },
+    // 可以继续添加
+];
+
+const lunrIndex = lunr(function () {
+    this.ref("id");
+    this.field("title");
+    documents.forEach(doc => this.add(doc));
+});
+
 // -------------------- 打开普通 URL（HTML / PDF / MP4） --------------------
 async function openTab(title, url) {
     if (openTabs[title]) {
@@ -9,7 +24,6 @@ async function openTab(title, url) {
         return;
     }
 
-    // 只对 PDF / MP4 / HTML 自动加 IR_（文件名，不加文件夹）
     if ((url.endsWith(".pdf") || url.endsWith(".mp4") || url.endsWith(".html")) && !/IR_/.test(url)) {
         url = url.replace(/([^\/]+)$/, "IR_$1");
     }
@@ -76,7 +90,7 @@ async function openTab(title, url) {
     createTab(title, contentElem);
 }
 
-// -------------------- 打开 data-resource（PDF + 链接 MP4） --------------------
+// -------------------- 打开 Resource Tab（PDF + MP4） --------------------
 async function openResourceTab(title, resource) {
     if (openTabs[title]) {
         setActiveTab(title);
@@ -222,29 +236,61 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 自动打开 Introduction（HTML 不加 IR_）
+    // 自动打开 Introduction
     openTab('Introduction', 'introduction.html');
 
-    // -------------------- 自动添加右侧搜索 Tab --------------------
-// -------------------- 自动添加右侧搜索 Tab --------------------
-(function addSearchTabButton() {
-    const searchBtnTab = document.createElement("div");
-    searchBtnTab.className = "tab";
-    searchBtnTab.style.marginLeft = "auto"; // 右对齐
-    searchBtnTab.textContent = "🔍 Search";
+    // -------------------- 搜索 Tab --------------------
+    (function addSearchTabButton() {
+        const searchBtnTab = document.createElement("div");
+        searchBtnTab.className = "tab";
+        searchBtnTab.style.marginLeft = "auto"; // 右对齐
+        searchBtnTab.textContent = "🔍 Search";
 
-    searchBtnTab.addEventListener("click", () => {
-        if (!openTabs["Search"]) {
-            // 插入 Search tab 之前，保证它在最右边
-            tabBar.insertBefore(searchBtnTab, null); // 永远最后
-            openTab("Search", "search.html");
-        } else {
-            setActiveTab("Search");
-        }
-    });
+        searchBtnTab.addEventListener("click", () => openSearchTab());
 
-    // 直接插入 tabBar 最后，保证在所有左侧菜单 Tab 右边
-    tabBar.appendChild(searchBtnTab);
-})();
-
+        tabBar.appendChild(searchBtnTab);
+    })();
 });
+
+// -------------------- 打开 Search Tab --------------------
+function openSearchTab() {
+    if (openTabs["Search"]) {
+        setActiveTab("Search");
+        return;
+    }
+
+    const contentElem = document.createElement("div");
+    contentElem.style.flex = "1";
+    contentElem.style.display = "flex";
+    contentElem.style.flexDirection = "column";
+    contentElem.style.padding = "10px";
+
+    contentElem.innerHTML = `
+      <input type="text" id="search-box" placeholder="Search..." style="padding:5px; margin-bottom:10px;">
+      <div id="search-results" style="flex:1; overflow:auto; border:1px solid #ccc; padding:5px;"></div>
+    `;
+
+    createTab("Search", contentElem);
+
+    const searchBox = contentElem.querySelector("#search-box");
+    const resultsDiv = contentElem.querySelector("#search-results");
+
+    searchBox.addEventListener("input", () => {
+        const query = searchBox.value.toLowerCase();
+        resultsDiv.innerHTML = "";
+        if (!query) return;
+
+        const hits = lunrIndex.search(query);
+        hits.forEach(hit => {
+            const doc = documents.find(d => d.id === hit.ref);
+            if (doc) {
+                const div = document.createElement("div");
+                div.textContent = doc.title;
+                div.style.cursor = "pointer";
+                div.style.margin = "3px 0";
+                div.addEventListener("click", () => openTab(doc.title, doc.url));
+                resultsDiv.appendChild(div);
+            }
+        });
+    });
+}
