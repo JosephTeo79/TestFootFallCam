@@ -2,7 +2,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
 const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
-const openTabs = {};
+const openTabs = {}; // 普通 Tab 系统存储
 
 // -------------------- 打开 HTML/PDF/MP4 --------------------
 async function openTab(title, url) {
@@ -54,7 +54,7 @@ async function openTab(title, url) {
     createTab(title, contentElem);
 }
 
-// -------------------- 创建 Tab --------------------
+// -------------------- 创建普通 Tab --------------------
 function createTab(title, contentElem){
     tabContent.appendChild(contentElem);
     const tab=document.createElement("div"); tab.className="tab"; tab.dataset.title=title;
@@ -71,6 +71,8 @@ function setActiveTab(title){
     Object.values(openTabs).forEach(({tab,iframe})=>{tab.classList.remove("active"); iframe.style.display="none";});
     if(!openTabs[title]) return;
     openTabs[title].tab.classList.add("active"); openTabs[title].iframe.style.display="flex";
+    // 点击其他 Tab 时隐藏 Search 内容
+    if(searchContent) searchContent.style.display="none";
 }
 
 function closeTab(title){
@@ -80,7 +82,57 @@ function closeTab(title){
     if(remaining.length>0) setActiveTab(remaining[remaining.length-1]);
 }
 
+// -------------------- Resource Tab --------------------
+async function openResourceTab(title, resource){
+    if(openTabs[title]){ setActiveTab(title); return; }
+    const contentElem=document.createElement("div");
+    contentElem.style.flex="1"; contentElem.style.display="flex"; contentElem.style.flexDirection="column"; contentElem.style.overflowY="auto";
+
+    try{
+        const videoUrl = resource.replace(/([^\/]+)$/,"IR_$1.mp4");
+        const videoLink=document.createElement("a");
+        videoLink.href="#"; videoLink.textContent="▶ Click to play video"; 
+        videoLink.style.display="block"; videoLink.style.marginBottom="10px"; videoLink.style.fontWeight="bold";
+        videoLink.addEventListener("click",function(e){
+            e.preventDefault();
+            if(!contentElem.querySelector("video")){
+                const video=document.createElement("video");
+                video.src=videoUrl; video.controls=true; video.setAttribute("controlsList","nodownload");
+                video.style.width="70%"; video.style.height="auto"; video.setAttribute("playsinline","true");
+                video.addEventListener("contextmenu",e=>e.preventDefault());
+                const container=document.createElement("div"); container.style.display="flex"; container.style.justifyContent="center";
+                container.appendChild(video); contentElem.insertBefore(container,contentElem.firstChild);
+            }
+        });
+        contentElem.appendChild(videoLink);
+
+        const pdfUrl = resource.replace(/([^\/]+)$/,"IR_$1.pdf");
+        const resp = await fetch(pdfUrl);
+        if(resp.ok){
+            const pdfData = await resp.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({data:pdfData}).promise;
+            const dpr = window.devicePixelRatio||1;
+            for(let i=1;i<=pdf.numPages;i++){
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({scale:2});
+                const canvas=document.createElement("canvas");
+                canvas.width = viewport.width*dpr;
+                canvas.height = viewport.height*dpr;
+                canvas.style.width="100%"; canvas.style.height="auto";
+                const ctx = canvas.getContext("2d");
+                ctx.setTransform(dpr,0,0,dpr,0,0);
+                await page.render({canvasContext:ctx,viewport}).promise;
+                contentElem.appendChild(canvas);
+            }
+        } else { contentElem.innerHTML+="<p style='color:red;'>PDF not found</p>"; }
+    } catch(err){ contentElem.innerHTML+="<p style='color:red;'>Failed to load PDF/video</p>"; }
+
+    createTab(title, contentElem);
+}
+
 // -------------------- 初始化菜单 & Search --------------------
+let searchContent = null;
+
 document.addEventListener("DOMContentLoaded",()=>{
 
     const navLinks = document.querySelectorAll(".nav-link");
@@ -102,15 +154,18 @@ document.addEventListener("DOMContentLoaded",()=>{
     // -------------------- Lunr 索引 --------------------
     const idx = lunr(function(){ this.ref('id'); this.field('title'); documents.forEach(d=>this.add(d)); });
 
-    // -------------------- Search 显示区域（固定） --------------------
-    const searchContent = document.createElement("div");
+    // -------------------- Search 固定显示区域 --------------------
+    searchContent = document.createElement("div");
     searchContent.style.display="none"; // 默认隐藏
-    searchContent.style.flex="1"; searchContent.style.flexDirection="column"; searchContent.style.height="100%";
+    searchContent.style.flex="1"; 
+    searchContent.style.flexDirection="column"; 
+    searchContent.style.height="100%";
     tabContent.appendChild(searchContent);
 
     const inputBox = document.createElement("input");
     inputBox.type="text"; inputBox.id="search-box"; inputBox.placeholder="Search...";
-    const resultsDiv = document.createElement("div"); resultsDiv.id="search-results"; resultsDiv.style.flex="1"; resultsDiv.style.overflowY="auto";
+    const resultsDiv = document.createElement("div");
+    resultsDiv.id="search-results"; resultsDiv.style.flex="1"; resultsDiv.style.overflowY="auto";
 
     searchContent.appendChild(inputBox);
     searchContent.appendChild(resultsDiv);
@@ -134,15 +189,16 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     });
 
-    // -------------------- 添加 Search Tab 按钮 --------------------
+    // -------------------- 添加 Search 按钮 --------------------
     const searchBtnTab = document.createElement("div");
     searchBtnTab.className="tab";
     searchBtnTab.textContent="🔍 Search";
     searchBtnTab.style.cursor="pointer";
     searchBtnTab.style.flexShrink="0";
     searchBtnTab.addEventListener("click",()=>{
-        // 显示 Search 内容区域，隐藏所有普通 Tab
-        Object.values(openTabs).forEach(({iframe})=>{iframe.style.display="none";});
+        // 隐藏所有普通 Tab 内容
+        Object.values(openTabs).forEach(({iframe})=>iframe.style.display="none");
+        // 显示 Search
         searchContent.style.display="flex";
         // 高亮按钮
         document.querySelectorAll("#tab-bar .tab").forEach(btn=>btn.classList.remove("active"));
