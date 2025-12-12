@@ -226,20 +226,25 @@ document.addEventListener("DOMContentLoaded", () => {
     openTab('Introduction', 'introduction.html');
 
     // -------------------- 自动添加右侧搜索 Tab --------------------
-    (function addSearchTabButton() {
-        const searchBtnTab = document.createElement("div");
-        searchBtnTab.className = "tab";
-        searchBtnTab.style.marginLeft = "auto"; // 右对齐
-        searchBtnTab.textContent = "🔍 Search";
+// -------------------- 自动添加右侧搜索 Tab --------------------
+(function addSearchTabButton() {
+    const searchBtnTab = document.createElement("div");
+    searchBtnTab.className = "tab";
+    searchBtnTab.style.marginLeft = "auto"; // 右对齐
+    searchBtnTab.textContent = "🔍 Search";
 
-        searchBtnTab.addEventListener("click", () => {
-            if (!openTabs["Search"]) {
-                openTab("Search", "search.html");
-            } else {
-                setActiveTab("Search");
-            }
-        });
+    searchBtnTab.addEventListener("click", () => {
+        if (!openTabs["Search"]) {
+            // 插入 Search tab 之前，保证它在最右边
+            tabBar.insertBefore(searchBtnTab, null); // 永远最后
+            openTab("Search", "search.html");
+        } else {
+            setActiveTab("Search");
+        }
+    });
 
-        tabBar.appendChild(searchBtnTab);
-    })();
+    // 直接插入 tabBar 最后，保证在所有左侧菜单 Tab 右边
+    tabBar.appendChild(searchBtnTab);
+})();
+
 });
