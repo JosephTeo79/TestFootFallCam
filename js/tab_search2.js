@@ -4,6 +4,19 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {}; // 普通 Tab 系统存储
 
+// -------------------- 创建左右 Tab 容器 --------------------
+const tabsLeft = document.createElement("div");
+tabsLeft.id = "tabs-left";
+tabsLeft.style.display = "flex";
+
+const tabsRight = document.createElement("div");
+tabsRight.id = "tabs-right";
+tabsRight.style.display = "flex";
+tabsRight.style.marginLeft = "auto";
+
+tabBar.appendChild(tabsLeft);
+tabBar.appendChild(tabsRight);
+
 // -------------------- 打开 HTML/PDF/MP4 --------------------
 async function openTab(title, url) {
     if (openTabs[title]) { setActiveTab(title); return; }
@@ -94,7 +107,8 @@ function createTab(title, contentElem){
         closeTab(title);
     });
 
-    tabBar.appendChild(tab);
+    // ★★★ 改动：所有 tab 放在 tabs-left，而不是 tabBar
+    tabsLeft.appendChild(tab);
 
     openTabs[title]={tab, iframe:contentElem};
 
@@ -112,7 +126,7 @@ function setActiveTab(title){
         openTabs[title].iframe.style.display="flex";
     }
 
-    if(searchContent) searchContent.style.display="none";  // 切换 tab 时隐藏 search
+    if(searchContent) searchContent.style.display="none";
 }
 
 function closeTab(title){
@@ -202,7 +216,6 @@ async function openResourceTab(title, resource){
     createTab(title, contentElem);
 }
 
-
 // -------------------- 模糊搜索 --------------------
 function fuzzyMatch(keyword, text) {
     keyword = keyword.toLowerCase();
@@ -289,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // -------------------- Search Tab --------------------
+    // -------------------- Search Tab（永远固定右侧） --------------------
     const searchBtnTab = document.createElement("div");
     searchBtnTab.className="tab";
     searchBtnTab.textContent="🔍 Search";
@@ -304,7 +317,8 @@ document.addEventListener("DOMContentLoaded", () => {
         searchBtnTab.classList.add("active");
     });
 
-    tabBar.appendChild(searchBtnTab);
+    // ★★★ 改动：Search 放到 tabs-right，不会跑到左边
+    tabsRight.appendChild(searchBtnTab);
 
     // -------------------- 默认打开 Introduction --------------------
     openTab('Introduction','introduction.html');
