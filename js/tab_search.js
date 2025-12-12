@@ -3,6 +3,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
+let searchTabCreated = false;
 
 // -------------------- 打开 HTML/PDF/MP4 --------------------
 async function openTab(title, url) {
@@ -10,11 +11,10 @@ async function openTab(title, url) {
     if ((url.endsWith(".pdf")||url.endsWith(".mp4")||url.endsWith(".html")) && !/IR_/.test(url)) {
         url = url.replace(/([^\/]+)$/, "IR_$1");
     }
+
     const contentElem = document.createElement("div");
-    contentElem.style.flex="1";
-    contentElem.style.display="flex";
-    contentElem.style.flexDirection="column";
-    contentElem.style.overflowY="auto";
+    contentElem.style.flex="1"; contentElem.style.display="flex";
+    contentElem.style.flexDirection="column"; contentElem.style.overflowY="auto";
 
     try {
         if(url.endsWith(".pdf")){
@@ -61,7 +61,8 @@ async function openTab(title, url) {
 async function openResourceTab(title, resource){
     if(openTabs[title]){ setActiveTab(title); return; }
     const contentElem=document.createElement("div");
-    contentElem.style.flex="1"; contentElem.style.display="flex"; contentElem.style.flexDirection="column"; contentElem.style.overflowY="auto";
+    contentElem.style.flex="1"; contentElem.style.display="flex";
+    contentElem.style.flexDirection="column"; contentElem.style.overflowY="auto";
 
     try{
         const videoUrl = resource.replace(/([^\/]+)$/,"IR_$1.mp4");
@@ -111,8 +112,10 @@ function createTab(title, contentElem){
     const tab=document.createElement("div"); tab.className="tab"; tab.dataset.title=title;
     const tabText=document.createElement("span"); tabText.textContent=title; tab.appendChild(tabText);
     const closeBtn=document.createElement("button"); closeBtn.textContent="×"; closeBtn.className="close-btn"; tab.appendChild(closeBtn);
+
     tabText.addEventListener("click",()=>setActiveTab(title));
     closeBtn.addEventListener("click",e=>{ e.stopPropagation(); closeTab(title); });
+
     tabBar.appendChild(tab);
     openTabs[title]={tab, iframe:contentElem};
     setActiveTab(title);
@@ -135,6 +138,7 @@ function closeTab(title){
 document.addEventListener("DOMContentLoaded",()=>{
     const navLinks = document.querySelectorAll(".nav-link");
     const documents = [];
+
     navLinks.forEach((link,idx)=>{
         const title = link.getAttribute("data-title") || link.textContent.trim();
         const url = link.getAttribute("data-url") || null;
@@ -143,61 +147,66 @@ document.addEventListener("DOMContentLoaded",()=>{
 
         link.addEventListener("click",function(e){
             e.preventDefault();
-            if(resource) openResourceTab(title,resource);
+            if(title === "Search"){ // 避免重复创建 Search Tab
+                if(openTabs["Search"]){ setActiveTab("Search"); }
+            } else if(resource) openResourceTab(title,resource);
             else openTab(title,url);
         });
     });
 
-    // -------------------- Lunr 索引 --------------------
+    // -------------------- Lunr.js 索引 --------------------
     const idx = lunr(function(){ this.ref('id'); this.field('title'); documents.forEach(d=>this.add(d)); });
 
-    // -------------------- 创建 Search Tab (init with feature) --------------------
-    const searchContent = document.createElement("div");
-    searchContent.style.display="flex";
-    searchContent.style.flexDirection="column";
-    searchContent.style.height="100%";
+    // 创建 Search Tab（只创建一次）
+    function createSearchTab(){
+        if(searchTabCreated) return;
+        searchTabCreated = true;
 
-    const inputBox = document.createElement("input");
-    inputBox.type="text";
-    inputBox.id="search-box";
-    inputBox.placeholder="Search...";
-    const resultsDiv = document.createElement("div");
-    resultsDiv.id="search-results";
-    resultsDiv.style.flex="1"; resultsDiv.style.overflowY="auto";
+        const contentElem=document.createElement("div");
+        contentElem.style.display="flex";
+        contentElem.style.flexDirection="column";
+        contentElem.style.height="100%";
 
-    searchContent.appendChild(inputBox);
-    searchContent.appendChild(resultsDiv);
+        const inputBox=document.createElement("input");
+        inputBox.type="text"; inputBox.id="search-box"; inputBox.placeholder="Search...";
+        const resultsDiv=document.createElement("div");
+        resultsDiv.id="search-results"; resultsDiv.style.flex="1"; resultsDiv.style.overflowY="auto";
 
-    inputBox.addEventListener("keypress", function(e){
-        if(e.key==='Enter'){
-            const query = inputBox.value.trim();
-            if(!query) return;
-            const results = idx.search(query);
-            resultsDiv.innerHTML="";
-            if(results.length===0){ resultsDiv.innerHTML="<p>No results found.</p>"; return; }
-            results.forEach(res=>{
-                const doc = documents.find(d=>d.id==res.ref);
-                const item = document.createElement("div");
-                item.textContent = doc.title;
-                item.addEventListener("click",()=>{
-                    if(doc.resource) openResourceTab(doc.title,doc.resource);
-                    else if(doc.url) openTab(doc.title,doc.url);
+        contentElem.appendChild(inputBox);
+        contentElem.appendChild(resultsDiv);
+
+        inputBox.addEventListener("keypress",function(e){
+            if(e.key==='Enter'){
+                const query = inputBox.value.trim();
+                if(!query) return;
+                const results = idx.search(query);
+                resultsDiv.innerHTML = "";
+                if(results.length===0){ resultsDiv.innerHTML="<p>No results found.</p>"; return; }
+                results.forEach(res=>{
+                    const doc = documents.find(d=>d.id==res.ref);
+                    const item = document.createElement("div"); item.textContent = doc.title;
+                    item.addEventListener("click",()=>{
+                        if(doc.resource) openResourceTab(doc.title,doc.resource);
+                        else if(doc.url) openTab(doc.title,doc.url);
+                    });
+                    resultsDiv.appendChild(item);
                 });
-                resultsDiv.appendChild(item);
-            });
-        }
-    });
+            }
+        });
 
-    // 创建 Search Tab 一次
-    createTab("Search", searchContent);
+        createTab("Search", contentElem);
+    }
 
-    // Tab Bar 上按钮切换到已有 Search Tab
+    createSearchTab();
+
+    // Tab Bar 上 Search 按钮只切换，不创建
     const searchBtnTab = document.createElement("div");
-    searchBtnTab.className="tab"; searchBtnTab.textContent="🔍 Search";
+    searchBtnTab.className = "tab"; searchBtnTab.textContent="🔍 Search";
     searchBtnTab.style.cursor="pointer"; searchBtnTab.style.flexShrink="0";
-    searchBtnTab.addEventListener("click", ()=>setActiveTab("Search"));
+    searchBtnTab.addEventListener("click",()=>setActiveTab("Search"));
     tabBar.appendChild(searchBtnTab);
 
-    // -------------------- 默认打开 Introduction --------------------
+    // 默认打开 Introduction + Search
     openTab('Introduction','introduction.html');
+    setActiveTab("Search"); // 初始显示 Search Tab
 });
