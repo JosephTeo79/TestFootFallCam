@@ -2,23 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Search</title>
+<title>Search Tab</title>
+<!-- Google CSE -->
 <script async src="https://cse.google.com/cse.js?cx=81ba2f28f25d04612"></script>
+<style>
+  #search-box { width: 100%; padding: 8px; font-size: 16px; margin-bottom: 10px; }
+  #search-results { flex: 1; overflow-y: auto; }
+</style>
 </head>
 <body>
-  <div class="gcse-search" data-enableAutoComplete="true" data-linkTarget="_self"></div>
+<div style="display:flex; flex-direction:column; height:100%;">
+  <!-- 可选：搜索输入框 -->
+  <input type="text" id="search-box" placeholder="Search..." />
+  <div id="search-results" class="gcse-searchresults-only" style="flex:1;"></div>
+</div>
 
-  <script>
-    // 限制搜索只在本站
-    window.__gcse = {
-      parsetags: 'explicit',
-      callback: function() {
-        const element = google.search.cse.element.getElement('searchresults-only0');
-        if (element) {
-          element.execute('site:josephteo79.github.io');
+<script>
+window.__gcse = {
+  parsetags: 'explicit',
+  callback: function() {
+    // 获取 Search Results 元素
+    const element = google.search.cse.element.getElement('search-results');
+    const inputBox = document.getElementById('search-box');
+
+    // 自动搜索输入框内容
+    inputBox.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        const query = inputBox.value.trim();
+        if(query) {
+          element.execute('site:josephteo79.github.io/TestFootFallCam ' + query);
         }
       }
-    };
-  </script>
+    });
+  }
+};
+
+// 初始化搜索结果元素
+function initSearch() {
+  google.search.cse.element.render({
+    div: "search-results",
+    tag: 'searchresults-only',
+    attributes: { linkTarget: "_self" }
+  });
+}
+
+// 等 CSE 脚本加载完成后调用
+window.addEventListener('load', initSearch);
+</script>
 </body>
 </html>
