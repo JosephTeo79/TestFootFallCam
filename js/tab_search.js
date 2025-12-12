@@ -1,12 +1,14 @@
-//pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+//pdfjsLib.GlobalWorkerOptions.workerSrc =
+  //"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 
 const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {};
 
-// -------------------- 打开 HTML/PDF/MP4 --------------------
+// -------------------- 打开 HTML / PDF / MP4 --------------------
 async function openTab(title, url) {
     if (openTabs[title]) { setActiveTab(title); return; }
+
     if ((url.endsWith(".pdf") || url.endsWith(".mp4") || url.endsWith(".html")) && !/IR_/.test(url)) {
         url = url.replace(/([^\/]+)$/, "IR_$1");
     }
@@ -67,7 +69,7 @@ async function openTab(title, url) {
     createTab(title, contentElem);
 }
 
-// -------------------- 打开 resource (PDF + 视频组合) --------------------
+// -------------------- 打开 Resource --------------------
 async function openResourceTab(title, resource) {
     if (openTabs[title]) { setActiveTab(title); return; }
 
@@ -78,7 +80,6 @@ async function openResourceTab(title, resource) {
     contentElem.style.overflowY = "auto";
 
     try {
-        // 视频
         const videoUrl = resource.replace(/([^\/]+)$/, "IR_$1.mp4");
         const videoLink = document.createElement("a");
         videoLink.href = "#";
@@ -87,7 +88,7 @@ async function openResourceTab(title, resource) {
         videoLink.style.marginBottom = "10px";
         videoLink.style.fontWeight = "bold";
 
-        videoLink.addEventListener("click", function (e) {
+        videoLink.addEventListener("click", e => {
             e.preventDefault();
             if (!contentElem.querySelector("video")) {
                 const video = document.createElement("video");
@@ -106,9 +107,9 @@ async function openResourceTab(title, resource) {
                 contentElem.insertBefore(container, contentElem.firstChild);
             }
         });
+
         contentElem.appendChild(videoLink);
 
-        // PDF
         const pdfUrl = resource.replace(/([^\/]+)$/, "IR_$1.pdf");
         const resp = await fetch(pdfUrl);
         if (resp.ok) {
@@ -139,8 +140,10 @@ async function openResourceTab(title, resource) {
     createTab(title, contentElem);
 }
 
-// -------------------- 创建 Tab --------------------
+// -------------------- 创建 / 切换 / 关闭 Tab --------------------
 function createTab(title, contentElem) {
+    if (openTabs[title]) { setActiveTab(title); return; }
+
     tabContent.appendChild(contentElem);
 
     const tab = document.createElement("div");
@@ -164,7 +167,6 @@ function createTab(title, contentElem) {
     setActiveTab(title);
 }
 
-// -------------------- Tab 操作 --------------------
 function setActiveTab(title) {
     Object.values(openTabs).forEach(({ tab, iframe }) => {
         tab.classList.remove("active");
@@ -178,15 +180,14 @@ function setActiveTab(title) {
 function closeTab(title) {
     if (!openTabs[title]) return;
     const { tab, iframe } = openTabs[title];
-    tab.remove();
-    iframe.remove();
+    tab.remove(); iframe.remove();
     delete openTabs[title];
 
     const remaining = Object.keys(openTabs);
     if (remaining.length > 0) setActiveTab(remaining[remaining.length - 1]);
 }
 
-// -------------------- 初始化菜单 + Search --------------------
+// -------------------- 初始化菜单 & Search --------------------
 document.addEventListener("DOMContentLoaded", () => {
     const navLinks = document.querySelectorAll(".nav-link");
     const documents = [];
@@ -195,23 +196,23 @@ document.addEventListener("DOMContentLoaded", () => {
         const title = link.getAttribute("data-title") || link.textContent.trim();
         const url = link.getAttribute("data-url") || null;
         const resource = link.getAttribute("data-resource") || null;
-
         documents.push({ id: idx, title, url, resource });
 
-        link.addEventListener("click", function (e) {
+        link.addEventListener("click", e => {
             e.preventDefault();
             if (resource) openResourceTab(title, resource);
-            else openTab(title, url);
+            else if (url) openTab(title, url);
         });
     });
 
     // Lunr 索引
     const idx = lunr(function () {
-        this.ref('id');
-        this.field('title');
+        this.ref("id");
+        this.field("title");
         documents.forEach(d => this.add(d));
     });
 
+    // 打开 Search Tab
     function openSearchTab() {
         if (openTabs["Search"]) { setActiveTab("Search"); return; }
 
@@ -224,7 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
         inputBox.type = "text";
         inputBox.id = "search-box";
         inputBox.placeholder = "Search...";
-
         const resultsDiv = document.createElement("div");
         resultsDiv.id = "search-results";
         resultsDiv.style.flex = "1";
@@ -233,13 +233,14 @@ document.addEventListener("DOMContentLoaded", () => {
         contentElem.appendChild(inputBox);
         contentElem.appendChild(resultsDiv);
 
-        inputBox.addEventListener("keypress", function (e) {
+        inputBox.addEventListener("keypress", e => {
             if (e.key === 'Enter') {
                 const query = inputBox.value.trim();
                 if (!query) return;
                 const results = idx.search(query);
                 resultsDiv.innerHTML = "";
                 if (results.length === 0) { resultsDiv.innerHTML = "<p>No results found.</p>"; return; }
+
                 results.forEach(res => {
                     const doc = documents.find(d => d.id == res.ref);
                     const item = document.createElement("div");
@@ -256,19 +257,16 @@ document.addEventListener("DOMContentLoaded", () => {
         createTab("Search", contentElem);
     }
 
-    // Tab Bar 上添加 Search 按钮，只切换
+    // Tab Bar 添加 Search 按钮
     const searchBtnTab = document.createElement("div");
     searchBtnTab.className = "tab";
     searchBtnTab.textContent = "🔍 Search";
     searchBtnTab.style.cursor = "pointer";
     searchBtnTab.style.flexShrink = "0";
-    searchBtnTab.addEventListener("click", () => {
-        if (openTabs["Search"]) setActiveTab("Search");
-        else openSearchTab();
-    });
+    searchBtnTab.addEventListener("click", openSearchTab);
     tabBar.appendChild(searchBtnTab);
 
-    // 默认打开 Introduction + Search Tab
-    openTab('Introduction', 'introduction.html');
+    // 默认打开 Introduction + Search
+    openTab("Introduction", "introduction.html");
     openSearchTab();
 });
