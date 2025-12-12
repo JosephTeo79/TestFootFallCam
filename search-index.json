@@ -1,0 +1,32 @@
+[
+  {
+    "id": "index",
+    "title": "Home",
+    "url": "index.html",
+    "content": "Welcome to Retail Pro Prism documentation."
+  },
+  {
+    "id": "IR_introduction",
+    "title": "Introduction",
+    "url": "IR_introduction.html",
+    "content": "Overview of Retail Pro Prism features and modules."
+  },
+  {
+    "id": "POS_training",
+    "title": "POS Training Document",
+    "url": "FrontOffice/IR_POS_Training_Document.pdf",
+    "content": "PDF content: POS Training steps..."
+  },
+  {
+    "id": "Login_Logout",
+    "title": "Login Logout",
+    "url": "FrontOffice/IR_Login_Logout.pdf",
+    "content": "Login Logout procedures."
+  },
+  {
+    "id": "Open_Register",
+    "title": "Open Register",
+    "url": "FrontOffice/IR_Open_Register.pdf",
+    "content": "Open register instructions."
+  }
+]
