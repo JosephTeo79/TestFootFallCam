@@ -20,10 +20,11 @@ tabBar.appendChild(tabsRight);
 // -------------------- 打开 HTML/PDF/MP4 --------------------
 async function openTab(title, url) {
     if(openTabs[title]){
-        if(openTabs[title].loading) return;
+        if(openTabs[title].loading) return; // 正在加载中直接忽略
         setActiveTab(title);
         return;
     }
+
     openTabs[title] = { loading: true };
 
     if ((url.endsWith(".pdf")||url.endsWith(".mp4")||url.endsWith(".html")) && !/IR_/.test(url)) {
@@ -87,13 +88,16 @@ async function openTab(title, url) {
             iframe.frameBorder="0";
             contentElem.appendChild(iframe);
         }
+
+        // PDF/视频/iframe 渲染完毕，移除 Loading
         loadingElem.remove();
+
     } catch(err){
         contentElem.innerHTML=`<p style="color:red;">Failed to load: ${err.message}</p>`;
     }
 
     createTab(title, contentElem);
-    openTabs[title].loading = false;
+    openTabs[title].loading = false; // 标记完成
 }
 
 // -------------------- 创建普通 Tab --------------------
@@ -260,16 +264,11 @@ let searchContent = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ---- 只抓 desktop 菜单，避免重复 ----
-    const navLinks = document.querySelectorAll("#desktop-menu .nav-link"); // <-- 改成 desktop 菜单 ID
+    const navLinks = document.querySelectorAll(".nav-link");
     const documents = [];
-    const seen = new Set();
 
-    navLinks.forEach((link, idx) => {
+    navLinks.forEach((link,idx)=>{
         const title = link.getAttribute("data-title") || link.textContent.trim();
-        if(seen.has(title)) return; // 去重
-        seen.add(title);
-
         const url = link.getAttribute("data-url") || null;
         const resource = link.getAttribute("data-resource") || null;
 
