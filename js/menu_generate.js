@@ -1,9 +1,8 @@
-// 生成菜单（desktop + mobile）
-function generateMenu(containerId) {
+function generateMenu(containerId){
   const container = document.getElementById(containerId);
   container.innerHTML = "";
-  
-  function createItem(item) {
+
+  function createItem(item){
     const li = document.createElement("li");
     if(item.url || item.resource){
       const a = document.createElement("a");
@@ -33,8 +32,3 @@ function generateMenu(containerId) {
   menuData.forEach(item => ulRoot.appendChild(createItem(item)));
   container.appendChild(ulRoot);
 }
-
-// desktop
-generateMenu("left-menu-scroll");
-// mobile
-generateMenu("mobile-drawer");
