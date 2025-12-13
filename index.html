@@ -23,6 +23,30 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 #search-box { padding:8px; font-size:16px; margin-bottom:10px; width:100%; box-sizing:border-box; }
 #search-results div { padding:6px; border-bottom:1px solid #ddd; cursor:pointer; }
 #search-results div:hover { background:#f0f0f0; }
+
+/* 左下角悬浮图标 */
+#floating-widget-left {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  z-index: 9999;
+}
+
+#floating-widget-left a img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+
+#floating-widget-left a img:hover {
+  transform: scale(1.1);
+}
 </style>
 </head>
 <body>
@@ -68,8 +92,21 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   </div>
 </div>
 
-<!-- 浮动客服组件占位 -->
-<div id="widget-placeholder"></div>
+<!-- 左下角悬浮图标 -->
+<div id="floating-widget-left">
+  <a href="https://example.com" target="_blank" title="Our Company">
+    <img src="icon/official.png" alt="Company">
+  </a>
+  <a href="https://wa.me/1234567890" target="_blank" title="WhatsApp">
+    <img src="icon/whatsapp.png" alt="WhatsApp">
+  </a>
+  <a href="https://www.tidio.com/panel/" target="_blank" title="Tidio">
+    <img src="icon/tidio.png" alt="Tidio">
+  </a>
+  <a href="mailto:support@example.com" target="_blank" title="Support Email">
+    <img src="icon/email.png" alt="Email">
+  </a>
+</div>
 
 <!-- JS 文件 --> 
 <script src="js/tab_search.js"></script> 
@@ -80,25 +117,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 window.onload = function () {
   // 自动打开 Introduction 
   openTab('Introduction', 'introduction.html'); 
-
-  // 安全加载浮动客服组件，确保现有 DOM 先加载完成
-  fetch('components/floating-widget.html')
-    .then(r => r.text())
-    .then(html => {
-      const placeholder = document.getElementById('widget-placeholder');
-      placeholder.innerHTML = html;
-
-      // 加载组件 CSS
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'components/floating-widget.css';
-      document.head.appendChild(link);
-
-      // 加载组件 JS
-      const script = document.createElement('script');
-      script.src = 'components/floating-widget.js';
-      document.body.appendChild(script);
-    });
 };
 </script>
 </body>
