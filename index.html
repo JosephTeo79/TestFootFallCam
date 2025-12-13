@@ -36,20 +36,20 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
     <li><span class="caret">Front Office</span>
       <ul class="nested">
-        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">POS Training Document</a></li>
-        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">Login Logout</a></li>
-        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">Open Register</a></li>
+        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
       </ul>
     </li>
     <li><span class="caret">Back Office</span>
       <ul class="nested"></ul>
     </li>
-    <li><a href="#" data-url="notebooklm.html" class="nav-link">Support Handbook</a></li>
+    <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
   </ul>
 </div>
 
 <div id="container">
-  <!-- 左侧菜单 -->
+  <!-- 左侧电脑板 -->
   <div id="left-pane">
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
@@ -99,13 +99,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
 
-<!-- JS -->
+<!-- JS 文件 -->
 <script src="js/tab_search.js"></script>
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
 
 <script>
-window.onload = function () {
+document.addEventListener('DOMContentLoaded', function() {
   openTab('Introduction', 'introduction.html');
 
   // Tidio 浮窗
@@ -132,7 +132,7 @@ window.onload = function () {
       caret.nextElementSibling.classList.toggle('nested-open');
     });
   });
-};
+});
 </script>
 </body>
 </html>
