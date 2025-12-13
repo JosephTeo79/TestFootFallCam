@@ -264,7 +264,7 @@ let searchContent = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    const navLinks = document.querySelectorAll(".nav-link");
+    const navLinks = document.querySelectorAll("#desktop-menu .nav-link"");
     const documents = [];
 
     navLinks.forEach((link,idx)=>{
