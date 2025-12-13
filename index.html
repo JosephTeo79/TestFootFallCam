@@ -7,8 +7,10 @@
 <link rel="icon" type="image/png" href="./icon/favicon.png">
 
 <!-- 样式文件 -->
-<link rel="stylesheet" href="css/style1.css">
+<link rel="stylesheet" href="css/treeview.css">
 <link rel="stylesheet" href="css/tab-style.css">
+<link rel="stylesheet" href="css/future-updates.css">
+<link rel="stylesheet" href="css/style1.css">
 
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
@@ -16,6 +18,9 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 </script>
+
+<!-- Lunr.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 </head>
 <body>
 
@@ -26,15 +31,53 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 </div>
 
 <!-- MOBILE DRAWER -->
-<div id="mobile-drawer"></div>
+<div id="mobile-drawer">
+  <ul>
+    <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
+    <li><span class="caret">Front Office</span>
+      <ul class="nested">
+        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+      </ul>
+    </li>
+    <li><span class="caret">Back Office</span>
+      <ul class="nested"></ul>
+    </li>
+    <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+  </ul>
+</div>
 
 <div id="container">
-  <!-- 左侧电脑板 -->
+  <!-- 左侧菜单 -->
   <div id="left-pane">
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
     </div>
-    <div id="left-menu-scroll"></div>
+
+    <div id="left-menu-scroll">
+      <ul>
+        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
+          <ul class="nested">
+            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+          </ul>
+        </li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Back Office</span>
+          <ul class="nested"></ul>
+        </li>
+        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+      </ul>
+
+      <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+    </div>
+
     <div class="bottom-area">
       <div id="floating-widget-left">
         <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
@@ -53,46 +96,43 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   </div>
 </div>
 
+<!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
 
-<!-- JS 文件 -->
-<script src="js/menu_data.js"></script>
-<script src="js/menu_generate.js"></script>
+<!-- JS -->
 <script src="js/tab_search.js"></script>
 <script src="js/treeview.js"></script>
+<script src="js/shortcut.js"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
-  // mobile hamburger
+window.onload = function () {
+  openTab('Introduction', 'introduction.html');
+
+  // Tidio 浮窗
+  window.tidioChatApi = window.tidioChatApi || {};
+  window.tidioChatApi.display = true;
+  (function() {
+    var tidioScript = document.createElement("script");
+    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
+    tidioScript.async = true;
+    document.body.appendChild(tidioScript);
+  })();
+
+  // Hamburger click
   const hamburger = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
-  if(hamburger && drawer){
-    hamburger.addEventListener('click',()=>drawer.classList.toggle('open'));
-  }
-
-  // 初始化菜单
-  generateMenu("left-menu-scroll");
-  generateMenu("mobile-drawer");
-
-  // 绑定 nav-link 点击事件
-  document.querySelectorAll(".nav-link").forEach(link => {
-    const title = link.textContent.trim();
-    const url = link.dataset.url;
-    const resource = link.dataset.resource;
-
-    link.addEventListener("click", function(e){
-      e.preventDefault();
-      if(resource) openResourceTab(title,resource);
-      else if(url) openTab(title,url);
-
-      // mobile drawer 自动关闭
-      if(drawer) drawer.classList.remove('open');
-    });
+  hamburger && hamburger.addEventListener('click', () => {
+    drawer.classList.toggle('open');
   });
 
-  // 默认打开 Introduction
-  openTab("Introduction","introduction.html");
-});
+  // Mobile nested folders
+  const carets = drawer.querySelectorAll('.caret');
+  carets.forEach(caret => {
+    caret.addEventListener('click', () => {
+      caret.nextElementSibling.classList.toggle('nested-open');
+    });
+  });
+};
 </script>
 </body>
 </html>
