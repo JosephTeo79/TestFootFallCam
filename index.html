@@ -15,7 +15,8 @@
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 </script>
 
 <!-- Lunr.js -->
@@ -31,22 +32,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
 <!-- MOBILE DRAWER -->
 <div id="mobile-drawer">
-  <ul id="mobile-menu"></ul>
-
-  <div class="future-updates">
-    <div class="icon">🚀</div>
-    <h2 class="title">More Content Coming Soon</h2>
-    <p class="subtitle">Stay tuned for updates!</p>
-  </div>
-
-  <div class="bottom-area">
-    <div id="floating-widget-left">
-      <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
-      <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
-      <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
-    </div>
-    <h2 class="footer-title">Retail Pro Prism</h2>
-  </div>
+  <div id="mobile-menu"></div>
 </div>
 
 <div id="container">
@@ -55,17 +41,14 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
     </div>
-
     <div id="left-menu-scroll">
-      <ul id="pc-menu"></ul>
-
+      <div id="pc-menu"></div>
       <div class="future-updates">
         <div class="icon">🚀</div>
         <h2 class="title">More Content Coming Soon</h2>
         <p class="subtitle">Stay tuned for updates!</p>
       </div>
     </div>
-
     <div class="bottom-area">
       <div id="floating-widget-left">
         <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
@@ -93,99 +76,110 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="js/shortcut.js"></script>
 
 <script>
-// --------------------- Menu Data ---------------------
+// ---------- 菜单数据 ----------
 const menuData = [
   { title: "Introduction", url: "introduction.html", icon: "icon/pdf.png" },
-  { title: "Front Office", icon: "icon/folder.jpg", children: [
+  {
+    title: "Front Office", icon: "icon/folder.jpg", children: [
       { title: "POS Training Document", url: "FrontOffice/POS_Training_Document.pdf", icon: "icon/pdf.png" },
-      { title: "Login Logout", resource: "FrontOffice/Login_Logout", icon: "icon/pdf.png", dataTitle:"Login Logout" },
-      { title: "Open Register", resource: "FrontOffice/Open_Register", icon: "icon/pdf.png", dataTitle:"Open Register" }
+      { title: "Login Logout", resource: "FrontOffice/Login_Logout", icon: "icon/pdf.png" },
+      { title: "Open Register", resource: "FrontOffice/Open_Register", icon: "icon/pdf.png" },
     ]
   },
   { title: "Back Office", icon: "icon/folder.jpg", children: [] },
-  { title: "Support Handbook", url: "notebooklm.html", icon: "icon/NoteBooklm.png" }
+  { title: "Support Handbook", url: "notebooklm.html", icon: "icon/NoteBooklm.png" },
 ];
 
-// --------------------- Render Menu ---------------------
-function renderMenu(data, container){
-  data.forEach(item=>{
+// ---------- 渲染菜单 ----------
+function renderMenu(containerId) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  const ul = document.createElement('ul');
+
+  menuData.forEach(item => {
     const li = document.createElement('li');
     if(item.children && item.children.length > 0){
       const span = document.createElement('span');
       span.className = 'caret';
-      if(item.icon){
-        const img = document.createElement('img');
-        img.src = item.icon;
-        img.className = 'image';
-        span.appendChild(img);
-      }
-      span.appendChild(document.createTextNode(item.title));
+      span.innerHTML = `<img src="${item.icon}" class="image"> ${item.title}`;
       li.appendChild(span);
 
-      const ul = document.createElement('ul');
-      ul.className = 'nested';
-      renderMenu(item.children, ul);
-      li.appendChild(ul);
+      const nestedUl = document.createElement('ul');
+      nestedUl.className = 'nested';
+      item.children.forEach(child => {
+        const childLi = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#';
+        a.className = 'nav-link';
+        a.dataset.url = child.url || '';
+        a.dataset.resource = child.resource || '';
+        a.dataset.title = child.title;
+        a.innerHTML = `<img src="${child.icon}" class="image"> ${child.title}`;
+        childLi.appendChild(a);
+        nestedUl.appendChild(childLi);
+      });
+      li.appendChild(nestedUl);
     } else {
       const a = document.createElement('a');
       a.href = '#';
       a.className = 'nav-link';
-      if(item.icon){
-        const img = document.createElement('img');
-        img.src = item.icon;
-        img.className = 'image';
-        a.appendChild(img);
-      }
-      a.appendChild(document.createTextNode(item.title));
-      if(item.url) a.dataset.url = item.url;
-      if(item.resource) a.dataset.resource = item.resource;
-      if(item.dataTitle) a.dataset.title = item.dataTitle;
+      a.dataset.url = item.url || '';
+      a.dataset.resource = item.resource || '';
+      a.dataset.title = item.title;
+      a.innerHTML = `<img src="${item.icon}" class="image"> ${item.title}`;
       li.appendChild(a);
     }
-    container.appendChild(li);
+    ul.appendChild(li);
   });
+  container.appendChild(ul);
 }
 
-// --------------------- Init ---------------------
-document.addEventListener('DOMContentLoaded', function(){
-  const pcMenu = document.getElementById('pc-menu');
-  const mobileMenu = document.getElementById('mobile-menu');
-  renderMenu(menuData, pcMenu);
-  renderMenu(menuData, mobileMenu);
+// ---------- 初始化 ----------
+document.addEventListener('DOMContentLoaded', function() {
 
-  // ☰ hamburger 开 / 关
-  const hamburger = document.getElementById('hamburger');
-  const drawer = document.getElementById('mobile-drawer');
-  if(hamburger && drawer){
-    hamburger.addEventListener('click', ()=>drawer.classList.toggle('open'));
-  }
+  // 渲染 PC + Mobile 菜单
+  renderMenu('pc-menu');
+  renderMenu('mobile-menu');
 
-  // 📂 mobile folder 展开
-  drawer.querySelectorAll('.caret').forEach(caret=>{
-    caret.addEventListener('click', function(e){
-      e.stopPropagation();
-      const nested = caret.nextElementSibling;
-      if(nested) nested.classList.toggle('nested-open');
-    });
-  });
+  // 默认打开首页 Tab
+  openTab('Introduction', 'introduction.html');
 
-  // ✅ 点击 menu item 自动关 drawer
-  drawer.querySelectorAll('a.nav-link').forEach(link=>{
-    link.addEventListener('click', ()=>drawer.classList.remove('open'));
-  });
-
-  // 打开首页 tab
-  openTab('Introduction','introduction.html');
-
-  // Tidio 浮窗
+  // Tidio
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
-  (function(){
+  (function() {
     const tidioScript = document.createElement("script");
     tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
     tidioScript.async = true;
     document.body.appendChild(tidioScript);
   })();
+
+  const drawer = document.getElementById('mobile-drawer');
+  const hamburger = document.getElementById('hamburger');
+
+  // 🍔 Hamburger 开关
+  hamburger.addEventListener('click', ()=> drawer.classList.toggle('open'));
+
+  // 📂 事件委托: PC & Mobile
+  document.getElementById('pc-menu').addEventListener('click', menuClickHandler);
+  document.getElementById('mobile-menu').addEventListener('click', menuClickHandler);
+
+  function menuClickHandler(e){
+    const link = e.target.closest('a.nav-link');
+    if(link){
+      e.preventDefault();
+      const title = link.dataset.title;
+      const url = link.dataset.url || link.dataset.resource;
+      openTab(title, url);
+      drawer.classList.remove('open'); // mobile 自动收回
+    }
+
+    const caret = e.target.closest('.caret');
+    if(caret){
+      const nested = caret.nextElementSibling;
+      if(nested) nested.classList.toggle('nested-open');
+    }
+  }
 });
 </script>
 
