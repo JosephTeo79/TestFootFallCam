@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Retail Pro Prism</title>
 <link rel="icon" type="image/png" href="./icon/favicon.png">
 
@@ -22,7 +23,31 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 </head>
 <body>
-<!-- 电脑版左侧 + 右侧内容 -->
+
+<!-- MOBILE HEADER -->
+<div id="mobile-header">
+  <h1>Retail Pro Prism</h1>
+  <button id="hamburger">&#9776;</button>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div id="mobile-drawer">
+  <ul>
+    <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
+    <li><span class="caret">Front Office</span>
+      <ul class="nested">
+        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">POS Training Document</a></li>
+        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">Login Logout</a></li>
+        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">Open Register</a></li>
+      </ul>
+    </li>
+    <li><span class="caret">Back Office</span>
+      <ul class="nested"></ul>
+    </li>
+    <li><a href="#" data-url="notebooklm.html" class="nav-link">Support Handbook</a></li>
+  </ul>
+</div>
+
 <div id="container">
   <!-- 左侧菜单 -->
   <div id="left-pane">
@@ -30,7 +55,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
     </div>
 
-    <!-- 左侧滚动区域 -->
     <div id="left-menu-scroll">
       <ul>
         <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
@@ -54,62 +78,28 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
       </div>
     </div>
 
-    <!-- 左下角浮动图标 + footer -->
     <div class="bottom-area">
       <div id="floating-widget-left">
-        <a href="https://integratedretail.com/" target="_blank" title="IR"><img src="icon/favicon.png" alt="Company"></a>
-        <a href="https://wa.me/6589467929" target="_blank" title="WhatsApp"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
-        <a href="mailto:joseph.teo@integratedretail.com?subject=Support%20Request"><img src="icon/email.png" alt="Email"></a>
+        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
       </div>
       <h2 class="footer-title">Retail Pro Prism</h2>
     </div>
   </div>
 
-  <!-- 分隔条 -->
   <div id="divider"></div>
 
-  <!-- 右侧区域 -->
   <div id="right-pane">
     <div id="tab-bar"></div>
     <div id="tab-content"></div>
   </div>
 </div>
 
-<!-- 手机顶部 Hamburger & 抽屉菜单 -->
-<div id="mobile-header">
-  <button id="hamburger">&#9776;</button>
-  <span class="mobile-logo">Retail Pro Prism</span>
-</div>
-<div id="mobile-drawer" class="closed">
-  <ul>
-    <li><a href="#" data-url="introduction.html">Introduction</a></li>
-    <li>
-      <span class="caret">Front Office</span>
-      <ul class="nested">
-        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf">POS Training Document</a></li>
-        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout">Login Logout</a></li>
-        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register">Open Register</a></li>
-      </ul>
-    </li>
-    <li>
-      <span class="caret">Back Office</span>
-      <ul class="nested"></ul>
-    </li>
-    <li><a href="#" data-url="notebooklm.html">Support Handbook</a></li>
-  </ul>
-</div>
-
-<!-- 手机底部浮动图标 -->
-<div id="floating-widget-mobile">
-  <a href="https://integratedretail.com/"><img src="icon/favicon.png" alt="Company"></a>
-  <a href="https://wa.me/6589467929"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
-  <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
-</div>
-
 <!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
 
-<!-- JS 文件 -->
+<!-- JS -->
 <script src="js/tab_search.js"></script>
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
@@ -118,7 +108,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 window.onload = function () {
   openTab('Introduction', 'introduction.html');
 
-  // Tidio 浮窗固定右下角
+  // Tidio 浮窗
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
@@ -128,10 +118,20 @@ window.onload = function () {
     document.body.appendChild(tidioScript);
   })();
 
-  // 手机 Hamburger 控制抽屉
+  // Hamburger click
   const hamburger = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
-  hamburger && hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
+  hamburger && hamburger.addEventListener('click', () => {
+    drawer.classList.toggle('open');
+  });
+
+  // Mobile nested folders
+  const carets = drawer.querySelectorAll('.caret');
+  carets.forEach(caret => {
+    caret.addEventListener('click', () => {
+      caret.nextElementSibling.classList.toggle('nested-open');
+    });
+  });
 };
 </script>
 </body>
