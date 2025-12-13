@@ -2,91 +2,98 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Retail Pro Prism</title>
-<link rel="icon" type="image/png" href="./icon/favicon.png">
-
-<!-- 样式文件 -->
-<link rel="stylesheet" href="css/treeview.css">
-<link rel="stylesheet" href="css/tab-style.css">
-<link rel="stylesheet" href="css/future-updates.css">
+<link rel="icon" href="./icon/favicon.png">
 <link rel="stylesheet" href="css/style1.css">
-
-<!-- PDF.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-<script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
-</script>
-
-<!-- Lunr.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 </head>
 <body>
+
+<!-- HEADER / Mobile Hamburger -->
+<header id="mobile-header">
+  <div class="hamburger" id="hamburger">&#9776;</div>
+  <h1>Retail Pro Prism</h1>
+</header>
+
+<!-- DRAWER MENU (手机端点击 Hamburger 展开) -->
+<nav id="drawer-menu">
+  <ul>
+    <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
+    <li class="has-children">
+      Front Office
+      <ul class="nested">
+        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">POS Training Document</a></li>
+        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">Login Logout</a></li>
+        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">Open Register</a></li>
+      </ul>
+    </li>
+    <li class="has-children">
+      Back Office
+      <ul class="nested">
+        <!-- 可扩展 -->
+      </ul>
+    </li>
+    <li><a href="#" data-url="notebooklm.html" class="nav-link">Support Handbook</a></li>
+  </ul>
+</nav>
+
+<!-- MAIN CONTAINER -->
 <div id="container">
-  <!-- 左侧菜单 -->
+  <!-- LEFT PANE (桌面端) -->
   <div id="left-pane">
     <div class="header-title">
-      <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
+      <img src="./icon/Integrated_Retail_Logo.png" alt="Logo">
     </div>
+    <ul>
+      <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
+      <li class="has-children">
+        Front Office
+        <ul class="nested">
+          <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">POS Training Document</a></li>
+          <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">Login Logout</a></li>
+          <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">Open Register</a></li>
+        </ul>
+      </li>
+      <li class="has-children">
+        Back Office
+        <ul class="nested">
+        </ul>
+      </li>
+      <li><a href="#" data-url="notebooklm.html" class="nav-link">Support Handbook</a></li>
+    </ul>
 
-    <!-- 左侧滚动区域 -->
-    <div id="left-menu-scroll">
-      <ul>
-        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
-        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
-          <ul class="nested">
-            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">Pos Training Document</a></li>
-            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="./icon/pdf.png" class="image">Login Logout</a></li>
-            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="./icon/pdf.png" class="image">Open Register</a></li>
-          </ul>
-        </li>
-        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Back Office</span>
-          <ul class="nested"></ul>
-        </li>
-        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
-      </ul>
-
-      <div class="future-updates">
-        <div class="icon">🚀</div>
-        <h2 class="title">More Content Coming Soon</h2>
-        <p class="subtitle">Stay tuned for updates!</p>
-      </div>
-    </div>
-
-    <!-- 左下角图标和 footer -->
+    <!-- Bottom widgets -->
     <div class="bottom-area">
       <div id="floating-widget-left">
-        <a href="https://integratedretail.com/" target="_blank" title="IR"><img src="icon/favicon.png" alt="Company"></a>
-        <a href="https://wa.me/6589467929" target="_blank" title="WhatsApp"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
-        <a href="mailto:joseph.teo@integratedretail.com?subject=Support%20Request"><img src="icon/email.png" alt="Email"></a>
+        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
       </div>
       <h2 class="footer-title">Retail Pro Prism</h2>
     </div>
   </div>
 
-  <!-- 分隔条 -->
+  <!-- Divider -->
   <div id="divider"></div>
 
-  <!-- 右侧区域 -->
+  <!-- RIGHT PANE -->
   <div id="right-pane">
     <div id="tab-bar"></div>
     <div id="tab-content"></div>
   </div>
 </div>
 
-<!-- Tidio 浮窗 -->
-<div id="tidio-container"></div>
-
-<!-- JS 文件 -->
+<!-- JS -->
 <script src="js/tab_search.js"></script>
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
+<script src="js/drawer.js"></script>
 
 <script>
 window.onload = function () {
   openTab('Introduction', 'introduction.html');
 
-  // Tidio 浮窗固定右下角
+  // Tidio 固定右下
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
