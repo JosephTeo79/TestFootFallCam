@@ -166,8 +166,26 @@ body, html {
 }
 
 @media screen and (max-width: 768px) {
-  #left-pane { display: none; }
-  #mobile-header { display: flex; }
-  #mobile-drawer { display: block; position: fixed; top: 0; left: -250px; width: 250px; height: 100%; background: #fff; overflow-y: auto; transition: left 0.3s; z-index: 999; }
-  #mobile-drawer.open { left: 0; }
+  #left-pane { display: none; }             /* 手机隐藏左侧菜单 */
+  #mobile-header { display: flex; }         /* 手机显示顶部 hamburger */
+  #mobile-drawer {                            /* 手机抽屉 */
+    display: block;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: #fff;
+    overflow-y: auto;
+    transition: left 0.3s;
+    z-index: 999;
+  }
+  #mobile-drawer.open { left: 0; }         /* 打开抽屉 */
+  
+  /* 手机优化 footer-title 字体 */
+  .footer-title {
+    font-size: 12px;  
+    padding: 3px;
+  }
 }
+
