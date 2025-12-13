@@ -167,7 +167,21 @@ body, html {
 
 @media screen and (max-width: 768px) {
   #left-pane { display: none; }             /* 手机隐藏左侧菜单 */
-  #mobile-header { display: flex; }         /* 手机显示顶部 hamburger */
+  #mobile-header {
+    padding: 5px 10px;        /* 减少上下内边距 */
+    font-size: 14px;          /* 标题字体变小 */
+    height: auto;             /* 不固定太高 */
+  }
+  
+  #mobile-header h1 {
+    font-size: 16px;          /* 主标题字体小一点 */
+    margin: 0;
+  }
+  #hamburger {
+    font-size: 20px;          /* hamburger icon 不用太大 */
+    padding: 5px;
+  }
+
   #mobile-drawer {                            /* 手机抽屉 */
     display: block;
     position: fixed;
