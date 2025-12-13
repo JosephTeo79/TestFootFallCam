@@ -33,6 +33,18 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- MOBILE DRAWER -->
 <div id="mobile-drawer">
   <ul>
+    <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
+    <li><span class="caret">Front Office</span>
+      <ul class="nested">
+        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+      </ul>
+    </li>
+    <li><span class="caret">Back Office</span>
+      <ul class="nested"></ul>
+    </li>
+    <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
   </ul>
 
    <div class="future-updates">
@@ -59,16 +71,28 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     </div>
 
     <div id="left-menu-scroll">
-    
+      <ul>
+        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
+          <ul class="nested">
+            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+          </ul>
+        </li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Back Office</span>
+          <ul class="nested"></ul>
+        </li>
+        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+      </ul>
 
-
-    </div>
-    
       <div class="future-updates">
         <div class="icon">🚀</div>
         <h2 class="title">More Content Coming Soon</h2>
         <p class="subtitle">Stay tuned for updates!</p>
       </div>
+    </div>
+
     <div class="bottom-area">
       <div id="floating-widget-left">
         <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
@@ -79,7 +103,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     </div>
   </div>
 
-   <div id="right-pane">
+  <div id="divider"></div>
+
+  <div id="right-pane">
     <div id="tab-bar"></div>
     <div id="tab-content"></div>
   </div>
@@ -90,12 +116,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 <!-- JS 文件 -->
 <script src="js/tab_search.js"></script>
-
+<script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
-
-  <script src="js/treeview.js" ></script>
-<!-- 菜单动态加载 -->
-<script src="js/menu-load.js" ></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -121,11 +143,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  /* ✅ 点击 menu item 后自动关闭 drawer（仅手机） */
-  drawer.addEventListener('click', function(e) {
-    if (e.target && e.target.matches('a.nav-link')) {
+  /* 📂 mobile folder 展开 */
+  drawer.querySelectorAll('.caret').forEach(caret => {
+    caret.addEventListener('click', function (e) {
+      e.stopPropagation(); // 防止误触
+      const nested = caret.nextElementSibling;
+      if (nested) nested.classList.toggle('nested-open');
+    });
+  });
+
+  /* ✅ 关键：点 menu item 后自动关 drawer */
+  drawer.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', function () {
       drawer.classList.remove('open');
-    }
+    });
   });
 });
 </script>
