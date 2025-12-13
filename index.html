@@ -133,21 +133,33 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(tidioScript);
   })();
 
-  // Hamburger click
   const hamburger = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
-  hamburger && hamburger.addEventListener('click', () => {
-    drawer.classList.toggle('open');
+
+  /* ☰ hamburger 开 / 关 */
+  if (hamburger && drawer) {
+    hamburger.addEventListener('click', function () {
+      drawer.classList.toggle('open');
+    });
+  }
+
+  /* 📂 mobile folder 展开 */
+  drawer.querySelectorAll('.caret').forEach(caret => {
+    caret.addEventListener('click', function (e) {
+      e.stopPropagation(); // 防止误触
+      const nested = caret.nextElementSibling;
+      if (nested) nested.classList.toggle('nested-open');
+    });
   });
 
-  // Mobile nested folders
-  const carets = drawer.querySelectorAll('.caret');
-  carets.forEach(caret => {
-    caret.addEventListener('click', () => {
-      caret.nextElementSibling.classList.toggle('nested-open');
+  /* ✅ 关键：点 menu item 后自动关 drawer */
+  drawer.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', function () {
+      drawer.classList.remove('open');
     });
   });
 });
 </script>
+
 </body>
 </html>
