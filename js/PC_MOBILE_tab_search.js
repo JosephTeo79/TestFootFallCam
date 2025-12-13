@@ -264,22 +264,30 @@ let searchContent = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    const navLinks = document.querySelectorAll(".nav-link");
+    // ✅ 只抓桌面菜单
+    const navLinks = document.querySelectorAll("#left-menu-scroll .nav-link");
     const documents = [];
+    const seen = new Set();
 
-    navLinks.forEach((link,idx)=>{
+    navLinks.forEach((link, idx) => {
         const title = link.getAttribute("data-title") || link.textContent.trim();
-        const url = link.getAttribute("data-url") || null;
-        const resource = link.getAttribute("data-resource") || null;
+        if (seen.has(title)) return;
+        seen.add(title);
+
+        const url = link.getAttribute("data-url");
+        const resource = link.getAttribute("data-resource");
 
         documents.push({ id: idx, title, url, resource });
 
-        link.addEventListener("click", function(e){
+        link.addEventListener("click", (e) => {
             e.preventDefault();
-            if(resource) openResourceTab(title,resource);
-            else if(url) openTab(title,url);
+            if (resource) openResourceTab(title, resource);
+            else if (url) openTab(title, url);
         });
     });
+
+
+
 
     // -------------------- Search 区域 --------------------
     searchContent = document.createElement("div");
