@@ -1,50 +1,48 @@
-function initTreeview() {
-  const togglers = document.getElementsByClassName("caret");
+function generateMenu(container, data) {
+  const ul = document.createElement("ul");
+  data.forEach(item => {
+    const li = document.createElement("li");
 
-  for (let i = 0; i < togglers.length; i++) {
-    togglers[i].addEventListener("click", function () {
-      const nested = this.parentElement.querySelector(".nested");
-      if (nested) nested.classList.toggle("active");
-      this.classList.toggle("caret-down");
-    });
-  }
+    if(item.children && item.children.length > 0){
+      const span = document.createElement("span");
+      span.className = "caret";
+      span.innerHTML = `<img src="${item.icon}" class="image"> ${item.title}`;
+      li.appendChild(span);
 
-  const divider = document.getElementById("divider");
-  const leftPane = document.getElementById("left-pane");
-  const rightPane = document.getElementById("right-pane");
+      const nested = document.createElement("ul");
+      nested.className = "nested";
+      generateMenu(nested, item.children);
+      li.appendChild(nested);
 
-  if (!divider || !leftPane) {
-    console.error("缺少 #divider 或 #left-pane");
-    return;
-  }
-
-  let isDragging = false;
-
-  divider.addEventListener("mousedown", function (e) {
-    isDragging = true;
-    document.body.style.cursor = "col-resize";
-    if (rightPane) rightPane.style.pointerEvents = "none";
-    e.preventDefault();
-  });
-
-  document.addEventListener("mousemove", function (e) {
-    if (!isDragging) return;
-    const newWidth = e.clientX;
-    if (newWidth > 100 && newWidth < window.innerWidth - 100) {
-      leftPane.style.width = newWidth + "px";
+      span.addEventListener("click", () => nested.classList.toggle("active"));
+    } else {
+      const a = document.createElement("a");
+      a.href = "#";
+      a.className = "nav-link";
+      a.dataset.title = item.title;
+      if(item.url) a.dataset.url = item.url;
+      if(item.resource) a.dataset.resource = item.resource;
+      a.innerHTML = `<img src="${item.icon}" class="image"> ${item.title}`;
+      li.appendChild(a);
     }
-  });
 
-  document.addEventListener("mouseup", function () {
-    if (isDragging) {
-      isDragging = false;
-      document.body.style.cursor = "default";
-      if (rightPane) rightPane.style.pointerEvents = "auto";
-    }
+    ul.appendChild(li);
   });
+  container.appendChild(ul);
 }
 
-// 如果菜单已经存在，则立即初始化
-if (document.readyState === "complete" || document.readyState === "interactive") {
-  initTreeview();
-}
+// 生成菜单
+document.addEventListener("DOMContentLoaded", () => {
+  const leftContainer = document.getElementById("left-menu-scroll");
+  const mobileContainer = document.getElementById("mobile-drawer");
+  generateMenu(leftContainer, menuData);
+  generateMenu(mobileContainer, menuData);
+
+  // 移动端抽屉逻辑
+  const hamburger = document.getElementById("hamburger");
+  hamburger?.addEventListener("click", () => mobileContainer.classList.toggle("open"));
+
+  mobileContainer.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', () => mobileContainer.classList.remove('open'));
+  });
+});
