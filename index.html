@@ -24,33 +24,27 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 </head>
 <body>
 
-<!-- MOBILE HEADER -->
-<div id="mobile-header">
-  <h1>Retail Pro Prism</h1>
-  <button id="hamburger">&#9776;</button>
-</div>
-
 <!-- MOBILE DRAWER -->
 <div id="mobile-drawer">
+  <button id="drawer-close">&#10005;</button>
   <ul>
     <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
     <li><span class="caret">Front Office</span>
       <ul class="nested">
-        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
-        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
-        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">POS Training Document</a></li>
+        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">Login Logout</a></li>
+        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">Open Register</a></li>
       </ul>
     </li>
     <li><span class="caret">Back Office</span>
       <ul class="nested"></ul>
     </li>
-    <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+    <li><a href="#" data-url="notebooklm.html" class="nav-link">Support Handbook</a></li>
   </ul>
 </div>
 
-<!-- CONTAINER -->
 <div id="container">
-  <!-- 左侧菜单（电脑板） -->
+  <!-- 左侧菜单 (电脑) -->
   <div id="left-pane">
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
@@ -58,91 +52,4 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
     <div id="left-menu-scroll">
       <ul>
-        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
-        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
-          <ul class="nested">
-            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
-            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
-            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
-          </ul>
-        </li>
-        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Back Office</span>
-          <ul class="nested"></ul>
-        </li>
-        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
-      </ul>
-
-      <div class="future-updates">
-        <div class="icon">🚀</div>
-        <h2 class="title">More Content Coming Soon</h2>
-        <p class="subtitle">Stay tuned for updates!</p>
-      </div>
-    </div>
-
-    <!-- 左下角图标 -->
-    <div class="bottom-area">
-      <div id="floating-widget-left">
-        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
-        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
-        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
-      </div>
-      <h2 class="footer-title">Retail Pro Prism</h2>
-    </div>
-  </div>
-
-  <div id="divider"></div>
-
-  <div id="right-pane">
-    <div id="tab-bar"></div>
-    <div id="tab-content"></div>
-  </div>
-</div>
-
-<!-- 手机浮动图标 -->
-<div id="floating-widget-left-mobile">
-  <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
-  <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
-  <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
-</div>
-
-<!-- Tidio 浮窗 -->
-<div id="tidio-container"></div>
-
-<!-- JS 文件 -->
-<script src="js/tab_search.js"></script>
-<script src="js/treeview.js"></script>
-<script src="js/shortcut.js"></script>
-
-<script>
-window.onload = function () {
-  openTab('Introduction', 'introduction.html');
-
-  // Tidio 浮窗
-  window.tidioChatApi = window.tidioChatApi || {};
-  window.tidioChatApi.display = true;
-  (function() {
-    var tidioScript = document.createElement("script");
-    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
-    tidioScript.async = true;
-    document.body.appendChild(tidioScript);
-  })();
-
-  // Hamburger click
-  const hamburger = document.getElementById('hamburger');
-  const drawer = document.getElementById('mobile-drawer');
-  hamburger && hamburger.addEventListener('click', () => {
-    drawer.classList.toggle('open');
-  });
-
-  // Mobile nested folders
-  const carets = drawer.querySelectorAll('.caret');
-  carets.forEach(caret => {
-    caret.addEventListener('click', () => {
-      caret.nextElementSibling.classList.toggle('nested-open');
-    });
-  });
-};
-</script>
-
-</body>
-</html>
+        <li><a href="#" data-url="introduction.html" class="n
