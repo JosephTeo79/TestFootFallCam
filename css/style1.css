@@ -1,113 +1,177 @@
-/* ===== Base ===== */
+/* =========================
+   Global Reset
+========================= */
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
   font-family: sans-serif;
-  overflow: hidden;
+  width: 100%;
+  height: auto;              /* ⭐ 关键：不要锁死高度 */
+  overflow-x: hidden;        /* 只禁止横向 */
 }
 
+/* =========================
+   Main Layout
+========================= */
 #container {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;         /* ⭐ 用 min-height，不是 height */
 }
 
-/* ===== Left Pane ===== */
+/* =========================
+   Left Pane
+========================= */
 #left-pane {
   width: 280px;
   min-width: 280px;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #ccc;
-  flex-shrink: 0;
+  background: #fff;
 }
 
-#left-menu-scroll {
-  flex: 1;
+/* Header */
+.header-title {
+  padding: 10px;
+  text-align: center;
+}
+
+.header-icon {
+  max-width: 100%;
+  height: auto;
+}
+
+/* =========================
+   Menu Scroll Area
+========================= */
+#left-pane ul {
+  flex: 1;                   /* ⭐ 只有菜单区滚动 */
   overflow-y: auto;
-  padding: 0 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-/* ===== Bottom Area ===== */
+/* =========================
+   Bottom Area (重点)
+========================= */
 .bottom-area {
   flex-shrink: 0;
+  padding: 10px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 10px;
 }
 
+/* =========================
+   Floating Icons (LEFT)
+========================= */
 #floating-widget-left {
   display: flex;
   gap: 10px;
   margin-bottom: 8px;
 }
 
-#floating-widget-left img {
-  width: 36px !important;
-  height: 36px !important;
-  max-width: 36px;
-  max-height: 36px;
+#floating-widget-left a img {
+  width: 36px;               /* ⭐ 防止巨大 icon */
+  height: 36px;
   border-radius: 50%;
-  object-fit: contain;
-  box-shadow: 0 2px 6px rgba(0,0,0,.3);
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
+/* =========================
+   Footer Title
+========================= */
 .footer-title {
   margin: 0;
   padding: 5px;
+  font-size: 14px;
   text-align: center;
 }
 
-/* ===== Divider ===== */
+/* =========================
+   Divider
+========================= */
 #divider {
   width: 1px;
   background: #ccc;
 }
 
-/* ===== Right Pane ===== */
+/* =========================
+   Right Pane
+========================= */
 #right-pane {
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: #fff;
 }
 
+/* Tabs */
 #tab-bar {
+  display: flex;
   height: 40px;
   border-bottom: 1px solid #ccc;
   background: #f7f7f7;
 }
 
-#tab-content {
-  flex: 1;
-  overflow-y: auto;
+.tab {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  margin-right: 3px;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  background: #eee;
+  cursor: pointer;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.tab.active {
+  background: #fff;
+  font-weight: bold;
+}
+
+.close-btn {
+  margin-left: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 /* =========================
-   📱 Mobile Fix (CRITICAL)
-   ========================= */
+   Tab Content
+========================= */
+#tab-content {
+  flex: 1;
+  overflow-y: auto;          /* ⭐ 内容自己滚 */
+  background: #fff;
+}
+
+.tab-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: none;
+}
+
+/* =========================
+   Mobile Fixes
+========================= */
 @media (max-width: 768px) {
 
-  html, body {
-    overflow: auto;
-    height: auto;
-  }
-
   #container {
-    height: auto;
-    min-height: 100vh;
+    min-height: auto;        /* ⭐ 彻底防止“假拉长” */
   }
 
   #left-pane {
-    height: auto;
+    width: 100%;
+    min-width: 100%;
   }
 
-  #left-menu-scroll {
-    flex: none;
-    overflow: visible;
-  }
-
-  .bottom-area {
-    margin-top: 20px;
+  #divider {
+    display: none;
   }
 }
