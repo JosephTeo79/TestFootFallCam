@@ -128,20 +128,7 @@ body, html {
   z-index: 9999;
 }
 
-/* 手机板 */
-#mobile-header {
-  display: none;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background: #f7f7f7;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
+/* 手机抽屉菜单 */
 #mobile-drawer {
   display: none;
 }
@@ -162,31 +149,20 @@ body, html {
   padding-left: 15px;
 }
 
-#mobile-drawer ul li .nested.nested-open {
+#mobile-drawer ul li .nested-open {
   display: block;
 }
 
-/* 手机浮动图标 */
-#floating-widget-left-mobile {
+#drawer-close {
   display: none;
+  width: 100%;
+  padding: 10px;
+  text-align: right;
+  border: none;
+  background: #f7f7f7;
+  cursor: pointer;
+  font-size: 18px;
 }
 
 @media screen and (max-width: 768px) {
-  #left-pane { display: none; }
-  #mobile-header { display: flex; }
-  #mobile-drawer { display: block; position: fixed; top: 60px; left: -250px; width: 250px; height: calc(100% - 60px); background: #fff; overflow-y: auto; transition: left 0.3s; z-index: 999; }
-  #mobile-drawer.open { left: 0; }
-  #floating-widget-left-mobile {
-    display: flex;
-    position: fixed;
-    bottom: 20px;
-    left: 10px;
-    gap: 10px;
-    z-index: 1000;
-  }
-  #floating-widget-left-mobile a img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-  }
-}
+  #left-pane {
