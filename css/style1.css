@@ -129,6 +129,18 @@ body, html {
 }
 
 /* 手机抽屉菜单 */
+#mobile-header {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #f7f7f7;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+}
+
 #mobile-drawer {
   display: none;
 }
@@ -153,34 +165,9 @@ body, html {
   display: block;
 }
 
-#drawer-close {
-  display: none;
-  width: 100%;
-  padding: 10px;
-  text-align: right;
-  border: none;
-  background: #f7f7f7;
-  cursor: pointer;
-  font-size: 18px;
-}
-
 @media screen and (max-width: 768px) {
   #left-pane { display: none; }
-
-  #mobile-drawer {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: -250px;
-    width: 250px;
-    height: 100%;
-    background: #fff;
-    overflow-y: auto;
-    transition: left 0.3s;
-    z-index: 999;
-  }
-
+  #mobile-header { display: flex; }
+  #mobile-drawer { display: block; position: fixed; top: 0; left: -250px; width: 250px; height: 100%; background: #fff; overflow-y: auto; transition: left 0.3s; z-index: 999; }
   #mobile-drawer.open { left: 0; }
-
-  #drawer-close { display: block; }
 }
