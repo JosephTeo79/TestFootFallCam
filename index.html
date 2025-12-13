@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <title>Retail Pro Prism</title>
 <link rel="icon" type="image/png" href="./icon/favicon.png">
+
+<!-- 样式文件 -->
 <link rel="stylesheet" href="css/treeview.css">
-<link rel="stylesheet" href="css/style1.css">
 <link rel="stylesheet" href="css/tab-style.css">
 <link rel="stylesheet" href="css/future-updates.css">
+<link rel="stylesheet" href="css/style1.css">
 
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
@@ -18,116 +20,53 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 <!-- Lunr.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
-
-<style>
-#search-box { padding:8px; font-size:16px; margin-bottom:10px; width:100%; box-sizing:border-box; }
-#search-results div { padding:6px; border-bottom:1px solid #ddd; cursor:pointer; }
-#search-results div:hover { background:#f0f0f0; }
-
-/* 左侧菜单滚动 */
-#left-pane {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-}
-
-/* 左侧底部区域（footer + 图标） */
-.bottom-area {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-bottom: 10px;
-}
-
-/* 左下角浮动图标 */
-#floating-widget-left {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-#floating-widget-left a img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  transition: transform 0.2s;
-}
-
-#floating-widget-left a img:hover {
-  transform: scale(1.1);
-}
-
-/* 右侧区域滚动 */
-#right-pane {
-  overflow-y: auto;
-  height: 100vh;
-}
-
-/* Tidio 右下角浮动 */
-#tidio-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-}
-</style>
 </head>
 <body>
-<div id="container" style="display:flex;height:100vh;">
+<div id="container">
   <!-- 左侧菜单 -->
   <div id="left-pane">
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
     </div>
-    <ul>
-      <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
-      <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
-        <ul class="nested">
-          <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">Pos Training Document</a></li>
-          <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="./icon/pdf.png" class="image">Login Logout</a></li>
-          <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="./icon/pdf.png" class="image">Open Register</a></li>
-        </ul>
-      </li>
-      <li><span class="caret"><img src="./icon/folder.jpg" class="image">Back Office</span>
-        <ul class="nested">
-          <!-- 可扩展 -->
-        </ul>
-      </li>
-      <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
-    </ul>
 
-    <div class="bottom-area">
+    <!-- 左侧滚动区域 -->
+    <div id="left-menu-scroll">
+      <ul>
+        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
+          <ul class="nested">
+            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">Pos Training Document</a></li>
+            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="./icon/pdf.png" class="image">Login Logout</a></li>
+            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="./icon/pdf.png" class="image">Open Register</a></li>
+          </ul>
+        </li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Back Office</span>
+          <ul class="nested"></ul>
+        </li>
+        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+      </ul>
+
       <div class="future-updates">
         <div class="icon">🚀</div>
         <h2 class="title">More Content Coming Soon</h2>
         <p class="subtitle">Stay tuned for updates!</p>
       </div>
+    </div>
 
-      <!-- 左下角浮动图标 -->
+    <!-- 左下角图标和 footer -->
+    <div class="bottom-area">
       <div id="floating-widget-left">
-        <a href="https://integratedretail.com/" target="_blank" title="IR">
-          <img src="icon/favicon.png" alt="Company">
-        </a>
-        <a href="https://wa.me/6589467929" target="_blank" title="WhatsApp">
-          <img src="icon/whatsapp.png" alt="WhatsApp">
-        </a>
-       
-        <a href="mailto:joseph.teo@integratedretail.com?subject=Support%20Request&body=Hello%2C%20I%20need%20help%20with...">
-          <img src="icon/email.png" alt="Email">
-        </a>
+        <a href="https://integratedretail.com/" target="_blank" title="IR"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank" title="WhatsApp"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="https://www.tidio.com/panel/" target="_blank" title="Tidio"><img src="icon/tidio.png" alt="Tidio"></a>
+        <a href="mailto:joseph.teo@integratedretail.com?subject=Support%20Request"><img src="icon/email.png" alt="Email"></a>
       </div>
-
       <h2 class="footer-title">Retail Pro Prism</h2>
     </div>
   </div>
 
   <!-- 分隔条 -->
-  <div id="divider" style="width:5px; cursor:col-resize; background:#ddd;"></div>
+  <div id="divider"></div>
 
   <!-- 右侧区域 -->
   <div id="right-pane">
@@ -136,27 +75,26 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   </div>
 </div>
 
-<!-- Tidio 容器（右下角浮动聊天） -->
+<!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
 
-<!-- JS 文件 --> 
-<script src="js/tab_search.js"></script> 
+<!-- JS 文件 -->
+<script src="js/tab_search.js"></script>
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
 
 <script>
 window.onload = function () {
-  // 自动打开 Introduction 
-  openTab('Introduction', 'introduction.html'); 
+  openTab('Introduction', 'introduction.html');
 
-  // 加载 Tidio 脚本，让右下角浮窗永久显示
+  // Tidio 浮窗固定右下角
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
     var tidioScript = document.createElement("script");
-    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js"; // 替换成你的 Tidio Key
+    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
     tidioScript.async = true;
-    document.getElementById("tidio-container").appendChild(tidioScript);
+    document.body.appendChild(tidioScript);
   })();
 };
 </script>
