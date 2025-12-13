@@ -33,7 +33,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- MOBILE DRAWER -->
 <div id="mobile-drawer">
   <ul>
-    <!-- 菜单动态加载到这里 -->
+    <!-- 菜单动态加载 -->
   </ul>
 
   <div class="future-updates">
@@ -60,7 +60,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     </div>
 
     <div id="left-menu-scroll">
-      <!-- 菜单动态加载到这里 -->
+      <!-- 菜单动态加载 -->
     </div>
 
     <div class="future-updates">
@@ -93,11 +93,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- JS 文件 -->
 <script src="js/tab_search.js"></script>
 <script src="js/shortcut.js"></script>
-
-<!-- treeview.js 保留原逻辑 -->
 <script src="js/treeview.js" defer></script>
-
-<!-- 菜单动态加载 -->
 <script src="js/menu-load.js" defer></script>
 
 <script>
@@ -124,11 +120,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  /* ✅ 点击 menu item 后自动关闭 drawer（仅手机） */
-  drawer.addEventListener('click', function(e) {
-    if (e.target && e.target.matches('a.nav-link')) {
-      drawer.classList.remove('open');
-    }
+  // 事件委托：左侧电脑菜单
+  document.getElementById('left-menu-scroll').addEventListener('click', function(e){
+    const link = e.target.closest('a.nav-link');
+    if (!link) return;
+
+    const title = link.dataset.title || link.textContent.trim();
+    const url = link.dataset.url || link.dataset.resource;
+    if (url) openTab(title, url);
+
+    e.preventDefault();
+  });
+
+  // 事件委托：手机菜单
+  document.getElementById('mobile-drawer').addEventListener('click', function(e){
+    const link = e.target.closest('a.nav-link');
+    if (!link) return;
+
+    const title = link.dataset.title || link.textContent.trim();
+    const url = link.dataset.url || link.dataset.resource;
+    if (url) openTab(title, url);
+
+    // 自动关闭 drawer
+    this.classList.remove('open');
+    e.preventDefault();
   });
 });
 </script>
