@@ -79,6 +79,16 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <script>
 window.onload = function () {
   openTab('Introduction', 'introduction.html');
+
+  // Tidio 浮窗固定右下角
+  window.tidioChatApi = window.tidioChatApi || {};
+  window.tidioChatApi.display = true;
+  (function() {
+    var tidioScript = document.createElement("script");
+    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
+    tidioScript.async = true;
+    document.body.appendChild(tidioScript);
+  })();
 };
 </script>
 </body>
