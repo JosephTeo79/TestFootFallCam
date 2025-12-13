@@ -264,27 +264,23 @@ let searchContent = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ✅ 只抓桌面菜单
-    const navLinks = document.querySelectorAll("#left-menu-scroll .nav-link");
-    const documents = [];
-    const seen = new Set();
+   // 同时抓桌面 + mobile
+const navLinks = document.querySelectorAll(
+  "#left-menu-scroll .nav-link, #mobile-drawer .nav-link"
+);
 
-    navLinks.forEach((link, idx) => {
-        const title = link.getAttribute("data-title") || link.textContent.trim();
-        if (seen.has(title)) return;
-        seen.add(title);
+navLinks.forEach((link) => {
+  const title = link.getAttribute("data-title") || link.textContent.trim();
+  const url = link.getAttribute("data-url");
+  const resource = link.getAttribute("data-resource");
 
-        const url = link.getAttribute("data-url");
-        const resource = link.getAttribute("data-resource");
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (resource) openResourceTab(title, resource);
+    else if (url) openTab(title, url);
+  });
+});
 
-        documents.push({ id: idx, title, url, resource });
-
-        link.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (resource) openResourceTab(title, resource);
-            else if (url) openTab(title, url);
-        });
-    });
 
 
 
