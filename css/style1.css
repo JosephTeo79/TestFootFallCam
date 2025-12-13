@@ -1,4 +1,4 @@
-/* 电脑布局 */
+/* 全局布局 */
 body, html {
   margin: 0;
   padding: 0;
@@ -12,6 +12,7 @@ body, html {
   height: 100%;
 }
 
+/* 左侧电脑板 */
 #left-pane {
   width: 280px;
   min-width: 280px;
@@ -119,6 +120,7 @@ body, html {
   display: none;
 }
 
+/* Tidio */
 #tidio-container {
   position: fixed;
   bottom: 20px;
@@ -126,34 +128,46 @@ body, html {
   z-index: 9999;
 }
 
-/* 手机布局 */
-@media screen and (max-width:1023px) {
-  #left-pane, #divider { display: none; }
+/* 手机抽屉菜单 */
+#mobile-header {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #f7f7f7;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+}
 
-  #mobile-header { display: flex; justify-content: space-between; padding: 10px; background: #f7f7f7; align-items:center; }
-  #hamburger { font-size: 24px; background: none; border: none; cursor: pointer; }
+#mobile-drawer {
+  display: none;
+}
 
-  #mobile-drawer {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    width: 250px;
-    height: 100%;
-    background: #fff;
-    overflow-y: auto;
-    transition: left 0.3s;
-    z-index: 999;
-  }
+#mobile-drawer ul {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+}
+
+#mobile-drawer ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+#mobile-drawer ul li .nested {
+  display: none;
+  padding-left: 15px;
+}
+
+#mobile-drawer ul li .nested-open {
+  display: block;
+}
+
+@media screen and (max-width: 768px) {
+  #left-pane { display: none; }
+  #mobile-header { display: flex; }
+  #mobile-drawer { display: block; position: fixed; top: 0; left: -250px; width: 250px; height: 100%; background: #fff; overflow-y: auto; transition: left 0.3s; z-index: 999; }
   #mobile-drawer.open { left: 0; }
-
-  #floating-widget-mobile {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    display: flex;
-    gap: 10px;
-    z-index: 9999;
-  }
-
-  #right-pane { flex: 1; }
 }
