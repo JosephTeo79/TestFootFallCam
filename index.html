@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Retail Pro Prism</title>
 
 <link rel="icon" type="image/png" href="./icon/favicon.png">
@@ -34,72 +35,72 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
     </div>
 
-    <!-- ✅ 可滚动区域（关键） -->
-    <div id="left-menu-scroll">
+    <!-- MENU (⭐ 吃空间，推 footer 到底) -->
+    <ul>
+      <li>
+        <a href="#" data-url="introduction.html" class="nav-link">
+          <img src="icon/pdf.png" class="image">Introduction
+        </a>
+      </li>
 
-      <ul>
-        <li>
-          <a href="#" data-url="introduction.html" class="nav-link">
-            <img src="icon/pdf.png" class="image">Introduction
-          </a>
-        </li>
+      <li>
+        <span class="caret">
+          <img src="./icon/folder.jpg" class="image">Front Office
+        </span>
+        <ul class="nested">
+          <li>
+            <a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">
+              <img src="icon/pdf.png" class="image">POS Training Document
+            </a>
+          </li>
+          <li>
+            <a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">
+              <img src="icon/pdf.png" class="image">Login Logout
+            </a>
+          </li>
+          <li>
+            <a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">
+              <img src="icon/pdf.png" class="image">Open Register
+            </a>
+          </li>
+        </ul>
+      </li>
 
-        <li>
-          <span class="caret">
-            <img src="./icon/folder.jpg" class="image">Front Office
-          </span>
-          <ul class="nested">
-            <li>
-              <a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">
-                <img src="icon/pdf.png" class="image">Pos Training Document
-              </a>
-            </li>
-            <li>
-              <a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">
-                <img src="./icon/pdf.png" class="image">Login Logout
-              </a>
-            </li>
-            <li>
-              <a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">
-                <img src="./icon/pdf.png" class="image">Open Register
-              </a>
-            </li>
-          </ul>
-        </li>
+      <li>
+        <span class="caret">
+          <img src="./icon/folder.jpg" class="image">Back Office
+        </span>
+        <ul class="nested"></ul>
+      </li>
 
-        <li>
-          <a href="#" data-url="notebooklm.html" class="nav-link">
-            <img src="icon/NoteBooklm.png" class="image">Support Handbook
-          </a>
-        </li>
-      </ul>
+      <li>
+        <a href="#" data-url="notebooklm.html" class="nav-link">
+          <img src="icon/NoteBooklm.png" class="image">Support Handbook
+        </a>
+      </li>
+    </ul>
 
-      <div class="future-updates">
-        <div class="icon">🚀</div>
-        <h2 class="title">More Content Coming Soon</h2>
-        <p class="subtitle">Stay tuned for updates!</p>
+    <!-- ⭐ 永远在左下角 -->
+    <div class="bottom-area">
+
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank">
+          <img src="icon/favicon.png" alt="Company">
+        </a>
+        <a href="https://wa.me/6589467929" target="_blank">
+          <img src="icon/whatsapp.png" alt="WhatsApp">
+        </a>
+        <a href="mailto:joseph.teo@integratedretail.com">
+          <img src="icon/email.png" alt="Email">
+        </a>
       </div>
 
-      <!-- ✅ 手机一定能看到 -->
-      <div class="bottom-area">
-        <div id="floating-widget-left">
-          <a href="https://integratedretail.com/" target="_blank">
-            <img src="icon/favicon.png" alt="Company">
-          </a>
-          <a href="https://wa.me/6589467929" target="_blank">
-            <img src="icon/whatsapp.png" alt="WhatsApp">
-          </a>
-          <a href="mailto:joseph.teo@integratedretail.com">
-            <img src="icon/email.png" alt="Email">
-          </a>
-        </div>
-
-        <h2 class="footer-title">Retail Pro Prism</h2>
-      </div>
-
+      <h2 class="footer-title">Retail Pro Prism</h2>
     </div>
+
   </div>
 
+  <!-- DIVIDER -->
   <div id="divider"></div>
 
   <!-- RIGHT -->
@@ -119,14 +120,14 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 window.onload = function () {
   openTab('Introduction', 'introduction.html');
 
-  // Tidio 浮窗固定右下角
+  // Tidio 永远浮在右下角（不进 iframe / tab）
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
-  (function() {
-    var tidioScript = document.createElement("script");
-    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
-    tidioScript.async = true;
-    document.body.appendChild(tidioScript);
+  (function () {
+    var s = document.createElement("script");
+    s.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
+    s.async = true;
+    document.body.appendChild(s);
   })();
 };
 </script>
