@@ -46,7 +46,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
           <!-- 可扩展 -->
         </ul>
       </li>
-
       <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
     </ul>
     <div class="bottom-area">
@@ -69,14 +68,38 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   </div>
 </div>
 
+<!-- 浮动客服组件占位 -->
+<div id="widget-placeholder"></div>
+
 <!-- JS 文件 --> 
-  <script src="js/tab_search.js"></script> 
-  <script src="js/treeview.js"></script>
-  <script src="js/shortcut.js"></script>
-  <script src="components/floating-widget-loader.js"></script>
-  <script> window.onload = function () {
+<script src="js/tab_search.js"></script> 
+<script src="js/treeview.js"></script>
+<script src="js/shortcut.js"></script>
+
+<script>
+window.onload = function () {
   // 自动打开 Introduction 
-  openTab('Introduction', 'introduction.html'); }; 
-  </script>
+  openTab('Introduction', 'introduction.html'); 
+
+  // 安全加载浮动客服组件，确保现有 DOM 先加载完成
+  fetch('components/floating-widget.html')
+    .then(r => r.text())
+    .then(html => {
+      const placeholder = document.getElementById('widget-placeholder');
+      placeholder.innerHTML = html;
+
+      // 加载组件 CSS
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'components/floating-widget.css';
+      document.head.appendChild(link);
+
+      // 加载组件 JS
+      const script = document.createElement('script');
+      script.src = 'components/floating-widget.js';
+      document.body.appendChild(script);
+    });
+};
+</script>
 </body>
 </html>
