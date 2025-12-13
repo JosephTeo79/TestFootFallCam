@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +34,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- MOBILE DRAWER -->
 <div id="mobile-drawer">
   <ul>
-    <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
+    <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
     <li><span class="caret">Front Office</span>
       <ul class="nested">
         <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
@@ -46,10 +47,25 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     </li>
     <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
   </ul>
+
+   <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+  
+     <div class="bottom-area">
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
+      </div>
+      <h2 class="footer-title">Retail Pro Prism</h2>
+    </div>
 </div>
 
 <div id="container">
-  <!-- 左侧菜单 -->
+  <!-- 左侧电脑板 -->
   <div id="left-pane">
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
@@ -99,13 +115,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
 
-<!-- JS -->
+<!-- JS 文件 -->
 <script src="js/tab_search.js"></script>
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
 
 <script>
-window.onload = function () {
+document.addEventListener('DOMContentLoaded', function() {
   openTab('Introduction', 'introduction.html');
 
   // Tidio 浮窗
@@ -118,21 +134,33 @@ window.onload = function () {
     document.body.appendChild(tidioScript);
   })();
 
-  // Hamburger click
   const hamburger = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
-  hamburger && hamburger.addEventListener('click', () => {
-    drawer.classList.toggle('open');
-  });
 
-  // Mobile nested folders
-  const carets = drawer.querySelectorAll('.caret');
-  carets.forEach(caret => {
-    caret.addEventListener('click', () => {
-      caret.nextElementSibling.classList.toggle('nested-open');
+  /* ☰ hamburger 开 / 关 */
+  if (hamburger && drawer) {
+    hamburger.addEventListener('click', function () {
+      drawer.classList.toggle('open');
+    });
+  }
+
+  /* 📂 mobile folder 展开 */
+  drawer.querySelectorAll('.caret').forEach(caret => {
+    caret.addEventListener('click', function (e) {
+      e.stopPropagation(); // 防止误触
+      const nested = caret.nextElementSibling;
+      if (nested) nested.classList.toggle('nested-open');
     });
   });
-};
+
+  /* ✅ 关键：点 menu item 后自动关 drawer */
+  drawer.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', function () {
+      drawer.classList.remove('open');
+    });
+  });
+});
 </script>
+
 </body>
 </html>
