@@ -2,67 +2,59 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Retail Pro Prism</title>
 <link rel="icon" href="./icon/favicon.png">
+
+<!-- CSS 文件 -->
+<link rel="stylesheet" href="css/treeview.css">
 <link rel="stylesheet" href="css/style1.css">
+<link rel="stylesheet" href="css/tab-style.css">
+<link rel="stylesheet" href="css/future-updates.css">
 </head>
 <body>
 
-<!-- HEADER / Mobile Hamburger -->
-<header id="mobile-header">
-  <div class="hamburger" id="hamburger">&#9776;</div>
-  <h1>Retail Pro Prism</h1>
-</header>
+<!-- 手机 Hamburger -->
+<div id="mobile-menu-btn" onclick="toggleDrawer()">
+  <div></div><div></div><div></div>
+</div>
 
-<!-- DRAWER MENU (手机端点击 Hamburger 展开) -->
-<nav id="drawer-menu">
+<!-- Mobile Drawer -->
+<div id="mobile-drawer">
   <ul>
     <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
-    <li class="has-children">
-      Front Office
+    <li>
+      <span class="caret">Front Office</span>
       <ul class="nested">
         <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">POS Training Document</a></li>
         <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">Login Logout</a></li>
         <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">Open Register</a></li>
       </ul>
     </li>
-    <li class="has-children">
-      Back Office
-      <ul class="nested">
-        <!-- 可扩展 -->
-      </ul>
-    </li>
+    <li><span class="caret">Back Office</span><ul class="nested"></ul></li>
     <li><a href="#" data-url="notebooklm.html" class="nav-link">Support Handbook</a></li>
   </ul>
-</nav>
+</div>
 
-<!-- MAIN CONTAINER -->
 <div id="container">
-  <!-- LEFT PANE (桌面端) -->
+  <!-- 左侧菜单 -->
   <div id="left-pane">
-    <div class="header-title">
-      <img src="./icon/Integrated_Retail_Logo.png" alt="Logo">
-    </div>
+    <div class="header-title"><img src="./icon/Integrated_Retail_Logo.png" class="header-icon"></div>
     <ul>
       <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
-      <li class="has-children">
-        Front Office
+      <li>
+        <span class="caret">Front Office</span>
         <ul class="nested">
           <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">POS Training Document</a></li>
           <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">Login Logout</a></li>
           <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">Open Register</a></li>
         </ul>
       </li>
-      <li class="has-children">
-        Back Office
-        <ul class="nested">
-        </ul>
-      </li>
+      <li><span class="caret">Back Office</span><ul class="nested"></ul></li>
       <li><a href="#" data-url="notebooklm.html" class="nav-link">Support Handbook</a></li>
     </ul>
 
-    <!-- Bottom widgets -->
+    <!-- 左下浮动图标 -->
     <div class="bottom-area">
       <div id="floating-widget-left">
         <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
@@ -73,36 +65,45 @@
     </div>
   </div>
 
-  <!-- Divider -->
   <div id="divider"></div>
 
-  <!-- RIGHT PANE -->
+  <!-- 右侧 -->
   <div id="right-pane">
     <div id="tab-bar"></div>
     <div id="tab-content"></div>
   </div>
 </div>
 
-<!-- JS -->
+<!-- 浮动右下 Tidio -->
+<div id="floating-widget-right">
+  <div id="tidio-container"></div>
+</div>
+
+<!-- JS 文件 -->
 <script src="js/tab_search.js"></script>
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
-<script src="js/drawer.js"></script>
 
 <script>
 window.onload = function () {
   openTab('Introduction', 'introduction.html');
 
-  // Tidio 固定右下
+  // Tidio 浮窗
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
-  (function() {
+  (function(){
     var tidioScript = document.createElement("script");
     tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
     tidioScript.async = true;
     document.body.appendChild(tidioScript);
   })();
 };
+
+// 手机 Drawer 切换
+function toggleDrawer() {
+  const drawer = document.getElementById("mobile-drawer");
+  drawer.classList.toggle("active");
+}
 </script>
 </body>
 </html>
