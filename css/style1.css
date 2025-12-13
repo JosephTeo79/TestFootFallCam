@@ -1,69 +1,127 @@
-/* -------------------
-   Reset & 基础
-------------------- */
-html, body {
+/* 全局布局 */
+body, html {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: sans-serif;
-  overflow: auto; /* 手机允许滚动 */
+  overflow: hidden; /* 禁止全局滚动 */
 }
 
-ul { list-style: none; margin: 0; padding: 0; }
-a { text-decoration: none; color: inherit; }
-img { display: block; max-width: 100%; }
+#container {
+  display: flex;
+  height: 100%;
+}
 
-/* -------------------
-   Layout
-------------------- */
-#container { display: flex; height: 100vh; }
 #left-pane {
-  width: 280px; min-width: 280px; flex-shrink: 0;
-  display: flex; flex-direction: column; border-right: 1px solid #ccc;
-  background: #fafafa;
+  width: 280px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #ccc;
+  flex-shrink: 0;
 }
 
-#left-pane ul { flex: 1; overflow-y: auto; padding: 0 5px; }
-#left-pane li { margin: 4px 0; }
-#left-pane li a { display: flex; align-items: center; padding: 6px 8px; border-radius: 4px; }
-#left-pane li a:hover { background-color: #e0e0e0; }
-#left-pane .caret { display: flex; align-items: center; cursor: pointer; padding: 6px 8px; border-radius: 4px; }
-.nested { display: none; padding-left: 16px; }
-.caret-down .nested { display: block; }
+#left-menu-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 10px;
+}
 
-/* -------------------
-   Footer & Left Bottom Icons
-------------------- */
-.bottom-area { flex-shrink: 0; padding: 10px 0; text-align: center; border-top: 1px solid #ddd; }
-#floating-widget-left { display: flex; justify-content: center; gap: 12px; margin-bottom: 6px; }
-#floating-widget-left a img { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: transform 0.2s; }
-#floating-widget-left a img:hover { transform: scale(1.1); }
-.footer-title { margin: 0; padding: 5px; font-size: 14px; font-weight: bold; }
+.bottom-area {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 10px;
+}
 
-/* -------------------
-   Divider
-------------------- */
-#divider { width: 1px; background: #ccc; }
+#floating-widget-left {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
 
-/* -------------------
-   Right Pane
-------------------- */
-#right-pane { flex: 1; display: flex; flex-direction: column; }
-#tab-bar { display: flex; border-bottom: 1px solid #ccc; height: 40px; background: #f7f7f7; }
-.tab { display: flex; align-items: center; padding: 5px 10px; border: 1px solid #ccc; border-bottom: none; margin-right: 3px; cursor: pointer; background: #eee; border-top-left-radius: 6px; border-top-right-radius: 6px; }
-.tab.active { background: #fff; font-weight: bold; }
-.close-btn { margin-left: 8px; border: none; background: transparent; cursor: pointer; font-size: 14px; }
-#tab-content { flex: 1; display: flex; overflow-y: auto; background: #fff; }
-.tab-frame { flex: 1; border: none; display: none; }
+#floating-widget-left a img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
 
-/* -------------------
-   Responsive (手机优化)
-------------------- */
-@media (max-width: 768px) {
-  #container { flex-direction: column; height: auto; }
-  #left-pane { width: 100%; min-width: 0; border-right: none; border-bottom: 1px solid #ccc; height: auto; overflow-y: visible; }
-  #left-pane ul { overflow-y: visible; }
-  #right-pane { flex: none; height: auto; }
-  #tab-content { height: 400px; }
-  #floating-widget-left { justify-content: flex-start; padding-left: 10px; }
+#floating-widget-left a img:hover {
+  transform: scale(1.1);
+}
+
+.footer-title {
+  margin: 0;
+  padding: 5px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+#divider {
+  width: 1px;
+  background: #ccc;
+}
+
+#right-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#tab-bar {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  height: 40px;
+  background: #f7f7f7;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  margin-right: 3px;
+  cursor: pointer;
+  background: #eee;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.tab.active {
+  background: #fff;
+  font-weight: bold;
+}
+
+.close-btn {
+  margin-left: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#tab-content {
+  flex: 1;
+  display: flex;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.tab-frame {
+  flex: 1;
+  border: none;
+  display: none;
+}
+
+#tidio-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
 }
