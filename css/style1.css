@@ -1,129 +1,37 @@
-/* 全局重置 */
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+/* ---------- 通用 ---------- */
+body, html { margin:0; padding:0; font-family:sans-serif; height:100%; }
+#container { display:flex; height:100vh; }
+#divider { width:1px; background:#ccc; }
+
+/* ---------- 左侧菜单 ---------- */
+#left-pane { width:280px; flex-shrink:0; display:flex; flex-direction:column; border-right:1px solid #ccc; }
+#left-pane ul { flex:1; overflow-y:auto; margin:0; padding:0; }
+.bottom-area { padding:10px; text-align:center; }
+#floating-widget-left { display:flex; justify-content:center; gap:10px; margin-bottom:5px; }
+#floating-widget-left img { width:40px; height:40px; border-radius:50%; cursor:pointer; transition:transform 0.2s; }
+#floating-widget-left img:hover { transform:scale(1.1); }
+.footer-title { margin:0; }
+
+/* ---------- 右侧 ---------- */
+#right-pane { flex:1; display:flex; flex-direction:column; height:100%; }
+#tab-bar { display:flex; border-bottom:1px solid #ccc; height:40px; background:#f7f7f7; overflow-x:auto; }
+.tab { display:flex; align-items:center; padding:5px 10px; border:1px solid #ccc; border-bottom:none; margin-right:3px; cursor:pointer; background:#eee; border-top-left-radius:6px; border-top-right-radius:6px; }
+.tab.active { background:#fff; font-weight:bold; }
+.close-btn { margin-left:8px; border:none; background:transparent; cursor:pointer; font-size:14px; }
+#tab-content { flex:1; display:flex; overflow-y:auto; background:#fff; }
+.tab-frame { flex:1; border:none; display:none; }
+
+/* ---------- 手机 ---------- */
+@media screen and (max-width:768px){
+  #left-pane{display:none;}
+  #mobile-menu-btn{position:fixed; top:10px; left:10px; z-index:1000; width:40px; height:40px; background:#eee; border-radius:5px; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  #mobile-menu-btn div{width:25px; height:3px; background:#333; margin:3px 0;}
+  #mobile-drawer{position:fixed; top:0; left:-280px; width:280px; height:100%; background:#fff; border-right:1px solid #ccc; overflow-y:auto; transition:left 0.3s ease; z-index:999;}
+  #mobile-drawer.active{left:0;}
+  #mobile-drawer ul{padding:10px;}
 }
 
-/* Container */
-#container {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* LEFT PANE 桌面端 */
-#left-pane {
-  width: 280px;
-  min-width: 280px;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #ccc;
-  flex-shrink: 0;
-}
-
-#left-pane ul {
-  flex: 1;
-  overflow-y: auto;
-  margin: 0;
-  padding: 0;
-}
-
-.has-children > ul {
-  display: none;
-  list-style: none;
-  padding-left: 15px;
-}
-
-.has-children.open > ul {
-  display: block;
-}
-
-.bottom-area {
-  flex-shrink: 0;
-  padding: 10px;
-  text-align: center;
-}
-
-#floating-widget-left img {
-  width: 30px;
-  height: 30px;
-  margin: 5px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-/* RIGHT PANE */
-#right-pane {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-#tab-bar {
-  display: flex;
-  border-bottom: 1px solid #ccc;
-  height: 40px;
-  background: #f7f7f7;
-}
-
-#tab-content {
-  flex: 1;
-  overflow-y: auto;
-}
-
-/* MOBILE STYLES */
-@media screen and (max-width: 768px) {
-  #left-pane {
-    display: none;
-  }
-
-  #mobile-header {
-    display: flex;
-    align-items: center;
-    background: #f7f7f7;
-    height: 50px;
-    padding: 0 10px;
-  }
-
-  #hamburger {
-    font-size: 24px;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-
-  #drawer-menu {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    width: 250px;
-    height: 100%;
-    background: #fff;
-    border-right: 1px solid #ccc;
-    overflow-y: auto;
-    transition: left 0.3s;
-    z-index: 1000;
-  }
-
-  #drawer-menu.open {
-    left: 0;
-  }
-
-  #drawer-menu ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  #drawer-menu li {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-  }
-
-  .has-children > ul {
-    display: none;
-  }
-
-  .has-children.open > ul {
-    display: block;
-  }
-}
+/* ---------- Tidio / WhatsApp 右下 ---------- */
+#floating-widget-right{position:fixed; right:10px; bottom:10px; display:flex; flex-direction:column; gap:10px; z-index:1000;}
+#floating-widget-right img{width:50px; height:50px; border-radius:50%; cursor:pointer; transition:transform 0.2s;}
+#floating-widget-right img:hover{transform:scale(1.1);}
