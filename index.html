@@ -25,18 +25,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <body>
 
 <!-- MOBILE HEADER -->
-
-
-
 <div id="mobile-header">
  <img src="./icon/Integrated_Retail_Logo.png" class="header-icon" alt="Logo">
   <h1>Retail Pro Prism</h1>
   <button id="hamburger">&#9776;</button>
 </div>
-    
-
-
-  
 
 <!-- MOBILE DRAWER -->
 <div id="mobile-drawer">
@@ -45,7 +38,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     <h2>Retail Pro Prism</h2>
   </div>
   <ul>
-    <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
+    <li>
+      <a href="#" data-url="introduction.html" class="nav-link">
+        <img src="icon/pdf.png" class="image">Introduction
+      </a>
+    </li>
     <li><span class="caret">Front Office</span>
       <ul class="nested">
         <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
@@ -77,15 +74,17 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 </div>
 
 <div id="container">
-  <!-- 左侧电脑板 -->
   <div id="left-pane">
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
     </div>
-
     <div id="left-menu-scroll">
       <ul>
-        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
+        <li>
+          <a href="#" data-url="introduction.html" class="nav-link">
+            <img src="icon/pdf.png" class="image">Introduction
+          </a>
+        </li>
         <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
           <ul class="nested">
             <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
@@ -98,14 +97,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
         </li>
         <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
       </ul>
-
       <div class="future-updates">
         <div class="icon">🚀</div>
         <h2 class="title">More Content Coming Soon</h2>
         <p class="subtitle">Stay tuned for updates!</p>
       </div>
     </div>
-
     <div class="bottom-area">
       <div id="floating-widget-left">
         <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
@@ -135,9 +132,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
+  // --- 初始化 Introduction tab ---
   openTab('Introduction', 'introduction.html');
 
-  // Tidio 浮窗
+  // --- Tidio 浮窗 ---
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
@@ -147,31 +146,109 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(tidioScript);
   })();
 
+  // --- Hamburger drawer ---
   const hamburger = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
-
-  /* ☰ hamburger 开 / 关 */
   if (hamburger && drawer) {
-    hamburger.addEventListener('click', function () {
-      drawer.classList.toggle('open');
-    });
+    hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
   }
 
-  /* 📂 mobile folder 展开 */
+  // --- Mobile folder展开 ---
   drawer.querySelectorAll('.caret').forEach(caret => {
-    caret.addEventListener('click', function (e) {
-      e.stopPropagation(); // 防止误触
+    caret.addEventListener('click', e => {
+      e.stopPropagation();
       const nested = caret.nextElementSibling;
       if (nested) nested.classList.toggle('nested-open');
     });
   });
 
-  /* ✅ 关键：点 menu item 后自动关 drawer */
+  // --- 点击 menu item 关闭 drawer ---
   drawer.querySelectorAll('a.nav-link').forEach(link => {
-    link.addEventListener('click', function () {
-      drawer.classList.remove('open');
-    });
+    link.addEventListener('click', () => drawer.classList.remove('open'));
   });
+
+  // --- 创建搜索区域 ---
+  let searchContent = document.createElement("div");
+  searchContent.style.display = "none";
+  searchContent.style.flex = "1";
+  searchContent.style.flexDirection = "column";
+  searchContent.style.height = "100%";
+  tabContent.appendChild(searchContent);
+
+  const inputBox = document.createElement("input");
+  inputBox.type = "text";
+  inputBox.id = "search-box";
+  inputBox.placeholder = "Search...";
+  inputBox.style.padding = "6px";
+  inputBox.style.margin = "5px";
+  searchContent.appendChild(inputBox);
+
+  const resultsDiv = document.createElement("div");
+  resultsDiv.id = "search-results";
+  resultsDiv.style.flex = "1";
+  resultsDiv.style.overflowY = "auto";
+  searchContent.appendChild(resultsDiv);
+
+  // --- 搜索逻辑 ---
+  inputBox.addEventListener("input", function () {
+      const query = inputBox.value.trim();
+      resultsDiv.innerHTML = "";
+      if (!query) return;
+
+      const results = documents.filter(doc => fuzzyMatch(query, doc.title));
+      if (results.length === 0) resultsDiv.innerHTML = "<p>No results...</p>";
+
+      results.forEach(doc => {
+          const item = document.createElement("div");
+          item.textContent = doc.title;
+          item.style.cursor = "pointer";
+          item.style.padding = "4px 0";
+          item.addEventListener("click", () => {
+              if (doc.resource) openResourceTab(doc.title, doc.resource);
+              else if (doc.url) openTab(doc.title, doc.url);
+          });
+          resultsDiv.appendChild(item);
+      });
+  });
+
+  // --- PC Search Tab 按钮 ---
+  const searchBtnTab = document.createElement("div");
+  searchBtnTab.className = "tab";
+  searchBtnTab.textContent = "🔍 Search";
+  searchBtnTab.style.cursor = "pointer";
+  searchBtnTab.style.flexShrink = "0";
+  searchBtnTab.addEventListener("click", () => {
+      Object.values(openTabs).forEach(({ iframe }) => iframe.style.display = "none");
+      searchContent.style.display = "flex";
+      document.querySelectorAll("#tab-bar .tab").forEach(btn => btn.classList.remove("active"));
+      searchBtnTab.classList.add("active");
+  });
+  tabsRight.appendChild(searchBtnTab);
+
+  // --- 移动端：Introduction 右上角搜索按钮 ---
+  const introLink = document.querySelector('#mobile-drawer a.nav-link[data-url="introduction.html"]');
+  if (introLink) {
+    const mobileSearchBtn = document.createElement("button");
+    mobileSearchBtn.textContent = "🔍";
+    mobileSearchBtn.style.float = "right";
+    mobileSearchBtn.style.marginLeft = "5px";
+    mobileSearchBtn.style.fontSize = "0.9em";
+    mobileSearchBtn.style.padding = "2px 6px";
+    mobileSearchBtn.style.border = "none";
+    mobileSearchBtn.style.borderRadius = "4px";
+    mobileSearchBtn.style.background = "#007bff";
+    mobileSearchBtn.style.color = "#fff";
+    mobileSearchBtn.style.cursor = "pointer";
+
+    mobileSearchBtn.addEventListener("click", () => {
+      Object.values(openTabs).forEach(({ iframe }) => iframe.style.display = "none");
+      searchContent.style.display = "flex";
+    });
+
+    introLink.style.position = "relative";
+    introLink.appendChild(mobileSearchBtn);
+  }
+
 });
 </script>
 
