@@ -4,15 +4,43 @@ const tabBar = document.getElementById("tab-bar");
 const tabContent = document.getElementById("tab-content");
 const openTabs = {}; // 普通 Tab 系统存储
 
+// -------------------- 创建左右 Tab 容器 --------------------
+const tabsLeft = document.createElement("div");
+tabsLeft.id = "tabs-left";
+tabsLeft.style.display = "flex";
+
+const tabsRight = document.createElement("div");
+tabsRight.id = "tabs-right";
+tabsRight.style.display = "flex";
+tabsRight.style.marginLeft = "auto";
+
+tabBar.appendChild(tabsLeft);
+tabBar.appendChild(tabsRight);
+
 // -------------------- 打开 HTML/PDF/MP4 --------------------
 async function openTab(title, url) {
-    if (openTabs[title]) { setActiveTab(title); return; }
+    if(openTabs[title]){
+        if(openTabs[title].loading) return; // 正在加载中直接忽略
+        setActiveTab(title);
+        return;
+    }
+
+    openTabs[title] = { loading: true };
+
     if ((url.endsWith(".pdf")||url.endsWith(".mp4")||url.endsWith(".html")) && !/IR_/.test(url)) {
         url = url.replace(/([^\/]+)$/, "IR_$1");
     }
 
     const contentElem = document.createElement("div");
-    contentElem.style.flex="1"; contentElem.style.display="flex"; contentElem.style.flexDirection="column"; contentElem.style.overflowY="auto";
+    contentElem.style.flex="1"; 
+    contentElem.style.display="flex"; 
+    contentElem.style.flexDirection="column"; 
+    contentElem.style.overflowY="auto";
+
+    const loadingElem = document.createElement("p");
+    loadingElem.textContent = "Loading...";
+    loadingElem.style.color = "gray";
+    contentElem.appendChild(loadingElem);
 
     try {
         if(url.endsWith(".pdf")){
@@ -21,6 +49,7 @@ async function openTab(title, url) {
             const pdfData = await resp.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({data:pdfData}).promise;
             const dpr = window.devicePixelRatio||1;
+
             for(let i=1;i<=pdf.numPages;i++){
                 const page = await pdf.getPage(i);
                 const viewport = page.getViewport({scale:2});
@@ -36,104 +65,204 @@ async function openTab(title, url) {
             }
         } else if(url.endsWith(".mp4")){
             const video = document.createElement("video");
-            video.src=url; video.controls=true; video.setAttribute("controlsList","nodownload");
-            video.style.width="70%"; video.style.height="auto";
+            video.src=url; 
+            video.controls=true; 
+            video.setAttribute("controlsList","nodownload");
+            video.style.width="70%"; 
+            video.style.height="auto";
             video.setAttribute("playsinline","true");
             video.addEventListener("contextmenu",e=>e.preventDefault());
-            const container=document.createElement("div"); container.style.display="flex"; container.style.justifyContent="center";
-            container.appendChild(video); contentElem.appendChild(container);
+
+            const container=document.createElement("div"); 
+            container.style.display="flex"; 
+            container.style.justifyContent="center";
+            container.appendChild(video); 
+            contentElem.appendChild(container);
+
         } else {
             const iframe=document.createElement("iframe");
-            iframe.src=url; iframe.style.width="100%"; iframe.style.height="100%"; iframe.style.flex="1"; iframe.frameBorder="0";
+            iframe.src=url; 
+            iframe.style.width="100%"; 
+            iframe.style.height="100%"; 
+            iframe.style.flex="1"; 
+            iframe.frameBorder="0";
             contentElem.appendChild(iframe);
         }
+
+        // PDF/视频/iframe 渲染完毕，移除 Loading
+        loadingElem.remove();
+
     } catch(err){
         contentElem.innerHTML=`<p style="color:red;">Failed to load: ${err.message}</p>`;
     }
 
     createTab(title, contentElem);
+    openTabs[title].loading = false; // 标记完成
 }
 
 // -------------------- 创建普通 Tab --------------------
 function createTab(title, contentElem){
     tabContent.appendChild(contentElem);
-    const tab=document.createElement("div"); tab.className="tab"; tab.dataset.title=title;
-    const tabText=document.createElement("span"); tabText.textContent=title; tab.appendChild(tabText);
-    const closeBtn=document.createElement("button"); closeBtn.textContent="×"; closeBtn.className="close-btn"; tab.appendChild(closeBtn);
+
+    const tab=document.createElement("div"); 
+    tab.className="tab"; 
+    tab.dataset.title=title;
+
+    const tabText=document.createElement("span"); 
+    tabText.textContent=title; 
+    tab.appendChild(tabText);
+
+    const closeBtn=document.createElement("button"); 
+    closeBtn.textContent="×"; 
+    closeBtn.className="close-btn"; 
+    tab.appendChild(closeBtn);
+
     tabText.addEventListener("click",()=>setActiveTab(title));
-    closeBtn.addEventListener("click",e=>{ e.stopPropagation(); closeTab(title); });
-    tabBar.appendChild(tab);
-    openTabs[title]={tab, iframe:contentElem};
+    closeBtn.addEventListener("click",e=>{
+        e.stopPropagation(); 
+        closeTab(title);
+    });
+
+    tabsLeft.appendChild(tab);
+
+    openTabs[title].tab = tab;
+    openTabs[title].iframe = contentElem;
+
     setActiveTab(title);
 }
 
 function setActiveTab(title){
-    Object.values(openTabs).forEach(({tab,iframe})=>{tab.classList.remove("active"); iframe.style.display="none";});
-    if(!openTabs[title]) return;
-    openTabs[title].tab.classList.add("active"); openTabs[title].iframe.style.display="flex";
-    // 点击其他 Tab 时隐藏 Search 内容
+    Object.values(openTabs).forEach(({tab,iframe})=>{
+        if(tab) tab.classList.remove("active"); 
+        if(iframe) iframe.style.display="none";
+    });
+
+    if(openTabs[title]){
+        openTabs[title].tab.classList.add("active"); 
+        openTabs[title].iframe.style.display="flex";
+    }
+
     if(searchContent) searchContent.style.display="none";
 }
 
 function closeTab(title){
     if(!openTabs[title]) return;
-    const {tab,iframe}=openTabs[title]; tab.remove(); iframe.remove(); delete openTabs[title];
+
+    const {tab,iframe}=openTabs[title];
+    if(tab) tab.remove(); 
+    if(iframe) iframe.remove(); 
+    delete openTabs[title];
+
     const remaining=Object.keys(openTabs);
     if(remaining.length>0) setActiveTab(remaining[remaining.length-1]);
 }
 
 // -------------------- Resource Tab --------------------
 async function openResourceTab(title, resource){
-    if(openTabs[title]){ setActiveTab(title); return; }
+    if(openTabs[title]){
+        if(openTabs[title].loading) return;
+        setActiveTab(title);
+        return;
+    }
+
+    openTabs[title] = { loading: true };
+
     const contentElem=document.createElement("div");
-    contentElem.style.flex="1"; contentElem.style.display="flex"; contentElem.style.flexDirection="column"; contentElem.style.overflowY="auto";
+    contentElem.style.flex="1"; 
+    contentElem.style.display="flex"; 
+    contentElem.style.flexDirection="column"; 
+    contentElem.style.overflowY="auto";
+
+    const loadingElem = document.createElement("p");
+    loadingElem.textContent = "Loading...";
+    loadingElem.style.color = "gray";
+    contentElem.appendChild(loadingElem);
 
     try{
-        const videoUrl = resource.replace(/([^\/]+)$/,"IR_$1.mp4");
+        const videoUrl = resource.replace(/([^\/]+)$/, "IR_$1.mp4");
+
         const videoLink=document.createElement("a");
-        videoLink.href="#"; videoLink.textContent="▶ Click to play video"; 
-        videoLink.style.display="block"; videoLink.style.marginBottom="10px"; videoLink.style.fontWeight="bold";
-        videoLink.addEventListener("click",function(e){
+        videoLink.href="#"; 
+        videoLink.textContent="▶ Click to play video"; 
+        videoLink.style.display="block"; 
+        videoLink.style.marginBottom="10px"; 
+        videoLink.style.fontWeight="bold";
+
+        videoLink.addEventListener("click", function(e){
             e.preventDefault();
             if(!contentElem.querySelector("video")){
                 const video=document.createElement("video");
-                video.src=videoUrl; video.controls=true; video.setAttribute("controlsList","nodownload");
-                video.style.width="70%"; video.style.height="auto"; video.setAttribute("playsinline","true");
+                video.src=videoUrl; 
+                video.controls=true; 
+                video.setAttribute("controlsList","nodownload");
+                video.style.width="70%"; 
+                video.style.height="auto"; 
+                video.setAttribute("playsinline","true");
                 video.addEventListener("contextmenu",e=>e.preventDefault());
-                const container=document.createElement("div"); container.style.display="flex"; container.style.justifyContent="center";
-                container.appendChild(video); contentElem.insertBefore(container,contentElem.firstChild);
+
+                const container=document.createElement("div"); 
+                container.style.display="flex"; 
+                container.style.justifyContent="center";
+                container.appendChild(video); 
+                contentElem.insertBefore(container,contentElem.firstChild);
             }
         });
+
         contentElem.appendChild(videoLink);
 
-        const pdfUrl = resource.replace(/([^\/]+)$/,"IR_$1.pdf");
+        const pdfUrl = resource.replace(/([^\/]+)$/, "IR_$1.pdf");
         const resp = await fetch(pdfUrl);
+
         if(resp.ok){
             const pdfData = await resp.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({data:pdfData}).promise;
             const dpr = window.devicePixelRatio||1;
+
             for(let i=1;i<=pdf.numPages;i++){
                 const page = await pdf.getPage(i);
                 const viewport = page.getViewport({scale:2});
                 const canvas=document.createElement("canvas");
                 canvas.width = viewport.width*dpr;
                 canvas.height = viewport.height*dpr;
-                canvas.style.width="100%"; canvas.style.height="auto";
+                canvas.style.width="100%"; 
+                canvas.style.height="auto";
+
                 const ctx = canvas.getContext("2d");
                 ctx.setTransform(dpr,0,0,dpr,0,0);
                 await page.render({canvasContext:ctx,viewport}).promise;
                 contentElem.appendChild(canvas);
             }
-        } else { contentElem.innerHTML+="<p style='color:red;'>PDF not found</p>"; }
-    } catch(err){ contentElem.innerHTML+="<p style='color:red;'>Failed to load PDF/video</p>"; }
+        } else {
+            contentElem.innerHTML+="<p style='color:red;'>PDF not found</p>";
+        }
+
+        loadingElem.remove();
+
+    } catch(err){
+        contentElem.innerHTML+="<p style='color:red;'>Failed to load PDF/video</p>";
+    }
 
     createTab(title, contentElem);
+    openTabs[title].loading = false;
+}
+
+// -------------------- 模糊搜索 --------------------
+function fuzzyMatch(keyword, text) {
+    keyword = keyword.toLowerCase();
+    text = text.toLowerCase();
+
+    let index = -1;
+    for (let char of keyword) {
+        index = text.indexOf(char, index + 1);
+        if (index === -1) return false;
+    }
+    return true;
 }
 
 // -------------------- 初始化菜单 & Search --------------------
 let searchContent = null;
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded", () => {
 
     const navLinks = document.querySelectorAll(".nav-link");
     const documents = [];
@@ -142,70 +271,82 @@ document.addEventListener("DOMContentLoaded",()=>{
         const title = link.getAttribute("data-title") || link.textContent.trim();
         const url = link.getAttribute("data-url") || null;
         const resource = link.getAttribute("data-resource") || null;
-        documents.push({id:idx,title,url,resource});
 
-        link.addEventListener("click",function(e){
+        documents.push({ id: idx, title, url, resource });
+
+        link.addEventListener("click", function(e){
             e.preventDefault();
             if(resource) openResourceTab(title,resource);
             else if(url) openTab(title,url);
         });
     });
 
-    // -------------------- Lunr 索引 --------------------
-    const idx = lunr(function(){ this.ref('id'); this.field('title'); documents.forEach(d=>this.add(d)); });
-
-    // -------------------- Search 固定显示区域 --------------------
+    // -------------------- Search 区域 --------------------
     searchContent = document.createElement("div");
-    searchContent.style.display="none"; // 默认隐藏
-    searchContent.style.flex="1"; 
-    searchContent.style.flexDirection="column"; 
+    searchContent.style.display="none";
+    searchContent.style.flex="1";
+    searchContent.style.flexDirection="column";
     searchContent.style.height="100%";
     tabContent.appendChild(searchContent);
 
     const inputBox = document.createElement("input");
-    inputBox.type="text"; inputBox.id="search-box"; inputBox.placeholder="Search...";
+    inputBox.type="text"; 
+    inputBox.id="search-box"; 
+    inputBox.placeholder="Search...";
+
     const resultsDiv = document.createElement("div");
-    resultsDiv.id="search-results"; resultsDiv.style.flex="1"; resultsDiv.style.overflowY="auto";
+    resultsDiv.id="search-results"; 
+    resultsDiv.style.flex="1"; 
+    resultsDiv.style.overflowY="auto";
 
     searchContent.appendChild(inputBox);
     searchContent.appendChild(resultsDiv);
 
-    inputBox.addEventListener("keypress",function(e){
-        if(e.key==='Enter'){
-            const query=inputBox.value.trim();
-            if(!query) return;
-            const results=idx.search(query);
-            resultsDiv.innerHTML="";
-            if(results.length===0){ resultsDiv.innerHTML="<p>No results found.</p>"; return; }
-            results.forEach(res=>{
-                const doc=documents.find(d=>d.id==res.ref);
-                const item=document.createElement("div"); item.textContent=doc.title;
-                item.addEventListener("click",()=>{ 
-                    if(doc.resource) openResourceTab(doc.title,doc.resource);
-                    else if(doc.url) openTab(doc.title,doc.url);
-                });
-                resultsDiv.appendChild(item);
-            });
+    inputBox.addEventListener("input", function(){
+        const query = inputBox.value.trim();
+        resultsDiv.innerHTML = "";
+
+        if(!query) return;
+
+        const results = documents.filter(doc => fuzzyMatch(query, doc.title));
+
+        if(results.length === 0){
+            resultsDiv.innerHTML = "<p>No results...</p>";
+            return;
         }
+
+        results.forEach(doc=>{
+            const item = document.createElement("div");
+            item.textContent = doc.title;
+            item.style.cursor = "pointer";
+            item.style.padding = "4px 0";
+
+            item.addEventListener("click", ()=>{
+                if(doc.resource) openResourceTab(doc.title, doc.resource);
+                else if(doc.url) openTab(doc.title, doc.url);
+            });
+
+            resultsDiv.appendChild(item);
+        });
     });
 
-    // -------------------- 添加 Search 按钮 --------------------
+    // -------------------- Search Tab（右侧固定） --------------------
     const searchBtnTab = document.createElement("div");
     searchBtnTab.className="tab";
     searchBtnTab.textContent="🔍 Search";
     searchBtnTab.style.cursor="pointer";
     searchBtnTab.style.flexShrink="0";
+
     searchBtnTab.addEventListener("click",()=>{
-        // 隐藏所有普通 Tab 内容
         Object.values(openTabs).forEach(({iframe})=>iframe.style.display="none");
-        // 显示 Search
         searchContent.style.display="flex";
-        // 高亮按钮
+
         document.querySelectorAll("#tab-bar .tab").forEach(btn=>btn.classList.remove("active"));
         searchBtnTab.classList.add("active");
     });
-    tabBar.appendChild(searchBtnTab);
 
-    // -------------------- 初始化只打开 Introduction Tab --------------------
+    tabsRight.appendChild(searchBtnTab);
+
+    // -------------------- 默认打开 Introduction --------------------
     openTab('Introduction','introduction.html');
 });
