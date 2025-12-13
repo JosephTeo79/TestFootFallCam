@@ -6,56 +6,101 @@
 <title>Retail Pro Prism</title>
 <link rel="icon" type="image/png" href="./icon/favicon.png">
 
+<!-- 样式文件 -->
 <link rel="stylesheet" href="css/treeview.css">
 <link rel="stylesheet" href="css/tab-style.css">
 <link rel="stylesheet" href="css/future-updates.css">
 <link rel="stylesheet" href="css/style1.css">
 
+<!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 </script>
+
+<!-- Lunr.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 </head>
 <body>
 
+<!-- MOBILE HEADER -->
 <div id="mobile-header">
   <h1>Retail Pro Prism</h1>
   <button id="hamburger">&#9776;</button>
 </div>
 
-<div id="mobile-drawer"></div>
+<!-- MOBILE DRAWER -->
+<div id="mobile-drawer">
+  <ul>
+  </ul>
+
+   <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+  
+     <div class="bottom-area">
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
+      </div>
+      <h2 class="footer-title">Retail Pro Prism</h2>
+    </div>
+</div>
+
 <div id="container">
+  <!-- 左侧电脑板 -->
   <div id="left-pane">
-    <div class="header-title"><img src="./icon/Integrated_Retail_Logo.png" class="header-icon"></div>
-    <div id="left-menu-scroll"></div>
+    <div class="header-title">
+      <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
+    </div>
+
+    <div id="left-menu-scroll">
+    
+
+
+    </div>
+    
+      <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+    <div class="bottom-area">
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
+      </div>
+      <h2 class="footer-title">Retail Pro Prism</h2>
+    </div>
   </div>
 
-  <div id="divider"></div>
-
-  <div id="right-pane">
+   <div id="right-pane">
     <div id="tab-bar"></div>
     <div id="tab-content"></div>
   </div>
 </div>
 
+<!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
 
-<script src="js/treeview.js"></script>
+<!-- JS 文件 -->
 <script src="js/tab_search.js"></script>
+<script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
+
+<!-- 菜单动态加载 -->
+<script src="js/menu-load.js"></script>
+
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  // 载入 menu.html
-  fetch("menu.html").then(r => r.text()).then(html => {
-    document.getElementById("left-menu-scroll").innerHTML = html;
-    document.getElementById("mobile-drawer").innerHTML = html;
+document.addEventListener('DOMContentLoaded', function() {
+  openTab('Introduction', 'introduction.html');
 
-    // 初始化 treeview
-    if (typeof initTreeView === "function") initTreeView();
-  });
-
-  // Tidio
+  // Tidio 浮窗
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
@@ -65,10 +110,22 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.appendChild(tidioScript);
   })();
 
-  // hamburger
   const hamburger = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
-  hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
+
+  /* ☰ hamburger 开 / 关 */
+  if (hamburger && drawer) {
+    hamburger.addEventListener('click', function () {
+      drawer.classList.toggle('open');
+    });
+  }
+
+  /* ✅ 点击 menu item 后自动关闭 drawer（仅手机） */
+  drawer.addEventListener('click', function(e) {
+    if (e.target && e.target.matches('a.nav-link')) {
+      drawer.classList.remove('open');
+    }
+  });
 });
 </script>
 
