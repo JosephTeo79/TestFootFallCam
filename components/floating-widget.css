@@ -4,8 +4,9 @@
   right: 20px;
   z-index: 9999;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* 垂直展开，如果想水平改 row */
   align-items: flex-end;
+  gap: 10px;
 }
 
 #widget-toggle {
@@ -28,9 +29,8 @@
 }
 
 #widget-icons {
-  display: none;
+  display: none; /* 点击 toggle 显示/隐藏 */
   flex-direction: column;
-  margin-bottom: 10px;
   gap: 10px;
 }
 
