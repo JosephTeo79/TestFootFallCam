@@ -1,215 +1,69 @@
-/* ==============================
+/* -------------------
    Reset & 基础
-============================== */
+------------------- */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: sans-serif;
+  overflow: auto; /* 手机允许滚动 */
 }
 
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+ul { list-style: none; margin: 0; padding: 0; }
+a { text-decoration: none; color: inherit; }
+img { display: block; max-width: 100%; }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-img {
-  display: block;
-  max-width: 100%;
-}
-
-/* ==============================
+/* -------------------
    Layout
-============================== */
-#container {
-  display: flex;
-  height: 100vh; /* 占满屏幕高度 */
-}
-
+------------------- */
+#container { display: flex; height: 100vh; }
 #left-pane {
-  width: 280px;
-  min-width: 280px;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #ccc;
+  width: 280px; min-width: 280px; flex-shrink: 0;
+  display: flex; flex-direction: column; border-right: 1px solid #ccc;
   background: #fafafa;
-  flex-shrink: 0; /* 不允许压缩 */
 }
 
-/* 左侧菜单滚动区域 */
-#left-pane ul {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 5px;
-}
+#left-pane ul { flex: 1; overflow-y: auto; padding: 0 5px; }
+#left-pane li { margin: 4px 0; }
+#left-pane li a { display: flex; align-items: center; padding: 6px 8px; border-radius: 4px; }
+#left-pane li a:hover { background-color: #e0e0e0; }
+#left-pane .caret { display: flex; align-items: center; cursor: pointer; padding: 6px 8px; border-radius: 4px; }
+.nested { display: none; padding-left: 16px; }
+.caret-down .nested { display: block; }
 
-/* 左侧菜单样式 */
-#left-pane li {
-  margin: 4px 0;
-}
+/* -------------------
+   Footer & Left Bottom Icons
+------------------- */
+.bottom-area { flex-shrink: 0; padding: 10px 0; text-align: center; border-top: 1px solid #ddd; }
+#floating-widget-left { display: flex; justify-content: center; gap: 12px; margin-bottom: 6px; }
+#floating-widget-left a img { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: transform 0.2s; }
+#floating-widget-left a img:hover { transform: scale(1.1); }
+.footer-title { margin: 0; padding: 5px; font-size: 14px; font-weight: bold; }
 
-#left-pane li a {
-  display: flex;
-  align-items: center;
-  padding: 6px 8px;
-  border-radius: 4px;
-}
-
-#left-pane li a:hover {
-  background-color: #e0e0e0;
-}
-
-#left-pane .caret {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 4px;
-}
-
-.nested {
-  display: none;
-  padding-left: 16px;
-}
-
-.caret-down .nested {
-  display: block;
-}
-
-/* ==============================
-   Footer & 左下角浮动图标
-============================== */
-.bottom-area {
-  flex-shrink: 0;
-  padding: 10px 0;
-  text-align: center;
-  border-top: 1px solid #ddd;
-}
-
-/* 左下角图标容器 */
-#floating-widget-left {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 6px;
-}
-
-#floating-widget-left a img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  transition: transform 0.2s;
-}
-
-#floating-widget-left a img:hover {
-  transform: scale(1.1);
-}
-
-.footer-title {
-  margin: 0;
-  padding: 5px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-/* ==============================
+/* -------------------
    Divider
-============================== */
-#divider {
-  width: 1px;
-  background: #ccc;
-}
+------------------- */
+#divider { width: 1px; background: #ccc; }
 
-/* ==============================
+/* -------------------
    Right Pane
-============================== */
-#right-pane {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+------------------- */
+#right-pane { flex: 1; display: flex; flex-direction: column; }
+#tab-bar { display: flex; border-bottom: 1px solid #ccc; height: 40px; background: #f7f7f7; }
+.tab { display: flex; align-items: center; padding: 5px 10px; border: 1px solid #ccc; border-bottom: none; margin-right: 3px; cursor: pointer; background: #eee; border-top-left-radius: 6px; border-top-right-radius: 6px; }
+.tab.active { background: #fff; font-weight: bold; }
+.close-btn { margin-left: 8px; border: none; background: transparent; cursor: pointer; font-size: 14px; }
+#tab-content { flex: 1; display: flex; overflow-y: auto; background: #fff; }
+.tab-frame { flex: 1; border: none; display: none; }
 
-#tab-bar {
-  display: flex;
-  border-bottom: 1px solid #ccc;
-  height: 40px;
-  background: #f7f7f7;
-}
-
-.tab {
-  display: flex;
-  align-items: center;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-bottom: none;
-  margin-right: 3px;
-  cursor: pointer;
-  background: #eee;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-}
-
-.tab.active {
-  background: #fff;
-  font-weight: bold;
-}
-
-.close-btn {
-  margin-left: 8px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-#tab-content {
-  flex: 1;          /* 占满右侧剩余空间 */
-  display: flex;
-  overflow-y: auto; /* 内容内部滚动 */
-  background: #fff;
-}
-
-.tab-frame {
-  flex: 1;
-  border: none;
-  display: none;
-}
-
-/* ==============================
+/* -------------------
    Responsive (手机优化)
-============================== */
+------------------- */
 @media (max-width: 768px) {
-  #container {
-    flex-direction: column;
-    height: auto;
-  }
-
-  #left-pane {
-    width: 100%;
-    min-width: 0;
-    border-right: none;
-    border-bottom: 1px solid #ccc;
-  }
-
-  #right-pane {
-    flex: none;
-    height: auto;
-  }
-
-  #tab-content {
-    height: 400px; /* 手机内容可滚动 */
-  }
-
-  #floating-widget-left {
-    justify-content: flex-start;
-    padding-left: 10px;
-  }
+  #container { flex-direction: column; height: auto; }
+  #left-pane { width: 100%; min-width: 0; border-right: none; border-bottom: 1px solid #ccc; height: auto; overflow-y: visible; }
+  #left-pane ul { overflow-y: visible; }
+  #right-pane { flex: none; height: auto; }
+  #tab-content { height: 400px; }
+  #floating-widget-left { justify-content: flex-start; padding-left: 10px; }
 }
