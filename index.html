@@ -31,9 +31,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 </div>
 
 <!-- MOBILE DRAWER -->
-<div id="mobile-drawer">
-  <div id="mobile-menu"></div>
-</div>
+<div id="mobile-drawer"></div>
 
 <div id="container">
   <!-- 左侧电脑板 -->
@@ -41,14 +39,30 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
     </div>
+
     <div id="left-menu-scroll">
-      <div id="pc-menu"></div>
+      <ul id="main-menu">
+        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
+          <ul class="nested">
+            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+          </ul>
+        </li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Back Office</span>
+          <ul class="nested"></ul>
+        </li>
+        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+      </ul>
+
       <div class="future-updates">
         <div class="icon">🚀</div>
         <h2 class="title">More Content Coming Soon</h2>
         <p class="subtitle">Stay tuned for updates!</p>
       </div>
     </div>
+
     <div class="bottom-area">
       <div id="floating-widget-left">
         <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
@@ -76,110 +90,51 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <script src="js/shortcut.js"></script>
 
 <script>
-// ---------- 菜单数据 ----------
-const menuData = [
-  { title: "Introduction", url: "introduction.html", icon: "icon/pdf.png" },
-  {
-    title: "Front Office", icon: "icon/folder.jpg", children: [
-      { title: "POS Training Document", url: "FrontOffice/POS_Training_Document.pdf", icon: "icon/pdf.png" },
-      { title: "Login Logout", resource: "FrontOffice/Login_Logout", icon: "icon/pdf.png" },
-      { title: "Open Register", resource: "FrontOffice/Open_Register", icon: "icon/pdf.png" },
-    ]
-  },
-  { title: "Back Office", icon: "icon/folder.jpg", children: [] },
-  { title: "Support Handbook", url: "notebooklm.html", icon: "icon/NoteBooklm.png" },
-];
-
-// ---------- 渲染菜单 ----------
-function renderMenu(containerId) {
-  const container = document.getElementById(containerId);
-  if(!container) return;
-  const ul = document.createElement('ul');
-
-  menuData.forEach(item => {
-    const li = document.createElement('li');
-    if(item.children && item.children.length > 0){
-      const span = document.createElement('span');
-      span.className = 'caret';
-      span.innerHTML = `<img src="${item.icon}" class="image"> ${item.title}`;
-      li.appendChild(span);
-
-      const nestedUl = document.createElement('ul');
-      nestedUl.className = 'nested';
-      item.children.forEach(child => {
-        const childLi = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = '#';
-        a.className = 'nav-link';
-        a.dataset.url = child.url || '';
-        a.dataset.resource = child.resource || '';
-        a.dataset.title = child.title;
-        a.innerHTML = `<img src="${child.icon}" class="image"> ${child.title}`;
-        childLi.appendChild(a);
-        nestedUl.appendChild(childLi);
-      });
-      li.appendChild(nestedUl);
-    } else {
-      const a = document.createElement('a');
-      a.href = '#';
-      a.className = 'nav-link';
-      a.dataset.url = item.url || '';
-      a.dataset.resource = item.resource || '';
-      a.dataset.title = item.title;
-      a.innerHTML = `<img src="${item.icon}" class="image"> ${item.title}`;
-      li.appendChild(a);
-    }
-    ul.appendChild(li);
-  });
-  container.appendChild(ul);
-}
-
-// ---------- 初始化 ----------
 document.addEventListener('DOMContentLoaded', function() {
-
-  // 渲染 PC + Mobile 菜单
-  renderMenu('pc-menu');
-  renderMenu('mobile-menu');
-
-  // 默认打开首页 Tab
+  // 打开默认 tab
   openTab('Introduction', 'introduction.html');
 
-  // Tidio
+  // 克隆 PC menu 到 mobile drawer
+  const mainMenu = document.getElementById('main-menu');
+  const mobileDrawer = document.getElementById('mobile-drawer');
+  if(mainMenu && mobileDrawer) {
+    const cloneMenu = mainMenu.cloneNode(true);
+    mobileDrawer.appendChild(cloneMenu);
+  }
+
+  // Tidio 浮窗
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
-    const tidioScript = document.createElement("script");
+    var tidioScript = document.createElement("script");
     tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
     tidioScript.async = true;
     document.body.appendChild(tidioScript);
   })();
 
-  const drawer = document.getElementById('mobile-drawer');
+  // Mobile drawer toggle
   const hamburger = document.getElementById('hamburger');
+  if(hamburger && mobileDrawer) {
+    hamburger.addEventListener('click', () => {
+      mobileDrawer.classList.toggle('open');
+    });
+  }
 
-  // 🍔 Hamburger 开关
-  hamburger.addEventListener('click', ()=> drawer.classList.toggle('open'));
-
-  // 📂 事件委托: PC & Mobile
-  document.getElementById('pc-menu').addEventListener('click', menuClickHandler);
-  document.getElementById('mobile-menu').addEventListener('click', menuClickHandler);
-
-  function menuClickHandler(e){
-    const link = e.target.closest('a.nav-link');
-    if(link){
-      e.preventDefault();
-      const title = link.dataset.title;
-      const url = link.dataset.url || link.dataset.resource;
-      openTab(title, url);
-      drawer.classList.remove('open'); // mobile 自动收回
-    }
-
-    const caret = e.target.closest('.caret');
-    if(caret){
+  // Mobile folder toggle
+  mobileDrawer.querySelectorAll('.caret').forEach(caret => {
+    caret.addEventListener('click', e => {
+      e.stopPropagation();
       const nested = caret.nextElementSibling;
       if(nested) nested.classList.toggle('nested-open');
-    }
-  }
+    });
+  });
+
+  // 点击 menu 自动关闭 drawer
+  mobileDrawer.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileDrawer.classList.remove('open');
+    });
+  });
 });
 </script>
 
