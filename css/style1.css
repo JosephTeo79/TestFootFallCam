@@ -1,118 +1,146 @@
-/* =========================
-   Global Reset
-========================= */
+/* ==============================
+   Reset & 基础
+============================== */
 html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
   font-family: sans-serif;
-  width: 100%;
-  height: auto;              /* ⭐ 关键：不要锁死高度 */
-  overflow-x: hidden;        /* 只禁止横向 */
 }
 
-/* =========================
-   Main Layout
-========================= */
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* ==============================
+   Layout
+============================== */
 #container {
   display: flex;
-  min-height: 100vh;         /* ⭐ 用 min-height，不是 height */
+  height: 100vh; /* 占满屏幕高度 */
 }
 
-/* =========================
-   Left Pane
-========================= */
 #left-pane {
   width: 280px;
   min-width: 280px;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #ccc;
-  background: #fff;
+  background: #fafafa;
+  flex-shrink: 0; /* 不允许压缩 */
 }
 
-/* Header */
-.header-title {
-  padding: 10px;
-  text-align: center;
-}
-
-.header-icon {
-  max-width: 100%;
-  height: auto;
-}
-
-/* =========================
-   Menu Scroll Area
-========================= */
+/* 左侧菜单滚动区域 */
 #left-pane ul {
-  flex: 1;                   /* ⭐ 只有菜单区滚动 */
+  flex: 1;
   overflow-y: auto;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  padding: 0 5px;
 }
 
-/* =========================
-   Bottom Area (重点)
-========================= */
+/* 左侧菜单样式 */
+#left-pane li {
+  margin: 4px 0;
+}
+
+#left-pane li a {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+#left-pane li a:hover {
+  background-color: #e0e0e0;
+}
+
+#left-pane .caret {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.nested {
+  display: none;
+  padding-left: 16px;
+}
+
+.caret-down .nested {
+  display: block;
+}
+
+/* ==============================
+   Footer & 左下角浮动图标
+============================== */
 .bottom-area {
   flex-shrink: 0;
   padding: 10px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  text-align: center;
+  border-top: 1px solid #ddd;
 }
 
-/* =========================
-   Floating Icons (LEFT)
-========================= */
+/* 左下角图标容器 */
 #floating-widget-left {
   display: flex;
-  gap: 10px;
-  margin-bottom: 8px;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 6px;
 }
 
 #floating-widget-left a img {
-  width: 36px;               /* ⭐ 防止巨大 icon */
+  width: 36px;
   height: 36px;
   border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
 }
 
-/* =========================
-   Footer Title
-========================= */
+#floating-widget-left a img:hover {
+  transform: scale(1.1);
+}
+
 .footer-title {
   margin: 0;
   padding: 5px;
   font-size: 14px;
-  text-align: center;
+  font-weight: bold;
 }
 
-/* =========================
+/* ==============================
    Divider
-========================= */
+============================== */
 #divider {
   width: 1px;
   background: #ccc;
 }
 
-/* =========================
+/* ==============================
    Right Pane
-========================= */
+============================== */
 #right-pane {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #fff;
 }
 
-/* Tabs */
 #tab-bar {
   display: flex;
-  height: 40px;
   border-bottom: 1px solid #ccc;
+  height: 40px;
   background: #f7f7f7;
 }
 
@@ -120,11 +148,11 @@ html, body {
   display: flex;
   align-items: center;
   padding: 5px 10px;
-  margin-right: 3px;
   border: 1px solid #ccc;
   border-bottom: none;
-  background: #eee;
+  margin-right: 3px;
   cursor: pointer;
+  background: #eee;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
 }
@@ -139,39 +167,49 @@ html, body {
   border: none;
   background: transparent;
   cursor: pointer;
+  font-size: 14px;
 }
 
-/* =========================
-   Tab Content
-========================= */
 #tab-content {
-  flex: 1;
-  overflow-y: auto;          /* ⭐ 内容自己滚 */
+  flex: 1;          /* 占满右侧剩余空间 */
+  display: flex;
+  overflow-y: auto; /* 内容内部滚动 */
   background: #fff;
 }
 
 .tab-frame {
-  width: 100%;
-  height: 100%;
+  flex: 1;
   border: none;
   display: none;
 }
 
-/* =========================
-   Mobile Fixes
-========================= */
+/* ==============================
+   Responsive (手机优化)
+============================== */
 @media (max-width: 768px) {
-
   #container {
-    min-height: auto;        /* ⭐ 彻底防止“假拉长” */
+    flex-direction: column;
+    height: auto;
   }
 
   #left-pane {
     width: 100%;
-    min-width: 100%;
+    min-width: 0;
+    border-right: none;
+    border-bottom: 1px solid #ccc;
   }
 
-  #divider {
-    display: none;
+  #right-pane {
+    flex: none;
+    height: auto;
+  }
+
+  #tab-content {
+    height: 400px; /* 手机内容可滚动 */
+  }
+
+  #floating-widget-left {
+    justify-content: flex-start;
+    padding-left: 10px;
   }
 }
