@@ -1,8 +1,8 @@
-// js/menu.js
+// 所有菜单数据统一存放
 const menuData = [
   {
     title: "Introduction",
-    url: "introduction.html"
+    url: "introduction.html",
   },
   {
     title: "Front Office",
