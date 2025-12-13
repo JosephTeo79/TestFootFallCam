@@ -165,4 +165,22 @@ body, html {
 }
 
 @media screen and (max-width: 768px) {
-  #left-pane {
+  #left-pane { display: none; }
+
+  #mobile-drawer {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: #fff;
+    overflow-y: auto;
+    transition: left 0.3s;
+    z-index: 999;
+  }
+
+  #mobile-drawer.open { left: 0; }
+
+  #drawer-close { display: block; }
+}
