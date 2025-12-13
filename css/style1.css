@@ -146,7 +146,10 @@ body, html {
   margin: 0;
   line-height: 1.2;
 }
-
+.header-icon {
+  height: 28px; /* 控制图片大小 */
+  width: auto;
+}
 #hamburger {
   font-size: 20px;
   padding: 5px;
