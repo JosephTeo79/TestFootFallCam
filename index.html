@@ -24,12 +24,29 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 #search-results div { padding:6px; border-bottom:1px solid #ddd; cursor:pointer; }
 #search-results div:hover { background:#f0f0f0; }
 
-/* 左侧底部图标 */
+/* 左侧菜单滚动 */
+#left-pane {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* 左侧底部区域（footer + 图标） */
+.bottom-area {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+/* 左下角浮动图标 */
 #floating-widget-left {
   display: flex;
   flex-direction: row;
   gap: 10px;
-  margin-bottom: 10px; /* 与 footer-title 保持间距 */
+  margin-bottom: 10px;
 }
 
 #floating-widget-left a img {
@@ -44,10 +61,24 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 #floating-widget-left a img:hover {
   transform: scale(1.1);
 }
+
+/* 右侧区域滚动 */
+#right-pane {
+  overflow-y: auto;
+  height: 100vh;
+}
+
+/* Tidio 右下角浮动 */
+#tidio-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
 </style>
 </head>
 <body>
-<div id="container">
+<div id="container" style="display:flex;height:100vh;">
   <!-- 左侧菜单 -->
   <div id="left-pane">
     <div class="header-title">
@@ -77,7 +108,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
         <p class="subtitle">Stay tuned for updates!</p>
       </div>
 
-      <!-- 左侧底部图标 -->
+      <!-- 左下角浮动图标 -->
       <div id="floating-widget-left">
         <a href="https://integratedretail.com/" target="_blank" title="IR">
           <img src="icon/favicon.png" alt="Company">
@@ -85,6 +116,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
         <a href="https://wa.me/6589467929" target="_blank" title="WhatsApp">
           <img src="icon/whatsapp.png" alt="WhatsApp">
         </a>
+       
         <a href="mailto:joseph.teo@integratedretail.com?subject=Support%20Request&body=Hello%2C%20I%20need%20help%20with...">
           <img src="icon/email.png" alt="Email">
         </a>
@@ -95,7 +127,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   </div>
 
   <!-- 分隔条 -->
-  <div id="divider"></div>
+  <div id="divider" style="width:5px; cursor:col-resize; background:#ddd;"></div>
 
   <!-- 右侧区域 -->
   <div id="right-pane">
@@ -112,9 +144,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
 
-<!-- 自动打开 Introduction -->
 <script>
 window.onload = function () {
+  // 自动打开 Introduction 
   openTab('Introduction', 'introduction.html'); 
 
   // 加载 Tidio 脚本，让右下角浮窗永久显示
