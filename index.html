@@ -24,9 +24,14 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 </head>
 <body>
 
+<!-- MOBILE HEADER -->
+<div id="mobile-header">
+  <h1>Retail Pro Prism</h1>
+  <button id="hamburger">&#9776;</button>
+</div>
+
 <!-- MOBILE DRAWER -->
 <div id="mobile-drawer">
-  <button id="drawer-close">&#10005;</button>
   <ul>
     <li><a href="#" data-url="introduction.html" class="nav-link">Introduction</a></li>
     <li><span class="caret">Front Office</span>
@@ -44,7 +49,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 </div>
 
 <div id="container">
-  <!-- 左侧菜单 (电脑) -->
+  <!-- 左侧菜单 -->
   <div id="left-pane">
     <div class="header-title">
       <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
@@ -94,7 +99,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
 
-<!-- JS 文件 -->
+<!-- JS -->
 <script src="js/tab_search.js"></script>
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
@@ -113,15 +118,14 @@ window.onload = function () {
     document.body.appendChild(tidioScript);
   })();
 
-  // Mobile drawer close button
+  // Hamburger click
+  const hamburger = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
-  const drawerClose = document.getElementById('drawer-close');
-
-  drawerClose.addEventListener('click', () => {
-    drawer.classList.remove('open');
+  hamburger && hamburger.addEventListener('click', () => {
+    drawer.classList.toggle('open');
   });
 
-  // Nested folders
+  // Mobile nested folders
   const carets = drawer.querySelectorAll('.caret');
   carets.forEach(caret => {
     caret.addEventListener('click', () => {
