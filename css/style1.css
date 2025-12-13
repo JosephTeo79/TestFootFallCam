@@ -133,12 +133,23 @@ body, html {
   display: none;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 5px 10px;
   background: #f7f7f7;
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 9999;
+}
+
+#mobile-header h1 {
+  font-size: 16px;
+  margin: 0;
+  line-height: 1.2;
+}
+
+#hamburger {
+  font-size: 20px;
+  padding: 5px;
 }
 
 #mobile-drawer {
@@ -166,40 +177,9 @@ body, html {
 }
 
 @media screen and (max-width: 768px) {
-  #left-pane { display: none; }             /* 手机隐藏左侧菜单 */
-  #mobile-header {
-    padding: 5px 10px;        /* 减少上下内边距 */
-    font-size: 14px;          /* 标题字体变小 */
-    height: auto;             /* 不固定太高 */
-  }
-  
-  #mobile-header h1 {
-    font-size: 16px;          /* 主标题字体小一点 */
-    margin: 0;
-  }
-  #hamburger {
-    font-size: 20px;          /* hamburger icon 不用太大 */
-    padding: 5px;
-  }
-
-  #mobile-drawer {                            /* 手机抽屉 */
-    display: block;
-    position: fixed;
-    top: 0;
-    left: -250px;
-    width: 250px;
-    height: 100%;
-    background: #fff;
-    overflow-y: auto;
-    transition: left 0.3s;
-    z-index: 999;
-  }
-  #mobile-drawer.open { left: 0; }         /* 打开抽屉 */
-  
-  /* 手机优化 footer-title 字体 */
-  .footer-title {
-    font-size: 12px;  
-    padding: 3px;
-  }
+  #left-pane { display: none; }
+  #mobile-header { display: flex; }
+  #mobile-drawer { display: block; position: fixed; top: 0; left: -250px; width: 250px; height: 100%; background: #fff; overflow-y: auto; transition: left 0.3s; z-index: 9999; }
+  #mobile-drawer.open { left: 0; }
+  .footer-title { font-size: 12px; padding: 3px; }
 }
-
