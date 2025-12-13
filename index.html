@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retail Pro Prism</title>
+<link rel="icon" type="image/png" href="./icon/favicon.png">
+
+<!-- 样式文件 -->
+<link rel="stylesheet" href="css/treeview.css">
+<link rel="stylesheet" href="css/tab-style.css">
+<link rel="stylesheet" href="css/future-updates.css">
+<link rel="stylesheet" href="css/style1.css">
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+</script>
+
+<!-- Lunr.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<div id="mobile-header">
+  <h1>Retail Pro Prism</h1>
+  <button id="hamburger">&#9776;</button>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div id="mobile-drawer">
+  <ul>
+    <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
+    <li><span class="caret">Front Office</span>
+      <ul class="nested">
+        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+      </ul>
+    </li>
+    <li><span class="caret">Back Office</span>
+      <ul class="nested"></ul>
+    </li>
+    <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+  </ul>
+
+   <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+  
+     <div class="bottom-area">
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
+      </div>
+      <h2 class="footer-title">Retail Pro Prism</h2>
+    </div>
+</div>
+
+<div id="container">
+  <!-- 左侧电脑板 -->
+  <div id="left-pane">
+    <div class="header-title">
+      <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
+    </div>
+
+    <div id="left-menu-scroll">
+      <ul>
+        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="icon/pdf.png" class="image">Introduction</a></li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
+          <ul class="nested">
+            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+          </ul>
+        </li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Back Office</span>
+          <ul class="nested"></ul>
+        </li>
+        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+      </ul>
+
+      <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+    </div>
+
+    <div class="bottom-area">
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
+      </div>
+      <h2 class="footer-title">Retail Pro Prism</h2>
+    </div>
+  </div>
+
+  <div id="divider"></div>
+
+  <div id="right-pane">
+    <div id="tab-bar"></div>
+    <div id="tab-content"></div>
+  </div>
+</div>
+
+<!-- Tidio 浮窗 -->
+<div id="tidio-container"></div>
+
+<!-- JS 文件 -->
+<script src="js/tab_search.js"></script>
+<script src="js/treeview.js"></script>
+<script src="js/shortcut.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  openTab('Introduction', 'introduction.html');
+
+  // Tidio 浮窗
+  window.tidioChatApi = window.tidioChatApi || {};
+  window.tidioChatApi.display = true;
+  (function() {
+    var tidioScript = document.createElement("script");
+    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
+    tidioScript.async = true;
+    document.body.appendChild(tidioScript);
+  })();
+
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('mobile-drawer');
+
+  /* ☰ hamburger 开 / 关 */
+  if (hamburger && drawer) {
+    hamburger.addEventListener('click', function () {
+      drawer.classList.toggle('open');
+    });
+  }
+
+  /* 📂 mobile folder 展开 */
+  drawer.querySelectorAll('.caret').forEach(caret => {
+    caret.addEventListener('click', function (e) {
+      e.stopPropagation(); // 防止误触
+      const nested = caret.nextElementSibling;
+      if (nested) nested.classList.toggle('nested-open');
+    });
+  });
+
+  /* ✅ 关键：点 menu item 后自动关 drawer */
+  drawer.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', function () {
+      drawer.classList.remove('open');
+    });
+  });
+});
+</script>
+
+</body>
+</html>
