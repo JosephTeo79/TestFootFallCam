@@ -1,47 +1,22 @@
-#floating-widget {
+#floating-widget-left {
   position: fixed;
   bottom: 20px;
-  right: 20px;
-  z-index: 9999;
+  left: 20px; /* 左下角 */
   display: flex;
-  flex-direction: column; /* 垂直展开，如果想水平改 row */
-  align-items: flex-end;
-  gap: 10px;
+  flex-direction: row; /* 水平排列 */
+  gap: 10px; /* 图标间距 */
+  z-index: 9999;
 }
 
-#widget-toggle {
-  width: 60px;
-  height: 60px;
-  background: #007bff;
-  color: white;
-  font-size: 28px;
+#floating-widget-left a img {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   transition: transform 0.2s;
 }
 
-#widget-toggle:hover {
-  transform: scale(1.1);
-}
-
-#widget-icons {
-  display: none; /* 点击 toggle 显示/隐藏 */
-  flex-direction: column;
-  gap: 10px;
-}
-
-#widget-icons a img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  transition: transform 0.2s;
-}
-
-#widget-icons a img:hover {
+#floating-widget-left a img:hover {
   transform: scale(1.1);
 }
