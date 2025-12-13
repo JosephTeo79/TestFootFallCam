@@ -77,16 +77,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
         <p class="subtitle">Stay tuned for updates!</p>
       </div>
 
-      <!-- 左侧底部图标，放在 footer-title 上方 -->
+      <!-- 左侧底部图标 -->
       <div id="floating-widget-left">
         <a href="https://integratedretail.com/" target="_blank" title="IR">
           <img src="icon/favicon.png" alt="Company">
         </a>
         <a href="https://wa.me/6589467929" target="_blank" title="WhatsApp">
           <img src="icon/whatsapp.png" alt="WhatsApp">
-        </a>
-        <a href="https://www.tidio.com/panel/" target="_blank" title="Tidio">
-          <img src="icon/tidio.png" alt="Tidio">
         </a>
         <a href="mailto:joseph.teo@integratedretail.com?subject=Support%20Request&body=Hello%2C%20I%20need%20help%20with...">
           <img src="icon/email.png" alt="Email">
@@ -107,15 +104,28 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   </div>
 </div>
 
+<!-- Tidio 容器（右下角浮动聊天） -->
+<div id="tidio-container"></div>
+
 <!-- JS 文件 --> 
 <script src="js/tab_search.js"></script> 
 <script src="js/treeview.js"></script>
 <script src="js/shortcut.js"></script>
 
+<!-- 自动打开 Introduction -->
 <script>
 window.onload = function () {
-  // 自动打开 Introduction 
   openTab('Introduction', 'introduction.html'); 
+
+  // 加载 Tidio 脚本，让右下角浮窗永久显示
+  window.tidioChatApi = window.tidioChatApi || {};
+  window.tidioChatApi.display = true;
+  (function() {
+    var tidioScript = document.createElement("script");
+    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js"; // 替换成你的 Tidio Key
+    tidioScript.async = true;
+    document.getElementById("tidio-container").appendChild(tidioScript);
+  })();
 };
 </script>
 </body>
