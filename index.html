@@ -184,7 +184,6 @@ document.addEventListener('DOMContentLoaded', function() {
   searchPanel.style.padding = "8px";
   searchPanel.style.overflowY = "auto";
 
-  // 搜索输入框
   const searchInput = document.createElement("input");
   searchInput.type = "text";
   searchInput.placeholder = "Search...";
@@ -193,7 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
   searchInput.style.marginBottom = "6px";
   searchPanel.appendChild(searchInput);
 
-  // 搜索结果容器
   const searchResults = document.createElement("div");
   searchPanel.appendChild(searchResults);
   document.body.appendChild(searchPanel);
@@ -212,10 +210,17 @@ document.addEventListener('DOMContentLoaded', function() {
           item.textContent = doc.title;
           item.style.cursor = "pointer";
           item.style.padding = "4px 0";
+
           item.addEventListener("click", () => {
               if (doc.resource) openResourceTab(doc.title, doc.resource);
               else if (doc.url) openTab(doc.title, doc.url);
+
+              // ✅ 点击结果后隐藏浮窗
+              searchPanel.style.display = "none";
+              searchInput.value = "";
+              searchResults.innerHTML = "";
           });
+
           searchResults.appendChild(item);
       });
   });
@@ -231,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   tabsRight.appendChild(pcSearchBtn);
 
-  // --- 移动端搜索按钮 (Introduction右上角) ---
+  // --- 移动端搜索按钮 ---
   const introLink = document.querySelector('#mobile-drawer a.nav-link[data-url="introduction.html"]');
   if (introLink) {
     const mobileSearchBtn = document.createElement("button");
