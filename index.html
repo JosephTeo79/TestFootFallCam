@@ -167,36 +167,45 @@ document.addEventListener('DOMContentLoaded', function() {
     link.addEventListener('click', () => drawer.classList.remove('open'));
   });
 
-  // --- 创建搜索区域 ---
-  let searchContent = document.createElement("div");
-  searchContent.style.display = "none";
-  searchContent.style.flex = "1";
-  searchContent.style.flexDirection = "column";
-  searchContent.style.height = "100%";
-  tabContent.appendChild(searchContent);
+  // --- 创建独立搜索浮窗 ---
+  const searchPanel = document.createElement("div");
+  searchPanel.id = "search-panel";
+  searchPanel.style.position = "fixed";
+  searchPanel.style.top = "60px";
+  searchPanel.style.right = "16px";
+  searchPanel.style.width = "250px";
+  searchPanel.style.height = "400px";
+  searchPanel.style.background = "#fff";
+  searchPanel.style.border = "1px solid #ccc";
+  searchPanel.style.borderRadius = "8px";
+  searchPanel.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  searchPanel.style.display = "none";
+  searchPanel.style.zIndex = "1000";
+  searchPanel.style.padding = "8px";
+  searchPanel.style.overflowY = "auto";
 
-  const inputBox = document.createElement("input");
-  inputBox.type = "text";
-  inputBox.id = "search-box";
-  inputBox.placeholder = "Search...";
-  inputBox.style.padding = "6px";
-  inputBox.style.margin = "5px";
-  searchContent.appendChild(inputBox);
+  // 搜索输入框
+  const searchInput = document.createElement("input");
+  searchInput.type = "text";
+  searchInput.placeholder = "Search...";
+  searchInput.style.width = "100%";
+  searchInput.style.padding = "4px";
+  searchInput.style.marginBottom = "6px";
+  searchPanel.appendChild(searchInput);
 
-  const resultsDiv = document.createElement("div");
-  resultsDiv.id = "search-results";
-  resultsDiv.style.flex = "1";
-  resultsDiv.style.overflowY = "auto";
-  searchContent.appendChild(resultsDiv);
+  // 搜索结果容器
+  const searchResults = document.createElement("div");
+  searchPanel.appendChild(searchResults);
+  document.body.appendChild(searchPanel);
 
   // --- 搜索逻辑 ---
-  inputBox.addEventListener("input", function () {
-      const query = inputBox.value.trim();
-      resultsDiv.innerHTML = "";
+  searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim();
+      searchResults.innerHTML = "";
       if (!query) return;
 
       const results = documents.filter(doc => fuzzyMatch(query, doc.title));
-      if (results.length === 0) resultsDiv.innerHTML = "<p>No results...</p>";
+      if (results.length === 0) searchResults.innerHTML = "<p>No results</p>";
 
       results.forEach(doc => {
           const item = document.createElement("div");
@@ -207,25 +216,22 @@ document.addEventListener('DOMContentLoaded', function() {
               if (doc.resource) openResourceTab(doc.title, doc.resource);
               else if (doc.url) openTab(doc.title, doc.url);
           });
-          resultsDiv.appendChild(item);
+          searchResults.appendChild(item);
       });
   });
 
-  // --- PC Search Tab 按钮 ---
-  const searchBtnTab = document.createElement("div");
-  searchBtnTab.className = "tab";
-  searchBtnTab.textContent = "🔍 Search";
-  searchBtnTab.style.cursor = "pointer";
-  searchBtnTab.style.flexShrink = "0";
-  searchBtnTab.addEventListener("click", () => {
-      Object.values(openTabs).forEach(({ iframe }) => iframe.style.display = "none");
-      searchContent.style.display = "flex";
-      document.querySelectorAll("#tab-bar .tab").forEach(btn => btn.classList.remove("active"));
-      searchBtnTab.classList.add("active");
+  // --- PC 搜索按钮 ---
+  const pcSearchBtn = document.createElement("div");
+  pcSearchBtn.className = "tab";
+  pcSearchBtn.textContent = "🔍 Search";
+  pcSearchBtn.style.cursor = "pointer";
+  pcSearchBtn.style.flexShrink = "0";
+  pcSearchBtn.addEventListener("click", () => {
+      searchPanel.style.display = searchPanel.style.display === "none" ? "block" : "none";
   });
-  tabsRight.appendChild(searchBtnTab);
+  tabsRight.appendChild(pcSearchBtn);
 
-  // --- 移动端：Introduction 右上角搜索按钮 ---
+  // --- 移动端搜索按钮 (Introduction右上角) ---
   const introLink = document.querySelector('#mobile-drawer a.nav-link[data-url="introduction.html"]');
   if (introLink) {
     const mobileSearchBtn = document.createElement("button");
@@ -241,8 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileSearchBtn.style.cursor = "pointer";
 
     mobileSearchBtn.addEventListener("click", () => {
-      Object.values(openTabs).forEach(({ iframe }) => iframe.style.display = "none");
-      searchContent.style.display = "flex";
+      searchPanel.style.display = searchPanel.style.display === "none" ? "block" : "none";
     });
 
     introLink.style.position = "relative";
