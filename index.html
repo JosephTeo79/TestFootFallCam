@@ -1,10 +1,175 @@
-// js/mobile_search.js
-document.addEventListener("DOMContentLoaded", () => {
-  const introLink = document.querySelector('#mobile-drawer a.nav-link[data-url="introduction.html"]');
-  if (!introLink) return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retail Pro Prism</title>
+<link rel="icon" type="image/png" href="./icon/favicon.png">
 
+<!-- 样式文件 -->
+<link rel="stylesheet" href="css/treeview.css">
+<link rel="stylesheet" href="css/tab-style.css">
+<link rel="stylesheet" href="css/future-updates.css">
+<link rel="stylesheet" href="css/style1.css">
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+</script>
+
+<!-- Lunr.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<div id="mobile-header">
+ <img src="./icon/Integrated_Retail_Logo.png" class="header-icon" alt="Logo">
+  <h1>Retail Pro Prism</h1>
+  <button id="hamburger">&#9776;</button>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div id="mobile-drawer">
+   <div class="drawer-header">
+    <img src="./icon/Integrated_Retail_Logo.png" class="drawer-logo">
+    <h2>Retail Pro Prism</h2>
+  </div>
+  <ul>
+    <li>
+      <a href="#" data-url="introduction.html" class="nav-link">
+        <img src="icon/pdf.png" class="image">Introduction
+      </a>
+    </li>
+    <li><span class="caret">Front Office</span>
+      <ul class="nested">
+        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+      </ul>
+    </li>
+    <li><span class="caret">Back Office</span>
+      <ul class="nested"></ul>
+    </li>
+    <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+  </ul>
+
+   <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+  
+     <div class="bottom-area">
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
+        <a href="https://integratedretail.raiseaticket.com/"><img src="icon/raiseaticket.png" alt="RaiseATicket"></a>
+      </div>
+      <h2 class="footer-title">Retail Pro Prism</h2>
+    </div>
+</div>
+
+<div id="container">
+  <div id="left-pane">
+    <div class="header-title">
+      <img src="./icon/Integrated_Retail_Logo.png" class="header-icon">
+    </div>
+    <div id="left-menu-scroll">
+      <ul>
+        <li>
+          <a href="#" data-url="introduction.html" class="nav-link">
+            <img src="icon/pdf.png" class="image">Introduction
+          </a>
+        </li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Front Office</span>
+          <ul class="nested">
+            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="icon/pdf.png" class="image">POS Training Document</a></li>
+            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="icon/pdf.png" class="image">Login Logout</a></li>
+            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="icon/pdf.png" class="image">Open Register</a></li>
+          </ul>
+        </li>
+        <li><span class="caret"><img src="./icon/folder.jpg" class="image">Back Office</span>
+          <ul class="nested"></ul>
+        </li>
+        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="icon/NoteBooklm.png" class="image">Support Handbook</a></li>
+      </ul>
+      <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+    </div>
+    <div class="bottom-area">
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank"><img src="icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="icon/email.png" alt="Email"></a>
+         <a href="https://integratedretail.raiseaticket.com/"><img src="icon/raiseaticket.png" alt="RaiseATicket"></a>
+      </div>
+      <h2 class="footer-title">Retail Pro Prism</h2>
+    </div>
+  </div>
+
+  <div id="divider"></div>
+
+  <div id="right-pane">
+    <div id="tab-bar"></div>
+    <div id="tab-content"></div>
+  </div>
+</div>
+
+<!-- Tidio 浮窗 -->
+<div id="tidio-container"></div>
+
+<!-- JS 文件 -->
+<script src="js/tab_search.js"></script>
+<script src="js/treeview.js"></script>
+<script src="js/shortcut.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // --- 初始化 Introduction tab ---
+  openTab('Introduction', 'introduction.html');
+
+  // --- Tidio 浮窗 ---
+  window.tidioChatApi = window.tidioChatApi || {};
+  window.tidioChatApi.display = true;
+  (function() {
+    var tidioScript = document.createElement("script");
+    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
+    tidioScript.async = true;
+    document.body.appendChild(tidioScript);
+  })();
+
+  // --- Hamburger drawer ---
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('mobile-drawer');
+  if (hamburger && drawer) {
+    hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
+  }
+
+  // --- Mobile folder展开 ---
+  drawer.querySelectorAll('.caret').forEach(caret => {
+    caret.addEventListener('click', e => {
+      e.stopPropagation();
+      const nested = caret.nextElementSibling;
+      if (nested) nested.classList.toggle('nested-open');
+    });
+  });
+
+  // --- 点击 menu item 关闭 drawer ---
+  drawer.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', () => drawer.classList.remove('open'));
+  });
+
+  // --- 创建独立搜索浮窗 ---
   const searchPanel = document.createElement("div");
-  searchPanel.id = "mobile-search-panel";
+  searchPanel.id = "search-panel";
   searchPanel.style.position = "fixed";
   searchPanel.style.top = "60px";
   searchPanel.style.right = "16px";
@@ -31,51 +196,71 @@ document.addEventListener("DOMContentLoaded", () => {
   searchPanel.appendChild(searchResults);
   document.body.appendChild(searchPanel);
 
-  // 搜索逻辑
+  // --- 搜索逻辑 ---
   searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim();
-    searchResults.innerHTML = "";
-    if (!query) return;
+      const query = searchInput.value.trim();
+      searchResults.innerHTML = "";
+      if (!query) return;
 
-    const results = window.documents.filter(doc => window.fuzzyMatch(query, doc.title));
-    if (results.length === 0) searchResults.innerHTML = "<p>No results</p>";
+      const results = documents.filter(doc => fuzzyMatch(query, doc.title));
+      if (results.length === 0) searchResults.innerHTML = "<p>No results</p>";
 
-    results.forEach(doc => {
-      const item = document.createElement("div");
-      item.textContent = doc.title;
-      item.style.cursor = "pointer";
-      item.style.padding = "4px 0";
+      results.forEach(doc => {
+          const item = document.createElement("div");
+          item.textContent = doc.title;
+          item.style.cursor = "pointer";
+          item.style.padding = "4px 0";
 
-      item.addEventListener("click", () => {
-        if (doc.resource) window.openResourceTab(doc.title, doc.resource);
-        else if (doc.url) window.openTab(doc.title, doc.url);
+          item.addEventListener("click", () => {
+              if (doc.resource) openResourceTab(doc.title, doc.resource);
+              else if (doc.url) openTab(doc.title, doc.url);
 
-        searchPanel.style.display = "none";
-        searchInput.value = "";
-        searchResults.innerHTML = "";
+              // ✅ 点击结果后隐藏浮窗
+              searchPanel.style.display = "none";
+              searchInput.value = "";
+              searchResults.innerHTML = "";
+          });
+
+          searchResults.appendChild(item);
       });
+  });
 
-      searchResults.appendChild(item);
+  // --- PC 搜索按钮 ---
+  const pcSearchBtn = document.createElement("div");
+  pcSearchBtn.className = "tab";
+  pcSearchBtn.textContent = "🔍 Search";
+  pcSearchBtn.style.cursor = "pointer";
+  pcSearchBtn.style.flexShrink = "0";
+  pcSearchBtn.addEventListener("click", () => {
+      searchPanel.style.display = searchPanel.style.display === "none" ? "block" : "none";
+  });
+  tabsRight.appendChild(pcSearchBtn);
+
+  // --- 移动端搜索按钮 ---
+  const introLink = document.querySelector('#mobile-drawer a.nav-link[data-url="introduction.html"]');
+  if (introLink) {
+    const mobileSearchBtn = document.createElement("button");
+    mobileSearchBtn.textContent = "🔍";
+    mobileSearchBtn.style.float = "right";
+    mobileSearchBtn.style.marginLeft = "5px";
+    mobileSearchBtn.style.fontSize = "0.9em";
+    mobileSearchBtn.style.padding = "2px 6px";
+    mobileSearchBtn.style.border = "none";
+    mobileSearchBtn.style.borderRadius = "4px";
+    mobileSearchBtn.style.background = "#007bff";
+    mobileSearchBtn.style.color = "#fff";
+    mobileSearchBtn.style.cursor = "pointer";
+
+    mobileSearchBtn.addEventListener("click", () => {
+      searchPanel.style.display = searchPanel.style.display === "none" ? "block" : "none";
     });
-  });
 
-  // 移动端搜索按钮
-  const mobileSearchBtn = document.createElement("button");
-  mobileSearchBtn.textContent = "🔍";
-  mobileSearchBtn.style.float = "right";
-  mobileSearchBtn.style.marginLeft = "5px";
-  mobileSearchBtn.style.fontSize = "0.9em";
-  mobileSearchBtn.style.padding = "2px 6px";
-  mobileSearchBtn.style.border = "none";
-  mobileSearchBtn.style.borderRadius = "4px";
-  mobileSearchBtn.style.background = "#007bff";
-  mobileSearchBtn.style.color = "#fff";
-  mobileSearchBtn.style.cursor = "pointer";
+    introLink.style.position = "relative";
+    introLink.appendChild(mobileSearchBtn);
+  }
 
-  mobileSearchBtn.addEventListener("click", () => {
-    searchPanel.style.display = searchPanel.style.display === "none" ? "block" : "none";
-  });
-
-  introLink.style.position = "relative";
-  introLink.appendChild(mobileSearchBtn);
 });
+</script>
+
+</body>
+</html>
