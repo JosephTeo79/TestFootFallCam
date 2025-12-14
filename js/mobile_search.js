@@ -1,45 +1,81 @@
+// js/mobile_search.js
 document.addEventListener("DOMContentLoaded", () => {
-    const documents = window.documents || []; // 从 tab.js 引用
-    const searchContent = window.searchContent;
+  const introLink = document.querySelector('#mobile-drawer a.nav-link[data-url="introduction.html"]');
+  if (!introLink) return;
 
-    if (!searchContent) return;
+  const searchPanel = document.createElement("div");
+  searchPanel.id = "mobile-search-panel";
+  searchPanel.style.position = "fixed";
+  searchPanel.style.top = "60px";
+  searchPanel.style.right = "16px";
+  searchPanel.style.width = "250px";
+  searchPanel.style.height = "400px";
+  searchPanel.style.background = "#fff";
+  searchPanel.style.border = "1px solid #ccc";
+  searchPanel.style.borderRadius = "8px";
+  searchPanel.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  searchPanel.style.display = "none";
+  searchPanel.style.zIndex = "1000";
+  searchPanel.style.padding = "8px";
+  searchPanel.style.overflowY = "auto";
 
-    // --- 创建移动端搜索按钮，放在 Introduction menu 右上角 ---
-    const introLink = document.querySelector('#mobile-drawer a.nav-link[data-url="introduction.html"]');
-    if (!introLink) return;
+  const searchInput = document.createElement("input");
+  searchInput.type = "text";
+  searchInput.placeholder = "Search...";
+  searchInput.style.width = "100%";
+  searchInput.style.padding = "4px";
+  searchInput.style.marginBottom = "6px";
+  searchPanel.appendChild(searchInput);
 
-    const mobileSearchBtn = document.createElement("button");
-    mobileSearchBtn.textContent = "🔍";
-    mobileSearchBtn.style.float = "right";
-    mobileSearchBtn.style.marginLeft = "5px";
-    mobileSearchBtn.style.fontSize = "0.9em";
-    mobileSearchBtn.style.padding = "2px 6px";
-    mobileSearchBtn.style.border = "none";
-    mobileSearchBtn.style.borderRadius = "4px";
-    mobileSearchBtn.style.background = "#007bff";
-    mobileSearchBtn.style.color = "#fff";
-    mobileSearchBtn.style.cursor = "pointer";
+  const searchResults = document.createElement("div");
+  searchPanel.appendChild(searchResults);
+  document.body.appendChild(searchPanel);
 
-    introLink.style.position = "relative";
-    introLink.appendChild(mobileSearchBtn);
+  // 搜索逻辑
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.trim();
+    searchResults.innerHTML = "";
+    if (!query) return;
 
-    // --- 点击按钮切换显示搜索面板 ---
-    mobileSearchBtn.addEventListener("click", () => {
-        if (!searchContent) return;
+    const results = window.documents.filter(doc => window.fuzzyMatch(query, doc.title));
+    if (results.length === 0) searchResults.innerHTML = "<p>No results</p>";
 
-        // 隐藏所有已打开 tab
-        Object.values(window.openTabs || {}).forEach(({ iframe }) => {
-            if (iframe) iframe.style.display = "none";
-            if (iframe) iframe.style.flex = "1";
-        });
+    results.forEach(doc => {
+      const item = document.createElement("div");
+      item.textContent = doc.title;
+      item.style.cursor = "pointer";
+      item.style.padding = "4px 0";
 
-        // 切换 searchContent 显示/隐藏
-        searchContent.style.display = searchContent.style.display === "none" ? "flex" : "none";
+      item.addEventListener("click", () => {
+        if (doc.resource) window.openResourceTab(doc.title, doc.resource);
+        else if (doc.url) window.openTab(doc.title, doc.url);
 
-        // 清空搜索输入和结果
-        const inputBox = document.getElementById("search-box");
-        const resultsDiv = document.getElementById("search-results");
-        if (inputBox) inputBox.value = "";
-        if (resultsDiv) resultsDiv.innerHTML = "";
+        searchPanel.style.display = "none";
+        searchInput.value = "";
+        searchResults.innerHTML = "";
+      });
+
+      searchResults.appendChild(item);
     });
+  });
+
+  // 移动端搜索按钮
+  const mobileSearchBtn = document.createElement("button");
+  mobileSearchBtn.textContent = "🔍";
+  mobileSearchBtn.style.float = "right";
+  mobileSearchBtn.style.marginLeft = "5px";
+  mobileSearchBtn.style.fontSize = "0.9em";
+  mobileSearchBtn.style.padding = "2px 6px";
+  mobileSearchBtn.style.border = "none";
+  mobileSearchBtn.style.borderRadius = "4px";
+  mobileSearchBtn.style.background = "#007bff";
+  mobileSearchBtn.style.color = "#fff";
+  mobileSearchBtn.style.cursor = "pointer";
+
+  mobileSearchBtn.addEventListener("click", () => {
+    searchPanel.style.display = searchPanel.style.display === "none" ? "block" : "none";
+  });
+
+  introLink.style.position = "relative";
+  introLink.appendChild(mobileSearchBtn);
 });
