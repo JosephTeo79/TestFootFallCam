@@ -1,13 +1,13 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // 确保浮窗 searchPanel 已经存在
-    const searchPanel = document.getElementById("search-panel");
-    if (!searchPanel) return;
+document.addEventListener("DOMContentLoaded", () => {
+    const documents = window.documents || []; // 从 tab.js 引用
+    const searchContent = window.searchContent;
 
-    // 找 Introduction 链接
+    if (!searchContent) return;
+
+    // --- 创建移动端搜索按钮，放在 Introduction menu 右上角 ---
     const introLink = document.querySelector('#mobile-drawer a.nav-link[data-url="introduction.html"]');
     if (!introLink) return;
 
-    // 创建移动端搜索按钮
     const mobileSearchBtn = document.createElement("button");
     mobileSearchBtn.textContent = "🔍";
     mobileSearchBtn.style.float = "right";
@@ -20,12 +20,26 @@ document.addEventListener('DOMContentLoaded', function() {
     mobileSearchBtn.style.color = "#fff";
     mobileSearchBtn.style.cursor = "pointer";
 
-    // 点击按钮显示/隐藏搜索浮窗
-    mobileSearchBtn.addEventListener("click", () => {
-        searchPanel.style.display = searchPanel.style.display === "none" ? "block" : "none";
-    });
-
-    // 把按钮添加到 Introduction 链接右侧
     introLink.style.position = "relative";
     introLink.appendChild(mobileSearchBtn);
+
+    // --- 点击按钮切换显示搜索面板 ---
+    mobileSearchBtn.addEventListener("click", () => {
+        if (!searchContent) return;
+
+        // 隐藏所有已打开 tab
+        Object.values(window.openTabs || {}).forEach(({ iframe }) => {
+            if (iframe) iframe.style.display = "none";
+            if (iframe) iframe.style.flex = "1";
+        });
+
+        // 切换 searchContent 显示/隐藏
+        searchContent.style.display = searchContent.style.display === "none" ? "flex" : "none";
+
+        // 清空搜索输入和结果
+        const inputBox = document.getElementById("search-box");
+        const resultsDiv = document.getElementById("search-results");
+        if (inputBox) inputBox.value = "";
+        if (resultsDiv) resultsDiv.innerHTML = "";
+    });
 });
