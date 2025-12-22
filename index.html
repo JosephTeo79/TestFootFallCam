@@ -14,13 +14,30 @@
 
 <style>
 html, body {
-  overflow: visible !important;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
-#container,
-#left-pane,
+#container {
+  display: flex;
+  height: 100vh;
+}
+#left-pane {
+  width: 250px;
+  background: #f5f5f5;
+  padding: 16px;
+  box-sizing: border-box;
+}
 #right-pane {
-  overflow: visible !important;
+  flex: 1;
+  padding: 16px;
+  box-sizing: border-box;
+  background: #fff;
+  position: relative;
 }
+
+/* Botpress iframe */
 iframe.botpress-iframe {
   position: fixed !important;
   bottom: 20px !important;
@@ -28,23 +45,26 @@ iframe.botpress-iframe {
   width: 400px !important;
   height: 600px !important;
   border: none !important;
-  z-index: 999999 !important;
-}
-iframe.tidio-iframe {
   z-index: 9999 !important;
+}
+
+/* Tidio iframe 调整 z-index 保证显示 */
+iframe.tidio-iframe {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 440px !important; /* 避开 Botpress */
+  z-index: 9998 !important;
 }
 </style>
 </head>
 <body>
 
-<!-- ================= 页面结构 ================= -->
 <div id="container">
   <div id="left-pane">
-    <h2 style="padding:16px">Retail Pro Prism</h2>
+    <h2>Retail Pro Prism</h2>
   </div>
-  <div id="divider"></div>
   <div id="right-pane">
-    <h3 style="padding:16px">Welcome</h3>
+    <h3>Welcome</h3>
   </div>
 </div>
 
