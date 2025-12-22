@@ -11,111 +11,15 @@
 <link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/tab-style.css">
 <link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/future-updates.css">
 <link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/style1.css">
-
-<!-- PDF.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-<script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
-</script>
-
-<!-- Lunr.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 </head>
 <body>
 
-<!-- MOBILE HEADER -->
-<div id="mobile-header">
-  <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="header-icon" alt="Logo">
-  <h1>Retail Pro Prism</h1>
-  <button id="hamburger">&#9776;</button>
-</div>
-
-<!-- MOBILE DRAWER -->
-<div id="mobile-drawer">
-  <div class="drawer-header">
-    <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="drawer-logo">
-    <h2>Retail Pro Prism</h2>
-  </div>
-  <ul>
-    <li>
-      <a href="#" data-url="introduction.html" class="nav-link">
-        <img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction
-      </a>
-    </li>
-    <li><span class="caret">Front Office</span>
-      <ul class="nested">
-        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">POS Training Document</a></li>
-        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Login Logout</a></li>
-        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Open Register</a></li>
-      </ul>
-    </li>
-    <li><span class="caret">Back Office</span>
-      <ul class="nested"></ul>
-    </li>
-    <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/NoteBooklm.png" class="image">Support Handbook</a></li>
-  </ul>
-  <div class="future-updates">
-    <div class="icon">🚀</div>
-    <h2 class="title">More Content Coming Soon</h2>
-    <p class="subtitle">Stay tuned for updates!</p>
-  </div>
-  <div class="bottom-area">
-    <div id="floating-widget-left">
-      <a href="https://integratedretail.com/" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/favicon.png" alt="Company"></a>
-      <a href="https://wa.me/6589467929" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/whatsapp.png" alt="WhatsApp"></a>
-      <a href="mailto:joseph.teo@integratedretail.com"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/email.png" alt="Email"></a>
-      <a href="https://integratedretail.raiseaticket.com/"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/raiseaticket.png" alt="RaiseATicket"></a>
-    </div>
-    <h2 class="footer-title">Retail Pro Prism</h2>
-  </div>
-</div>
-
 <div id="container">
   <div id="left-pane">
-    <div class="header-title">
-      <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="header-icon">
-    </div>
-    <div id="left-menu-scroll">
-      <ul>
-        <li>
-          <a href="#" data-url="introduction.html" class="nav-link">
-            <img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction
-          </a>
-        </li>
-        <li><span class="caret"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/folder.jpg" class="image">Front Office</span>
-          <ul class="nested">
-            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">POS Training Document</a></li>
-            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Login Logout</a></li>
-            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Open Register</a></li>
-          </ul>
-        </li>
-        <li><span class="caret"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/folder.jpg" class="image">Back Office</span>
-          <ul class="nested"></ul>
-        </li>
-        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/NoteBooklm.png" class="image">Support Handbook</a></li>
-      </ul>
-      <div class="future-updates">
-        <div class="icon">🚀</div>
-        <h2 class="title">More Content Coming Soon</h2>
-        <p class="subtitle">Stay tuned for updates!</p>
-      </div>
-    </div>
-    <div class="bottom-area">
-      <div id="floating-widget-left">
-        <a href="https://integratedretail.com/" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/favicon.png" alt="Company"></a>
-        <a href="https://wa.me/6589467929" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/whatsapp.png" alt="WhatsApp"></a>
-        <a href="mailto:joseph.teo@integratedretail.com"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/email.png" alt="Email"></a>
-        <a href="https://integratedretail.raiseaticket.com/"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/raiseaticket.png" alt="RaiseATicket"></a>
-      </div>
-      <h2 class="footer-title">Retail Pro Prism</h2>
-    </div>
+    <h1>Retail Pro Prism</h1>
   </div>
-
-  <div id="divider"></div>
-
   <div id="right-pane">
-    <div id="tab-bar"></div>
-    <div id="tab-content"></div>
+    <h2>Welcome</h2>
   </div>
 </div>
 
@@ -124,82 +28,34 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 💬
 </button>
 
-<!-- Tidio 浮窗 -->
-<div id="tidio-container"></div>
-
-<!-- JS 文件 -->
-<script src="https://josephteo79.github.io/shared-library/v1.0/js/tab_search.js"></script>
-<script src="https://josephteo79.github.io/shared-library/v1.0/js/treeview.js"></script>
-<script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
-
+<!-- Botpress WebChat -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-
-  // --- 初始化 Introduction tab ---
-  openTab('Introduction', 'introduction.html');
-
-  // --- Tidio 初始化 ---
-  window.tidioChatApi = window.tidioChatApi || {};
-  window.tidioChatApi.display = true;
-  (function() {
-    var tidioScript = document.createElement("script");
-    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
-    tidioScript.async = true;
-    document.body.appendChild(tidioScript);
-  })();
-
-  // --- Botpress 初始化 ---
+  // 配置 Botpress
   window.botpressWebChat = {
-    host: "https://cdn.botpress.cloud/webchat/v3.5/",
-    botId: "XSX123E9",
-    messagingUrl: "https://cdn.botpress.cloud/api/v1",
-    showWidget: false
+    botId: 'XSX123E9',
+    host: 'https://cdn.botpress.cloud/webchat/v3.5/',
+    messagingUrl: 'https://cdn.botpress.cloud/api/v1',
+    showWidget: false, // 不自动显示
   };
 
+  // 插入 Botpress 脚本
   const bpScript = document.createElement('script');
   bpScript.src = "https://cdn.botpress.cloud/webchat/v3.5/inject.js";
   bpScript.async = true;
   document.body.appendChild(bpScript);
 
-  bpScript.onload = () => {
-    const btn = document.getElementById('bp-toggle');
-    const initInterval = setInterval(() => {
-      if (window.botpressWebChat && window.botpressWebChat.render) {
-        clearInterval(initInterval);
-
-        btn.addEventListener('click', () => {
-          if (!window.botpressWebChat._iframe) {
-            window.botpressWebChat.render();
-          } else {
-            const iframe = window.botpressWebChat._iframe;
-            iframe.style.display = iframe.style.display === "none" ? "block" : "none";
-          }
-        });
-      }
-    }, 200);
-  };
-
-  // --- Hamburger drawer ---
-  const hamburger = document.getElementById('hamburger');
-  const drawer = document.getElementById('mobile-drawer');
-  if (hamburger && drawer) {
-    hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
-  }
-
-  drawer.querySelectorAll('.caret').forEach(caret => {
-    caret.addEventListener('click', e => {
-      e.stopPropagation();
-      const nested = caret.nextElementSibling;
-      if (nested) nested.classList.toggle('nested-open');
-    });
+  // 点击按钮显示/隐藏 Botpress iframe
+  const toggleBtn = document.getElementById('bp-toggle');
+  toggleBtn.addEventListener('click', () => {
+    const iframe = document.querySelector('iframe[src*="webchat"]');
+    if (iframe) {
+      iframe.style.display = iframe.style.display === 'none' ? 'block' : 'none';
+    } else if (window.botpressWebChat) {
+      // 初始化聊天窗口（只执行一次）
+      window.botpressWebChat.showWidget = true;
+      window.botpressWebChat.init?.(); // 有些版本可能不需要 init
+    }
   });
-
-  drawer.querySelectorAll('a.nav-link').forEach(link => {
-    link.addEventListener('click', () => drawer.classList.remove('open'));
-  });
-
-});
 </script>
-
 </body>
 </html>
