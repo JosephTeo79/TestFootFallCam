@@ -12,48 +12,41 @@
 <link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/future-updates.css">
 <link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/style1.css">
 
-<!-- ================= 强制 iframe 不被裁剪（关键） ================= -->
+<!-- ================= 强制 iframe 不被裁剪 ================= -->
 <style>
 html, body {
   overflow: visible !important;
 }
-
 #container,
 #left-pane,
 #right-pane {
   overflow: visible !important;
 }
-
 iframe[src*="botpress"] {
   position: fixed !important;
   bottom: 20px !important;
   right: 20px !important;
   z-index: 999999 !important;
 }
-
 iframe[src*="tidio"] {
   z-index: 9999 !important;
 }
 </style>
-
 </head>
 <body>
 
-<!-- ================= 页面结构（保持你原本的） ================= -->
-
+<!-- ================= 页面结构 ================= -->
 <div id="container">
   <div id="left-pane">
     <h2 style="padding:16px">Retail Pro Prism</h2>
   </div>
-
   <div id="divider"></div>
-
   <div id="right-pane">
     <h3 style="padding:16px">Welcome</h3>
   </div>
 </div>
 
-<!-- ================= TIDIO（保持原样） ================= -->
+<!-- ================= TIDIO ================= -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   window.tidioChatApi = window.tidioChatApi || {};
@@ -66,20 +59,20 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<!-- ================= BOTPRESS（必须在最底部） ================= -->
+<!-- ================= BOTPRESS ================= -->
 <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
 <script>
-/*
-  ⚠️ 核心说明
-  - 不放 DOMContentLoaded
-  - 延迟 2.5 秒
-  - 确保 body 已稳定
-*/
 setTimeout(() => {
   window.botpressWebChat.init({
     webchatUrl: "https://cdn.botpress.cloud/webchat/v3.5",
     configUrl: "https://files.bpcontent.cloud/2025/12/22/00/20251222001942-XSX123E9.json"
   });
+
+  // ⭐ 自动打开聊天窗，保证可见
+  setTimeout(() => {
+    window.botpressWebChat.open();
+  }, 800);
+
 }, 2500);
 </script>
 
