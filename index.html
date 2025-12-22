@@ -15,7 +15,8 @@
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 </script>
 
 <!-- Lunr.js -->
@@ -25,18 +26,17 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
   /* Botpress 按钮样式 */
   #bp-toggle {
     position: fixed;
-    bottom: 80px;
+    bottom: 100px;
     right: 20px;
-    z-index: 1001;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 50%;
+    z-index: 9999;
     width: 50px;
     height: 50px;
-    font-size: 24px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    border: none;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    font-size: 24px;
   }
 </style>
 
@@ -45,19 +45,23 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
 <!-- MOBILE HEADER -->
 <div id="mobile-header">
-  <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="header-icon" alt="Logo">
+ <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="header-icon" alt="Logo">
   <h1>Retail Pro Prism</h1>
   <button id="hamburger">&#9776;</button>
 </div>
 
 <!-- MOBILE DRAWER -->
 <div id="mobile-drawer">
-  <div class="drawer-header">
+   <div class="drawer-header">
     <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="drawer-logo">
     <h2>Retail Pro Prism</h2>
   </div>
   <ul>
-    <li><a href="#" data-url="introduction.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction</a></li>
+    <li>
+      <a href="#" data-url="introduction.html" class="nav-link">
+        <img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction
+      </a>
+    </li>
     <li><span class="caret">Front Office</span>
       <ul class="nested">
         <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">POS Training Document</a></li>
@@ -65,25 +69,27 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
         <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Open Register</a></li>
       </ul>
     </li>
-    <li><span class="caret">Back Office</span><ul class="nested"></ul></li>
+    <li><span class="caret">Back Office</span>
+      <ul class="nested"></ul>
+    </li>
     <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/NoteBooklm.png" class="image">Support Handbook</a></li>
   </ul>
 
-  <div class="future-updates">
-    <div class="icon">🚀</div>
-    <h2 class="title">More Content Coming Soon</h2>
-    <p class="subtitle">Stay tuned for updates!</p>
-  </div>
-
-  <div class="bottom-area">
-    <div id="floating-widget-left">
-      <a href="https://integratedretail.com/" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/favicon.png" alt="Company"></a>
-      <a href="https://wa.me/6589467929" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/whatsapp.png" alt="WhatsApp"></a>
-      <a href="mailto:joseph.teo@integratedretail.com"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/email.png" alt="Email"></a>
-      <a href="https://integratedretail.raiseaticket.com/"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/raiseaticket.png" alt="RaiseATicket"></a>
+   <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+  
+     <div class="bottom-area">
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/email.png" alt="Email"></a>
+        <a href="https://integratedretail.raiseaticket.com/"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/raiseaticket.png" alt="RaiseATicket"></a>
+      </div>
+      <h2 class="footer-title">Retail Pro Prism</h2>
     </div>
-    <h2 class="footer-title">Retail Pro Prism</h2>
-  </div>
 </div>
 
 <div id="container">
@@ -93,8 +99,37 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
     </div>
     <div id="left-menu-scroll">
       <ul>
-        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction</a></li>
+        <li>
+          <a href="#" data-url="introduction.html" class="nav-link">
+            <img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction
+          </a>
+        </li>
+        <li><span class="caret"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/folder.jpg" class="image">Front Office</span>
+          <ul class="nested">
+            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">POS Training Document</a></li>
+            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Login Logout</a></li>
+            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Open Register</a></li>
+          </ul>
+        </li>
+        <li><span class="caret"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/folder.jpg" class="image">Back Office</span>
+          <ul class="nested"></ul>
+        </li>
+        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/NoteBooklm.png" class="image">Support Handbook</a></li>
       </ul>
+      <div class="future-updates">
+        <div class="icon">🚀</div>
+        <h2 class="title">More Content Coming Soon</h2>
+        <p class="subtitle">Stay tuned for updates!</p>
+      </div>
+    </div>
+    <div class="bottom-area">
+      <div id="floating-widget-left">
+        <a href="https://integratedretail.com/" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/favicon.png" alt="Company"></a>
+        <a href="https://wa.me/6589467929" target="_blank"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/whatsapp.png" alt="WhatsApp"></a>
+        <a href="mailto:joseph.teo@integratedretail.com"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/email.png" alt="Email"></a>
+        <a href="https://integratedretail.raiseaticket.com/"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/raiseaticket.png" alt="RaiseATicket"></a>
+      </div>
+      <h2 class="footer-title">Retail Pro Prism</h2>
     </div>
   </div>
 
@@ -102,9 +137,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
   <div id="right-pane">
     <div id="tab-bar"></div>
-    <div id="tab-content">
-      <h2>Welcome</h2>
-    </div>
+    <div id="tab-content">Welcome</div>
   </div>
 </div>
 
@@ -121,10 +154,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // 初始化 Introduction tab
-  if (typeof openTab === 'function') openTab('Introduction', 'introduction.html');
 
-  // Tidio
+  // 初始化 Introduction tab
+  openTab('Introduction', 'introduction.html');
+
+  // --- Tidio 浮窗 ---
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
@@ -134,40 +168,117 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(tidioScript);
   })();
 
-  // Hamburger drawer
+  // --- Hamburger drawer ---
   const hamburger = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
   if (hamburger && drawer) {
     hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
   }
+  drawer.querySelectorAll('.caret').forEach(caret => {
+    caret.addEventListener('click', e => {
+      e.stopPropagation();
+      const nested = caret.nextElementSibling;
+      if (nested) nested.classList.toggle('nested-open');
+    });
+  });
+  drawer.querySelectorAll('a.nav-link').forEach(link => {
+    link.addEventListener('click', () => drawer.classList.remove('open'));
+  });
 
-  // Botpress Webchat
+  // --- 搜索浮窗 ---
+  const searchPanel = document.createElement("div");
+  searchPanel.id = "search-panel";
+  searchPanel.style.position = "fixed";
+  searchPanel.style.top = "60px";
+  searchPanel.style.right = "16px";
+  searchPanel.style.width = "250px";
+  searchPanel.style.height = "400px";
+  searchPanel.style.background = "#fff";
+  searchPanel.style.border = "1px solid #ccc";
+  searchPanel.style.borderRadius = "8px";
+  searchPanel.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  searchPanel.style.display = "none";
+  searchPanel.style.zIndex = "1000";
+  searchPanel.style.padding = "8px";
+  searchPanel.style.overflowY = "auto";
+
+  const searchInput = document.createElement("input");
+  searchInput.type = "text";
+  searchInput.placeholder = "Search...";
+  searchInput.style.width = "100%";
+  searchInput.style.padding = "4px";
+  searchInput.style.marginBottom = "6px";
+  searchPanel.appendChild(searchInput);
+
+  const searchResults = document.createElement("div");
+  searchPanel.appendChild(searchResults);
+  document.body.appendChild(searchPanel);
+
+  searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim();
+      searchResults.innerHTML = "";
+      if (!query) return;
+      const results = documents.filter(doc => fuzzyMatch(query, doc.title));
+      if (results.length === 0) searchResults.innerHTML = "<p>No results</p>";
+      results.forEach(doc => {
+          const item = document.createElement("div");
+          item.textContent = doc.title;
+          item.style.cursor = "pointer";
+          item.style.padding = "4px 0";
+          item.addEventListener("click", () => {
+              if (doc.resource) openResourceTab(doc.title, doc.resource);
+              else if (doc.url) openTab(doc.title, doc.url);
+              searchPanel.style.display = "none";
+              searchInput.value = "";
+              searchResults.innerHTML = "";
+          });
+          searchResults.appendChild(item);
+      });
+  });
+
+  // --- 移动端搜索按钮 ---
+  const introLink = document.querySelector('#mobile-drawer a.nav-link[data-url="introduction.html"]');
+  if (introLink) {
+    const mobileSearchBtn = document.createElement("button");
+    mobileSearchBtn.textContent = "🔍";
+    mobileSearchBtn.style.float = "right";
+    mobileSearchBtn.style.marginLeft = "5px";
+    mobileSearchBtn.style.fontSize = "0.9em";
+    mobileSearchBtn.style.padding = "2px 6px";
+    mobileSearchBtn.style.border = "none";
+    mobileSearchBtn.style.borderRadius = "4px";
+    mobileSearchBtn.style.background = "#007bff";
+    mobileSearchBtn.style.color = "#fff";
+    mobileSearchBtn.style.cursor = "pointer";
+    mobileSearchBtn.addEventListener("click", () => {
+      searchPanel.style.display = searchPanel.style.display === "none" ? "block" : "none";
+    });
+    introLink.style.position = "relative";
+    introLink.appendChild(mobileSearchBtn);
+  }
+
+  // --- Botpress 初始化 ---
   window.botpressWebChat = {
     host: 'https://cdn.botpress.cloud/webchat/v3.5/',
     botId: 'XSX123E9',
-    showWidget: false, // 默认隐藏
-    messagingUrl: 'https://cdn.botpress.cloud/webchat/v3.5/',
+    showWidget: false
   };
-
-  const bpToggle = document.getElementById('bp-toggle');
-  function initBotpressButton() {
-    if (!window.botpressWebChat || !window.botpressWebChat.updateProps) {
-      setTimeout(initBotpressButton, 200);
-      return;
-    }
-    let isOpen = false;
-    bpToggle.addEventListener('click', () => {
-      isOpen = !isOpen;
-      window.botpressWebChat.updateProps({ showWidget: isOpen });
-    });
-  }
-  initBotpressButton();
-
-  // 动态加载 Botpress SDK
   const bpScript = document.createElement("script");
   bpScript.src = "https://cdn.botpress.cloud/webchat/v3.5/inject.js";
   bpScript.async = true;
   document.body.appendChild(bpScript);
+
+  function waitForBotpress() {
+    if (!window.botpressWebChat || !window.botpressWebChat.toggle) {
+      setTimeout(waitForBotpress, 200);
+      return;
+    }
+    const bpToggle = document.getElementById('bp-toggle');
+    bpToggle.addEventListener('click', () => {
+      window.botpressWebChat.toggle();
+    });
+  }
+  waitForBotpress();
 
 });
 </script>
