@@ -32,6 +32,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
   // 初始化 Botpress 配置
   window.botpressWebChat = {
     host: 'https://cdn.botpress.cloud/webchat/v3.5/',
@@ -39,25 +40,21 @@ document.addEventListener('DOMContentLoaded', function() {
     showWidget: false // 默认隐藏
   };
 
-  // 加载 Botpress Web Chat 脚本
+  // 加载 Botpress Web Chat
   const bpScript = document.createElement('script');
   bpScript.src = 'https://cdn.botpress.cloud/webchat/v3.5/inject.js';
   bpScript.async = true;
   document.body.appendChild(bpScript);
 
-  // 等待脚本加载完成再绑定事件
+  // 点击按钮显示聊天窗
   bpScript.onload = function() {
     const btn = document.getElementById('bp-toggle');
-
     btn.addEventListener('click', () => {
-      // 判断当前状态显示/隐藏
-      if (window.botpressWebChat.showWidget) {
-        window.botpressWebChat.close();  // 关闭聊天窗
-      } else {
-        window.botpressWebChat.open();   // 打开聊天窗
-      }
+      // 直接修改配置对象控制显示
+      window.botpressWebChat.showWidget = !window.botpressWebChat.showWidget;
     });
   };
+
 });
 </script>
 
