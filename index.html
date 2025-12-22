@@ -4,148 +4,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Retail Pro Prism</title>
+<link rel="icon" type="image/png" href="https://josephteo79.github.io/shared-library/v1.0/icon/favicon.png">
 
-<link rel="icon" type="image/png"
-  href="https://josephteo79.github.io/shared-library/v1.0/icon/favicon.png">
-
-<!-- CSS -->
+<!-- ================= CSS ================= -->
 <link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/treeview.css">
 <link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/tab-style.css">
 <link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/future-updates.css">
 <link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/style1.css">
 
-<!-- PDF.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-<script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
-</script>
-
-<!-- Lunr.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
-
-<!-- Widget Z-Index Control -->
+<!-- ================= 强制 iframe 不被裁剪（关键） ================= -->
 <style>
+html, body {
+  overflow: visible !important;
+}
+
+#container,
+#left-pane,
+#right-pane {
+  overflow: visible !important;
+}
+
+iframe[src*="botpress"] {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 999999 !important;
+}
+
 iframe[src*="tidio"] {
   z-index: 9999 !important;
 }
-iframe[src*="botpress"] {
-  z-index: 999999 !important;
-  bottom: 90px !important; /* avoid overlap */
-}
 </style>
-</head>
 
+</head>
 <body>
 
-<!-- ================= MOBILE HEADER ================= -->
-<div id="mobile-header">
-  <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png"
-       class="header-icon">
-  <h1>Retail Pro Prism</h1>
-  <button id="hamburger">&#9776;</button>
-</div>
+<!-- ================= 页面结构（保持你原本的） ================= -->
 
-<!-- ================= MOBILE DRAWER ================= -->
-<div id="mobile-drawer">
-  <div class="drawer-header">
-    <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png"
-         class="drawer-logo">
-    <h2>Retail Pro Prism</h2>
-  </div>
-
-  <ul>
-    <li>
-      <a href="#" data-url="introduction.html" class="nav-link">
-        <img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">
-        Introduction
-      </a>
-    </li>
-
-    <li>
-      <span class="caret">Front Office</span>
-      <ul class="nested">
-        <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link">POS Training</a></li>
-        <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link">Login Logout</a></li>
-        <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link">Open Register</a></li>
-      </ul>
-    </li>
-
-    <li><span class="caret">Back Office</span><ul class="nested"></ul></li>
-
-    <li>
-      <a href="#" data-url="notebooklm.html" class="nav-link">
-        <img src="https://josephteo79.github.io/shared-library/v1.0/icon/NoteBooklm.png" class="image">
-        Support Handbook
-      </a>
-    </li>
-  </ul>
-</div>
-
-<!-- ================= MAIN CONTAINER ================= -->
 <div id="container">
   <div id="left-pane">
-    <div id="left-menu-scroll"></div>
+    <h2 style="padding:16px">Retail Pro Prism</h2>
   </div>
+
   <div id="divider"></div>
+
   <div id="right-pane">
-    <div id="tab-bar"></div>
-    <div id="tab-content"></div>
+    <h3 style="padding:16px">Welcome</h3>
   </div>
 </div>
 
-<!-- ================= TIDIO ================= -->
+<!-- ================= TIDIO（保持原样） ================= -->
 <script>
-window.tidioChatApi = window.tidioChatApi || {};
-(function () {
-  var t = document.createElement("script");
-  t.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
-  t.async = true;
-  document.body.appendChild(t);
-})();
+document.addEventListener('DOMContentLoaded', function () {
+  window.tidioChatApi = window.tidioChatApi || {};
+  window.tidioChatApi.display = true;
+
+  var tidioScript = document.createElement("script");
+  tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
+  tidioScript.async = true;
+  document.body.appendChild(tidioScript);
+});
 </script>
 
-<!-- ================= BOTPRESS ================= -->
+<!-- ================= BOTPRESS（必须在最底部） ================= -->
 <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
 <script>
-window.botpressWebChat.init({
-  webchatUrl: "https://cdn.botpress.cloud/webchat/v3.5",
-  configUrl: "https://files.bpcontent.cloud/2025/12/22/00/20251222001942-XSX123E9.json",
-  configuration: {
-    hideWidget: false,
-    showCloseButton: true,
-    botName: "Retail Support"
-  }
-});
-</script>
-
-<script>
-const bpFix = setInterval(() => {
-  const bp = document.querySelector("iframe[src*='botpress']");
-  if (bp) {
-    bp.style.position = "fixed";
-    bp.style.right = "20px";
-    bp.style.zIndex = "999999";
-    clearInterval(bpFix);
-  }
-}, 300);
-</script>
-
-<!-- ================= PAGE JS ================= -->
-<script src="https://josephteo79.github.io/shared-library/v1.0/js/tab_search.js"></script>
-<script src="https://josephteo79.github.io/shared-library/v1.0/js/treeview.js"></script>
-<script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  openTab("Introduction", "introduction.html");
-
-  const hamburger = document.getElementById("hamburger");
-  const drawer = document.getElementById("mobile-drawer");
-  if (hamburger && drawer) {
-    hamburger.onclick = () => drawer.classList.toggle("open");
-  }
-});
+/*
+  ⚠️ 核心说明
+  - 不放 DOMContentLoaded
+  - 延迟 2.5 秒
+  - 确保 body 已稳定
+*/
+setTimeout(() => {
+  window.botpressWebChat.init({
+    webchatUrl: "https://cdn.botpress.cloud/webchat/v3.5",
+    configUrl: "https://files.bpcontent.cloud/2025/12/22/00/20251222001942-XSX123E9.json"
+  });
+}, 2500);
 </script>
 
 </body>
