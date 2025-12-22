@@ -15,12 +15,32 @@
 <!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
 </script>
 
 <!-- Lunr.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+
+<style>
+/* Botpress 按钮样式 */
+#bp-toggle {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 30px;
+  border: none;
+  cursor: pointer;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
 </head>
 <body>
 
@@ -38,11 +58,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     <h2>Retail Pro Prism</h2>
   </div>
   <ul>
-    <li>
-      <a href="#" data-url="introduction.html" class="nav-link">
-        <img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction
-      </a>
-    </li>
+    <li><a href="#" data-url="introduction.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction</a></li>
     <li><span class="caret">Front Office</span>
       <ul class="nested">
         <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">POS Training Document</a></li>
@@ -77,27 +93,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   <div id="left-pane">
     <div class="header-title">
       <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="header-icon">
+      <h2>Retail Pro Prism</h2>
     </div>
     <div id="left-menu-scroll">
       <ul>
         <li><a href="#" data-url="introduction.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction</a></li>
-        <li><span class="caret"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/folder.jpg" class="image">Front Office</span>
-          <ul class="nested">
-            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">POS Training Document</a></li>
-            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Login Logout</a></li>
-            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Open Register</a></li>
-          </ul>
-        </li>
-        <li><span class="caret"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/folder.jpg" class="image">Back Office</span>
-          <ul class="nested"></ul>
-        </li>
-        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/NoteBooklm.png" class="image">Support Handbook</a></li>
       </ul>
-      <div class="future-updates">
-        <div class="icon">🚀</div>
-        <h2 class="title">More Content Coming Soon</h2>
-        <p class="subtitle">Stay tuned for updates!</p>
-      </div>
     </div>
   </div>
 
@@ -106,8 +107,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   <div id="right-pane">
     <div id="tab-bar"></div>
     <div id="tab-content">
-      <h2>Welcome</h2>
-      <p>Select a document from the left menu.</p>
+      <h1>Welcome</h1>
+      <p>Select a menu item to view content.</p>
     </div>
   </div>
 </div>
@@ -115,23 +116,42 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
 
-<!-- Botpress 悬浮按钮 -->
-<button id="bp-toggle" style="position:fixed; bottom:100px; right:20px; z-index:9999; border:none; border-radius:50%; width:50px; height:50px; font-size:24px; cursor:pointer; background:#007bff; color:#fff;">🤖</button>
+<!-- Botpress 按钮 -->
+<button id="bp-toggle">💬</button>
 
 <!-- JS 文件 -->
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/tab_search.js"></script>
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/treeview.js"></script>
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 
-<!-- Botpress Webchat SDK -->
+<!-- Botpress SDK -->
 <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  window.botpressWebChat = {
+    host: 'https://cdn.botpress.cloud/webchat/v3.5/',
+    botId: 'XSX123E9',
+    showWidget: false
+  };
 
+  function initBotpressButton() {
+    const bpToggle = document.getElementById('bp-toggle');
+    if (window.botpressWebChat && window.botpressWebChat.toggle) {
+      bpToggle.addEventListener('click', () => {
+        window.botpressWebChat.toggle();
+      });
+    } else {
+      setTimeout(initBotpressButton, 200);
+    }
+  }
+  initBotpressButton();
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
   // --- 初始化 Introduction tab ---
   openTab('Introduction', 'introduction.html');
 
-  // --- Tidio ---
+  // --- Tidio 浮窗 ---
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
@@ -140,39 +160,6 @@ document.addEventListener('DOMContentLoaded', function() {
     tidioScript.async = true;
     document.body.appendChild(tidioScript);
   })();
-
-  // --- Botpress ---
-  window.botpressWebChat = {
-    host: 'https://cdn.botpress.cloud/webchat/v3.5/',
-    botId: 'XSX123E9', // 你的 Bot ID
-    showWidget: false   // 默认隐藏
-  };
-
-  document.getElementById('bp-toggle').addEventListener('click', () => {
-    window.botpressWebChat.toggle();
-  });
-
-  // --- Hamburger drawer ---
-  const hamburger = document.getElementById('hamburger');
-  const drawer = document.getElementById('mobile-drawer');
-  if (hamburger && drawer) {
-    hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
-  }
-
-  // --- Mobile folder展开 ---
-  drawer.querySelectorAll('.caret').forEach(caret => {
-    caret.addEventListener('click', e => {
-      e.stopPropagation();
-      const nested = caret.nextElementSibling;
-      if (nested) nested.classList.toggle('nested-open');
-    });
-  });
-
-  // --- 点击 menu item 关闭 drawer ---
-  drawer.querySelectorAll('a.nav-link').forEach(link => {
-    link.addEventListener('click', () => drawer.classList.remove('open'));
-  });
-
 });
 </script>
 
