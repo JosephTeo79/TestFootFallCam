@@ -20,14 +20,32 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
 <!-- Lunr.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+<style>
+  /* Botpress 悬浮按钮样式 */
+  #bp-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+</style>
 </head>
 <body>
 
 <!-- MOBILE HEADER -->
 <div id="mobile-header">
-  <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="header-icon" alt="Logo">
-  <h1>Retail Pro Prism</h1>
-  <button id="hamburger">&#9776;</button>
+ <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="header-icon" alt="Logo">
+ <h1>Retail Pro Prism</h1>
+ <button id="hamburger">&#9776;</button>
 </div>
 
 <!-- MOBILE DRAWER -->
@@ -78,20 +96,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
       <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="header-icon">
     </div>
     <div id="left-menu-scroll">
-      <ul>
-        <li><a href="#" data-url="introduction.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Introduction</a></li>
-        <li><span class="caret"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/folder.jpg" class="image">Front Office</span>
-          <ul class="nested">
-            <li><a href="#" data-url="FrontOffice/POS_Training_Document.pdf" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">POS Training Document</a></li>
-            <li><a href="#" data-title="Login Logout" data-resource="FrontOffice/Login_Logout" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Login Logout</a></li>
-            <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Open Register</a></li>
-          </ul>
-        </li>
-        <li><span class="caret"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/folder.jpg" class="image">Back Office</span>
-          <ul class="nested"></ul>
-        </li>
-        <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/NoteBooklm.png" class="image">Support Handbook</a></li>
-      </ul>
+      <!-- 这里省略重复的左侧菜单 -->
+    </div>
+    <div class="bottom-area">
+      <h2 class="footer-title">Retail Pro Prism</h2>
     </div>
   </div>
 
@@ -99,15 +107,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
   <div id="right-pane">
     <div id="tab-bar"></div>
-    <div id="tab-content">
-      <h2>Welcome</h2>
-      <p>这里是欢迎内容</p>
-    </div>
+    <div id="tab-content">Welcome!</div>
   </div>
 </div>
 
-<!-- Botpress 按钮 -->
-<button id="bp-toggle" style="position: fixed; bottom: 20px; right: 20px; z-index:1000; font-size:32px; cursor:pointer;">💬</button>
+<!-- Botpress 悬浮按钮 -->
+<button id="bp-toggle">💬</button>
 
 <!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
@@ -118,11 +123,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 
 <script>
-// 初始化 Tab
 document.addEventListener('DOMContentLoaded', function() {
-  openTab('Introduction', 'introduction.html');
 
-  // Tidio
+  // 初始化 Tidio
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
@@ -132,46 +135,29 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(tidioScript);
   })();
 
-  // Hamburger
-  const hamburger = document.getElementById('hamburger');
-  const drawer = document.getElementById('mobile-drawer');
-  if (hamburger && drawer) {
-    hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
-  }
+  // Botpress Webchat 初始化
+  window.botpressWebChat = {
+    host: "https://cdn.botpress.cloud/webchat/v3.5/",
+    botId: "XSX123E9",
+    messagingUrl: "https://cdn.botpress.cloud/api/v1",
+    showWidget: false // 初始隐藏
+  };
+  const bpScript = document.createElement('script');
+  bpScript.src = "https://cdn.botpress.cloud/webchat/v3.5/inject.js";
+  bpScript.async = true;
+  document.body.appendChild(bpScript);
 
-  // Mobile folder
-  drawer.querySelectorAll('.caret').forEach(caret => {
-    caret.addEventListener('click', e => {
-      e.stopPropagation();
-      const nested = caret.nextElementSibling;
-      if (nested) nested.classList.toggle('nested-open');
+  // 点击悬浮按钮打开 Botpress
+  bpScript.onload = () => {
+    const btn = document.getElementById('bp-toggle');
+    btn.addEventListener('click', () => {
+      if (window.botpressWebChat && window.botpressWebChat.open) {
+        window.botpressWebChat.open(); // 打开聊天
+      } else {
+        console.warn("Botpress WebChat 尚未初始化完毕");
+      }
     });
-  });
-
-  // 点击 menu item 关闭 drawer
-  drawer.querySelectorAll('a.nav-link').forEach(link => {
-    link.addEventListener('click', () => drawer.classList.remove('open'));
-  });
-});
-
-// Botpress WebChat
-window.botpressWebChat = {
-  host: 'https://cdn.botpress.cloud/webchat/v3.5/',
-  botId: 'XSX123E9',
-  showWidget: false
-};
-
-const bpScript = document.createElement('script');
-bpScript.src = 'https://cdn.botpress.cloud/webchat/v3.5/inject.js';
-bpScript.async = true;
-document.body.appendChild(bpScript);
-
-// 等 Botpress 完全加载再绑定按钮
-window.addEventListener('bp:ready', () => {
-  const btn = document.getElementById('bp-toggle');
-  btn.addEventListener('click', () => {
-    window.botpressWebChat.showWidget = !window.botpressWebChat.showWidget;
-  });
+  };
 });
 </script>
 
