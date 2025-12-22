@@ -5,13 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Retail Pro Prism</title>
 <link rel="icon" type="image/png" href="https://josephteo79.github.io/shared-library/v1.0/icon/favicon.png">
-
-<!-- 样式文件 -->
-<link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/treeview.css">
-<link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/tab-style.css">
-<link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/future-updates.css">
-<link rel="stylesheet" href="https://josephteo79.github.io/shared-library/v1.0/css/style1.css">
-
 <style>
 #bp-toggle {
   position: fixed;
@@ -32,46 +25,36 @@
 </head>
 <body>
 
-<!-- 左侧菜单、右侧内容保持原样 -->
-<div id="container">
-  <div id="left-pane">
-    <h2>Retail Pro Prism</h2>
-  </div>
-  <div id="right-pane">
-    <h1>Welcome</h1>
-  </div>
-</div>
+<h1>Welcome</h1>
 
 <!-- Botpress 按钮 -->
 <button id="bp-toggle">💬</button>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // 配置 Botpress
+  // 初始化 Botpress 配置
   window.botpressWebChat = {
     host: 'https://cdn.botpress.cloud/webchat/v3.5/',
     botId: 'XSX123E9',
-    showWidget: false
+    showWidget: false // 默认隐藏
   };
 
-  // 加载 Botpress Web Chat
+  // 加载 Botpress Web Chat 脚本
   const bpScript = document.createElement('script');
   bpScript.src = 'https://cdn.botpress.cloud/webchat/v3.5/inject.js';
   bpScript.async = true;
   document.body.appendChild(bpScript);
 
-  // 等待 Botpress 脚本加载完成
+  // 等待脚本加载完成再绑定事件
   bpScript.onload = function() {
     const btn = document.getElementById('bp-toggle');
-    btn.addEventListener('click', () => {
-      if (!window.botpressWebChat) return;
 
-      // 使用官方方法打开/关闭
-      const chatEl = document.querySelector('bp-web-widget');
-      if (chatEl && chatEl.style.display !== 'none') {
-        window.botpressWebChat.close();
+    btn.addEventListener('click', () => {
+      // 判断当前状态显示/隐藏
+      if (window.botpressWebChat.showWidget) {
+        window.botpressWebChat.close();  // 关闭聊天窗
       } else {
-        window.botpressWebChat.open();
+        window.botpressWebChat.open();   // 打开聊天窗
       }
     });
   };
