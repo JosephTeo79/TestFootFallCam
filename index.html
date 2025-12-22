@@ -21,13 +21,16 @@ html, body {
 #right-pane {
   overflow: visible !important;
 }
-iframe[src*="botpress"] {
+iframe.botpress-iframe {
   position: fixed !important;
   bottom: 20px !important;
   right: 20px !important;
+  width: 400px !important;
+  height: 600px !important;
+  border: none !important;
   z-index: 999999 !important;
 }
-iframe[src*="tidio"] {
+iframe.tidio-iframe {
   z-index: 9999 !important;
 }
 </style>
@@ -58,31 +61,11 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<!-- ================= BOTPRESS ================= -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // 动态加载 Botpress inject.js
-  var bpScript = document.createElement("script");
-  bpScript.src = "https://cdn.botpress.cloud/webchat/v3.5/inject.js";
-  bpScript.async = true;
-  document.body.appendChild(bpScript);
-
-  // 等 Botpress 完全加载
-  window.addEventListener('bp:ready', function() {
-    if (!window.botpressWebChat) return;
-
-    window.botpressWebChat.init({
-      webchatUrl: "https://cdn.botpress.cloud/webchat/v3.5",
-      configUrl: "https://files.bpcontent.cloud/2025/12/22/00/20251222001942-XSX123E9.json"
-    });
-
-    // 自动打开聊天窗
-    setTimeout(() => {
-      window.botpressWebChat.open();
-    }, 800);
-  });
-});
-</script>
+<!-- ================= BOTPRESS iframe ================= -->
+<iframe
+    class="botpress-iframe"
+    src="https://cdn.botpress.cloud/webchat/v3.5/shareable.html?configUrl=https://files.bpcontent.cloud/2025/12/22/00/20251222001942-XSX123E9.json">
+</iframe>
 
 </body>
 </html>
