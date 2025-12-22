@@ -61,13 +61,16 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- ================= BOTPRESS ================= -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // 动态创建 Botpress 脚本
+  // 动态加载 Botpress inject.js
   var bpScript = document.createElement("script");
   bpScript.src = "https://cdn.botpress.cloud/webchat/v3.5/inject.js";
   bpScript.async = true;
+  document.body.appendChild(bpScript);
 
-  // 脚本加载完成后初始化 Botpress
-  bpScript.onload = function() {
+  // 等 Botpress 完全加载
+  window.addEventListener('bp:ready', function() {
+    if (!window.botpressWebChat) return;
+
     window.botpressWebChat.init({
       webchatUrl: "https://cdn.botpress.cloud/webchat/v3.5",
       configUrl: "https://files.bpcontent.cloud/2025/12/22/00/20251222001942-XSX123E9.json"
@@ -77,9 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
       window.botpressWebChat.open();
     }, 800);
-  };
-
-  document.body.appendChild(bpScript);
+  });
 });
 </script>
 
