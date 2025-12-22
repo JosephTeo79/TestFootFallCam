@@ -22,25 +22,24 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 
 <style>
-/* Botpress 按钮样式 */
-#bp-toggle {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #007bff;
-  color: #fff;
-  font-size: 30px;
-  border: none;
-  cursor: pointer;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  /* Botpress 按钮样式 */
+  #bp-toggle {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1001;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
 </style>
+
 </head>
 <body>
 
@@ -66,9 +65,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
         <li><a href="#" data-title="Open Register" data-resource="FrontOffice/Open_Register" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/pdf.png" class="image">Open Register</a></li>
       </ul>
     </li>
-    <li><span class="caret">Back Office</span>
-      <ul class="nested"></ul>
-    </li>
+    <li><span class="caret">Back Office</span><ul class="nested"></ul></li>
     <li><a href="#" data-url="notebooklm.html" class="nav-link"><img src="https://josephteo79.github.io/shared-library/v1.0/icon/NoteBooklm.png" class="image">Support Handbook</a></li>
   </ul>
 
@@ -93,7 +90,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
   <div id="left-pane">
     <div class="header-title">
       <img src="https://josephteo79.github.io/shared-library/v1.0/icon/Integrated_Retail_Logo.png" class="header-icon">
-      <h2>Retail Pro Prism</h2>
     </div>
     <div id="left-menu-scroll">
       <ul>
@@ -107,8 +103,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
   <div id="right-pane">
     <div id="tab-bar"></div>
     <div id="tab-content">
-      <h1>Welcome</h1>
-      <p>Select a menu item to view content.</p>
+      <h2>Welcome</h2>
     </div>
   </div>
 </div>
@@ -124,34 +119,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/treeview.js"></script>
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 
-<!-- Botpress SDK -->
-<script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
-<script>
-  window.botpressWebChat = {
-    host: 'https://cdn.botpress.cloud/webchat/v3.5/',
-    botId: 'XSX123E9',
-    showWidget: false
-  };
-
-  function initBotpressButton() {
-    const bpToggle = document.getElementById('bp-toggle');
-    if (window.botpressWebChat && window.botpressWebChat.toggle) {
-      bpToggle.addEventListener('click', () => {
-        window.botpressWebChat.toggle();
-      });
-    } else {
-      setTimeout(initBotpressButton, 200);
-    }
-  }
-  initBotpressButton();
-</script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // --- 初始化 Introduction tab ---
-  openTab('Introduction', 'introduction.html');
+  // 初始化 Introduction tab
+  if (typeof openTab === 'function') openTab('Introduction', 'introduction.html');
 
-  // --- Tidio 浮窗 ---
+  // Tidio
   window.tidioChatApi = window.tidioChatApi || {};
   window.tidioChatApi.display = true;
   (function() {
@@ -160,6 +133,42 @@ document.addEventListener('DOMContentLoaded', function() {
     tidioScript.async = true;
     document.body.appendChild(tidioScript);
   })();
+
+  // Hamburger drawer
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('mobile-drawer');
+  if (hamburger && drawer) {
+    hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
+  }
+
+  // Botpress Webchat
+  window.botpressWebChat = {
+    host: 'https://cdn.botpress.cloud/webchat/v3.5/',
+    botId: 'XSX123E9',
+    showWidget: false, // 默认隐藏
+    messagingUrl: 'https://cdn.botpress.cloud/webchat/v3.5/',
+  };
+
+  const bpToggle = document.getElementById('bp-toggle');
+  function initBotpressButton() {
+    if (!window.botpressWebChat || !window.botpressWebChat.updateProps) {
+      setTimeout(initBotpressButton, 200);
+      return;
+    }
+    let isOpen = false;
+    bpToggle.addEventListener('click', () => {
+      isOpen = !isOpen;
+      window.botpressWebChat.updateProps({ showWidget: isOpen });
+    });
+  }
+  initBotpressButton();
+
+  // 动态加载 Botpress SDK
+  const bpScript = document.createElement("script");
+  bpScript.src = "https://cdn.botpress.cloud/webchat/v3.5/inject.js";
+  bpScript.async = true;
+  document.body.appendChild(bpScript);
+
 });
 </script>
 
