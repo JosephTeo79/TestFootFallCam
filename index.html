@@ -18,7 +18,27 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 
 <style>
-  #bot-button { position:fixed; bottom:90px; right:20px; z-index:1000; background:#007bff; color:#fff; border:none; border-radius:50%; width:60px; height:60px; font-size:24px; cursor:pointer; }
+ #bot-button {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 60px;       /* 按钮宽度 */
+  height: 60px;      /* 按钮高度 */
+  border-radius: 50%;/* 圆形按钮 */
+  background: #007bff; /* 背景色 */
+  border: none;
+  cursor: pointer;
+  display: flex;        /* 让图片居中 */
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* 按钮里图片大小 */
+#bot-button img {
+  width: 32px;   /* 图标宽度 */
+  height: 32px;  /* 图标高度 */
+} 
   #bot-iframe { position:fixed; bottom:160px; right:20px; width:400px; height:500px; border:1px solid #ccc; border-radius:8px; display:none; z-index:999; }
 </style>
 </head>
