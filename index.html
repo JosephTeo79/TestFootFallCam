@@ -18,29 +18,43 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 
 <style>
- #bot-button {
+#bot-button {
   position: fixed;
   bottom: 90px;
   right: 20px;
-  width: 60px;       /* 按钮宽度 */
-  height: 60px;      /* 按钮高度 */
-  border-radius: 50%;/* 圆形按钮 */
-  background: #007bff; /* 背景色 */
+  z-index: 1000;
+  background: #007bff;
   border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
   cursor: pointer;
-  display: flex;        /* 让图片居中 */
-  justify-content: center;
+  display: flex;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  justify-content: center;
 }
 
-/* 按钮里图片大小 */
 #bot-button img {
-  width: 32px;   /* 图标宽度 */
-  height: 32px;  /* 图标高度 */
-  border-radius: 50%;    /* logo 变圆 */
-  object-fit: cover;     /* 防止拉伸，保持比例裁剪 */
-} 
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* 尾巴 */
+#bot-button::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;      /* 尾巴位置在按钮下方 */
+  left: 50%;         /* 居中 */
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #007bff; /* 尾巴颜色和按钮一致 */
+}
+
   #bot-iframe { position:fixed; bottom:160px; right:20px; width:400px; height:500px; border:1px solid #ccc; border-radius:8px; display:none; z-index:999; }
 </style>
 </head>
