@@ -35,25 +35,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 }
 
 #bot-button img {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
 }
 
-/* 尾巴 */
-#bot-button::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;      /* 尾巴位置在按钮下方 */
-  left: 50%;         /* 居中 */
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 8px solid #007bff; /* 尾巴颜色和按钮一致 */
-}
+
 
   #bot-iframe { position:fixed; bottom:160px; right:20px; width:400px; height:500px; border:1px solid #ccc; border-radius:8px; display:none; z-index:999; }
 </style>
@@ -157,7 +145,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
 <!-- Botpress -->
 <button id="bot-button">
-  <img src="https://files.bpcontent.cloud/2025/12/22/00/20251222002253-Y8F2R9P2.png">
+  <img src="https://josephteo79.github.io/shared-library/v1.0/icon/raiseaticket.png">
 </button>
 <iframe id="bot-iframe"></iframe>
 
