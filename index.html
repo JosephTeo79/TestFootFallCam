@@ -38,6 +38,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 #bot-button img {
   width: 32px;   /* 图标宽度 */
   height: 32px;  /* 图标高度 */
+  border-radius: 50%;    /* logo 变圆 */
+  object-fit: cover;     /* 防止拉伸，保持比例裁剪 */
 } 
   #bot-iframe { position:fixed; bottom:160px; right:20px; width:400px; height:500px; border:1px solid #ccc; border-radius:8px; display:none; z-index:999; }
 </style>
