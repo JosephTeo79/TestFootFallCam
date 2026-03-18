@@ -16,34 +16,22 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 </script>
 <!-- Lunr.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
-
+   <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
 <style>
-#bot-button {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  z-index: 1000;
-  background: #007bff;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  #webchat .bpWebchat {
+    position: fixed;
+    bottom:20px;
+    right:20px;
+    z-index:9999;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    max-width: 100%;
+  }
 
-#bot-button img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-
-
-  #bot-iframe { position:fixed; bottom:160px; right:20px; width:400px; height:500px; border:1px solid #ccc; border-radius:8px; display:none; z-index:999; }
+  #webchat .bpFab {
+    display: none;
+  }
 </style>
 </head>
 <body>
@@ -143,11 +131,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <!-- Tidio 浮窗 -->
 <div id="tidio-container"></div>
 
-<!-- Botpress -->
-<button id="bot-button">
-  <img src="https://josephteo79.github.io/shared-library/v1.0/icon/favicon.png">
-</button>
-<iframe id="bot-iframe"></iframe>
+
 
 <!-- JS 文件 -->
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/tab_search.js"></script>
@@ -156,8 +140,51 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // 初始化 Introduction tab
+
+  
+  // --- 初始化 Introduction tab ---
   openTab('Introduction', 'introduction.html');
+
+// 1. 定义你的支持门户窗口名称
+const SUPPORT_WINDOW_NAME = "Integrated_Retail_Support_Portal";
+
+// 2. 监听全局点击事件
+document.addEventListener('click', function(event) {
+    // 寻找点击的目标是否是链接
+    const link = event.target.closest('a');
+    
+    if (link) {
+        const url = link.href;
+        
+        // 3. 检查是否属于你的 5 个目标网站之一
+        const isTargetSite = [
+            'integratedretail.com',
+            'Cegid-Retail',
+            'Retailpro-Prism',
+            'Footfall-Cam',
+            'Allegory-AI'
+        ].some(keyword => url.includes(keyword));
+
+        if (isTargetSite) {
+            // 🚀 核心逻辑：阻止默认的 _blank (新标签) 行为
+            event.preventDefault();
+            
+            // 4. 在同一个命名窗口中打开/刷新
+            const portalWin = window.open(url, SUPPORT_WINDOW_NAME);
+            
+            // 5. 尝试将窗口带到最前 (Focus)
+            if (portalWin) {
+                portalWin.focus();
+            }
+            
+            console.log(`🔗 Redirecting to ${url} in shared tab: ${SUPPORT_WINDOW_NAME}`);
+        }
+    }
+}, true); // 使用 Capture 模式确保在 Botpress 内部逻辑前拦截
+
+
+
+
 /*
   // Tidio
   window.tidioChatApi = window.tidioChatApi || {};
@@ -169,6 +196,83 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(tidioScript);
   })();
 */
+
+
+ window.botpress.on("webchat:ready", () => {
+    window.botpress.open();
+  });
+
+  // --- 逻辑 A: 获取 URL 参数 (来自 Botpress 的传值) ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const firstName = urlParams.get('firstname') || '';
+    const lastName = urlParams.get('lastname') || '';
+    const email = urlParams.get('email') || '';
+    const phone = urlParams.get('phone') || '';
+
+    
+
+    // --- 逻辑 B: Botpress 初始化 ---
+    
+    // 注意：如果你希望机器人记住用户，不要每次都 generate randomUserId
+    // 建议：只有当 URL 里没有 firstname 时才清空，或者干脆保留 session
+  //  if (!firstName) {
+        localStorage.clear(); 
+  //  }
+// 如果不想全删，可以用循环只删 bp 开头的项：
+// Object.keys(localStorage).forEach(key => { if(key.includes('bp')) localStorage.removeItem(key); });
+const randomUserId = firstName ? ('user_' + firstName.toLowerCase()) : ('guest_' + Math.random().toString(36).substring(2, 7));
+
+  window.botpress.init({
+  "botId": "a513dc7b-a61b-4a0e-b0c2-79292f0f64b8",
+  "userId": randomUserId,
+  "configuration": {
+    "version": "v2",
+    "botName": "Integrated Retail Support Agent",
+    "botAvatar": "https://files.bpcontent.cloud/2026/01/04/10/20260104100855-WL4YT8WH.png",
+    "botDescription": "",
+    "website": {},
+    "email": {},
+    "phone": {},
+    "termsOfService": {},
+    "privacyPolicy": {},
+    "color": "#044181",
+    "variant": "solid",
+    "headerVariant": "glass",
+    "themeMode": "light",
+    "fontFamily": "inter",
+    "radius": 2,
+    "feedbackEnabled": false,
+    "footer": "[⚡ by Botpress](https://botpress.com/?from=webchat)",
+    "soundEnabled": false,
+    "proactiveMessageEnabled": false,
+    "proactiveBubbleMessage": "Hi! 👋 Need help?",
+    "proactiveBubbleTriggerType": "afterDelay",
+    "proactiveBubbleDelayTime": 10
+  },
+  "clientId": "a77753bd-2319-48dd-a782-9d6ba282b204",
+  "selector": "#webchat"
+});
+
+  // When webchat is ready
+    window.botpress.on('webchat:initialized', () => {
+      console.log('✅ Webchat initialized');
+
+      // STEP 1: Upd2ate User with data
+      window.botpress.updateUser({
+        data: {
+         email: urlParams.get('email') || "",
+          phone:urlParams.get('phone') || "",
+          firstname:urlParams.get('firstname') || "",
+          lastname:urlParams.get('lastname') || "",
+          page_name: "Allegory",
+          category: "general",
+          timestamp: new Date().toISOString()
+        }
+      });
+    });
+  
+
+  
   // Hamburger drawer
   const hamburger = document.getElementById('hamburger');
   const drawer = document.getElementById('mobile-drawer');
@@ -185,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
   drawer.querySelectorAll('a.nav-link').forEach(link => {
     link.addEventListener('click', () => drawer.classList.remove('open'));
   });
-
+/*
   // Botpress Button
   const botButton = document.getElementById('bot-button');
   const botIframe = document.getElementById('bot-iframe');
@@ -199,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
       botIframe.style.display = 'none';
     }
   });
-
+*/
 });
 </script>
 
