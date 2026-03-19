@@ -292,7 +292,7 @@ const randomUserId = firstName ? ('user_' + firstName.toLowerCase()) : ('guest_'
   const payload = event?.payload;
 
   // 🧠 捕获 Botpress 的 open_url
-  if (payload?.type === 'open_url' && payload?.url) {
+  if (payload?.type === 'open_IRSupportTag' && payload?.url) {
     const url = payload.url;
 
     console.log("🧠 Bot 控制跳转:", url);
