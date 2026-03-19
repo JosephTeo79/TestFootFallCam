@@ -139,37 +139,42 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 <script>
 /**
- * 1. 核心跳转函数：负责参数接力
+ * 1. 核心跳转函数：负责清理 URL 并带参数接力
  */
-
 function safeRedirect(rawUrl) {
-    if (!rawUrl || rawUrl === '#' || rawUrl.startsWith('javascript')) return;
+    if (!rawUrl || typeof rawUrl !== 'string') return;
 
     try {
-        // --- 核心修复：强力清理 URL 末尾的各种干扰字符 ---
-        // 1. 去掉反斜杠转义
+        console.log("🔍 原始捕获 URL:", rawUrl);
+
+        // --- 强力清洗逻辑 ---
+        // 1. 去掉所有反斜杠 (Botpress 经常带这个)
         let cleanUrl = rawUrl.replace(/\\/g, '');
-        // 2. 切掉所有可能的 JSON 结尾符号：双引号、单引号、大括号、中括号、中文引号
-        // 使用正则截取第一个出现的非法字符之前的内容
-        cleanUrl = cleanUrl.split(/[“”"'}）\] ]/)[0];
+        
+        // 2. 找到 http 的开头，并切断后面所有的引号、括号、大括号
+        // 我们只保留从 http 开始到第一个引号或括号之前的内容
+        const match = cleanUrl.match(/https?:\/\/[^\s"“'”’\}）\]]+/);
+        if (match) {
+            cleanUrl = match[0];
+        }
 
+        // 3. 构建新的 URL 并注入当前页面参数
         const urlParams = new URLSearchParams(window.location.search);
-        // 尝试构建新的 URL 对象
         const newUrl = new URL(cleanUrl);
-
-        // 将当前页面的参数（firstname, email 等）附加到新页面
+        
         urlParams.forEach((value, key) => {
             newUrl.searchParams.set(key, value);
         });
 
-        console.log("🚀 最终清洗后的跳转地址:", newUrl.toString());
-        // 覆盖整个浏览器标签页
+        console.log("🚀 最终清洗并接力参数:", newUrl.toString());
+        
+        // 强制使用最顶层窗口跳转
         window.top.location.href = newUrl.toString();
     } catch (e) {
-        // 降级处理：如果 URL 构建失败，尝试手动清理后跳转
-        console.error("URL 格式化失败，尝试暴力跳转:", rawUrl);
-        let fallbackUrl = rawUrl.replace(/[“”"'}）\] ]/g, '').replace(/\\/g, '');
-        window.top.location.href = fallbackUrl;
+        console.error("跳转执行失败:", e);
+        // 最后的兜底：如果上面都失败了，直接尝试用原始地址最暴力的方式跳
+        const fallback = rawUrl.replace(/[^\x21-\x7E]+/g, ''); // 只保留 ASCII 字符
+        window.top.location.href = fallback;
     }
 }
 
@@ -186,127 +191,39 @@ document.addEventListener('DOMContentLoaded', function() {
         "configuration": { "botName": "Integrated Retail Support Agent", "color": "#044181" }
     });
 
+    // 重点：注入监听器
     window.botpress.on('webchat:ready', () => {
-        console.log("🤖 Botpress 监听器就绪");
+        console.log("🤖 Botpress 监听器已就绪...");
         window.botpress.open();
 
-        // 拦截所有 Botpress 事件
         window.botpress.on('*', (event) => {
-            let extractedUrl = null;
+            // 只要捕获到包含网址的消息，就尝试跳转
             const p = event.payload;
+            let target = null;
 
-            // 深度提取逻辑
             if (p?.url) {
-                extractedUrl = p.url;
+                target = p.url;
             } else if (p?.payload) {
-                // 处理 Postback 里的 JSON 字符串或直接 URL
-                if (typeof p.payload === 'string') {
-                    if (p.payload.includes('http')) {
-                        extractedUrl = p.payload;
-                    } else if (p.payload.includes('{')) {
-                        try {
-                            const inner = JSON.parse(p.payload);
-                            extractedUrl = inner.url;
-                        } catch (err) { }
-                    }
+                // 处理 Postback 里的字符串
+                if (typeof p.payload === 'string' && p.payload.includes('http')) {
+                    target = p.payload;
                 } else if (p.payload.url) {
-                    extractedUrl = p.payload.url;
+                    target = p.payload.url;
                 }
             }
 
-            // 如果提取到了 URL，且包含你的域名
-            if (extractedUrl && extractedUrl.includes('josephteo79')) {
-                console.log("🎯 发现信号，开始清洗跳转...");
-                safeRedirect(extractedUrl);
+            // 针对任何包含关键字的事件进行拦截
+            if (target && target.includes('josephteo79')) {
+                safeRedirect(target);
             }
         });
     });
 
-    // 用户信息更新
     window.botpress.on('webchat:initialized', () => {
         window.botpress.updateUser({ data: { email, firstname: firstName } });
     });
 
-    // 移动端菜单
-    const hamburger = document.getElementById('hamburger');
-    const drawer = document.getElementById('mobile-drawer');
-    if (hamburger && drawer) {
-        hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
-    }
-});
-</script>
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const firstName = urlParams.get('firstname') || '';
-    const email = urlParams.get('email') || '';
-
-    // 初始化 Botpress
-    window.botpress.init({
-        "botId": "a513dc7b-a61b-4a0e-b0c2-79292f0f64b8",
-        "clientId": "a77753bd-2319-48dd-a782-9d6ba282b204",
-        "selector": "#webchat",
-        "configuration": { "botName": "Integrated Retail Support Agent", "color": "#044181" }
-    });
-
-    window.botpress.on('webchat:ready', () => {
-        console.log("🤖 Botpress 已就绪，深度监听器启动...");
-        window.botpress.open();
-
-        // 【核心修改】深度拦截逻辑
-        window.botpress.on('*', (event) => {
-            console.log("🔍 捕捉事件:", event.type, event.payload);
-
-            let extractedUrl = null;
-
-            // 无论什么类型的事件，我们都去翻它的 payload
-            const p = event.payload;
-
-            // 路径 1: 直接在 payload 里 (Open URL 模式)
-            if (p?.url) extractedUrl = p.url;
-            
-            // 路径 2: 嵌套在 payload.payload 里 (Postback 模式)
-            else if (p?.payload) {
-                // 如果 payload 内部是 JSON 字符串
-                if (typeof p.payload === 'string' && p.payload.includes('{')) {
-                    try {
-                        const inner = JSON.parse(p.payload);
-                        extractedUrl = inner.url;
-                    } catch (e) { }
-                } 
-                // 如果 payload 直接就是 URL 字符串
-                else if (typeof p.payload === 'string' && p.payload.includes('http')) {
-                    extractedUrl = p.payload;
-                }
-                // 如果是对象
-                else if (p.payload.url) {
-                    extractedUrl = p.payload.url;
-                }
-            }
-
-            // 路径 3: 暴力扫描（如果以上都失效，直接检查整个 payload 字符串）
-            if (!extractedUrl && p) {
-                const strPayload = JSON.stringify(p);
-                if (strPayload.includes('josephteo79.github.io')) {
-                    // 用正则抓取网址
-                    const match = strPayload.match(/https?:\/\/[^\s"']+/);
-                    if (match) extractedUrl = match[0].replace(/\\/g, ''); // 去掉转义斜杠
-                }
-            }
-
-            // 执行跳转
-            if (extractedUrl && extractedUrl.includes('josephteo79')) {
-                console.log("🎯 成功截获目标 URL:", extractedUrl);
-                safeRedirect(extractedUrl);
-            }
-        });
-    });
-
-    // 用户信息更新
-    window.botpress.on('webchat:initialized', () => {
-        window.botpress.updateUser({ data: { email, firstname: firstName } });
-    });
-
-    // 移动端菜单逻辑
+    // 基础 UI 逻辑
     const hamburger = document.getElementById('hamburger');
     const drawer = document.getElementById('mobile-drawer');
     if (hamburger && drawer) {
