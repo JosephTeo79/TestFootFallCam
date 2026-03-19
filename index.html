@@ -144,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // --- 初始化 Introduction tab ---
   openTab('Introduction', 'introduction.html');
-
 // 1. 定义你的支持门户窗口名称
 const SUPPORT_WINDOW_NAME = "Integrated_Retail_Support_Portal";
 
@@ -159,10 +158,8 @@ document.addEventListener('click', function(event) {
         // 3. 检查是否属于你的 5 个目标网站之一
         const isTargetSite = [
             'integratedretail.com',
-            'Cegid-Retail',
-            'Retailpro-Prism',
-            'Footfall-Cam',
-            'Allegory-AI'
+            'TestFootFallCam',
+            'Allegory'
         ].some(keyword => url.includes(keyword));
 
         if (isTargetSite) {
@@ -264,7 +261,7 @@ const randomUserId = firstName ? ('user_' + firstName.toLowerCase()) : ('guest_'
           phone:urlParams.get('phone') || "",
           firstname:urlParams.get('firstname') || "",
           lastname:urlParams.get('lastname') || "",
-          page_name: "Allegory",
+          page_name: "Footfallcam",
           category: "general",
           timestamp: new Date().toISOString()
         }
