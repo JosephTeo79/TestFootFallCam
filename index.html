@@ -139,12 +139,32 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 
 <script>
+
+const originalWindowOpen = window.open;
+window.open = function(url, name, specs) {
+    const isTargetSite = [
+        'integratedretail.com',
+        'TestFootFallCam',
+        'Allegory'
+        
+    ].some(keyword => url && url.includes(keyword));
+
+    if (isTargetSite) {
+        // 强制所有目标网站进入同一个命名窗口
+        console.log("拦截到跳转请求，强制合并窗口:", url);
+        return originalWindowOpen.call(window, url, "Integrated_Retail_Support_Portal");
+    }
+    // 其他不相关的跳转按原样处理
+    return originalWindowOpen.call(window, url, name, specs);
+};
+
+   
 document.addEventListener('DOMContentLoaded', function() {
 
   
   // --- 初始化 Introduction tab ---
   openTab('Introduction', 'introduction.html');
-// 1. 定义你的支持门户窗口名称
+/*// 1. 定义你的支持门户窗口名称
 const SUPPORT_WINDOW_NAME = "Integrated_Retail_Support_Portal";
 
 // 2. 监听全局点击事件
@@ -179,7 +199,7 @@ document.addEventListener('click', function(event) {
     }
 }, true); // 使用 Capture 模式确保在 Botpress 内部逻辑前拦截
 
-
+*/
 
 
 /*
