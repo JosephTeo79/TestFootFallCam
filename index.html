@@ -139,102 +139,69 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 
 <script>
-/**
- * 核心：参数接力跳转函数 (确保使用 window.top)
- */
+// 1. 核心跳转函数（带参数接力）
 function safeRedirect(targetUrl) {
     if (!targetUrl || targetUrl === '#' || targetUrl.startsWith('javascript')) return;
     try {
         const currentParams = new URLSearchParams(window.location.search);
         const newUrl = new URL(targetUrl, window.location.origin);
-        currentParams.forEach((value, key) => { newUrl.searchParams.set(key, value); });
-        
-        console.log("🚀 执行原地参数接力跳转:", newUrl.toString());
+        currentParams.forEach((value, key) => {
+            newUrl.searchParams.set(key, value);
+        });
+        console.log("🚀 准备执行跳转:", newUrl.toString());
+        // 强制使用最顶层窗口跳转
         window.top.location.href = newUrl.toString();
     } catch (e) {
         window.top.location.href = targetUrl;
     }
 }
 
-/**
- * 终极拦截：监听 Iframe 消息
- */
-window.addEventListener('message', function(event) {
-    if (event.data) {
-        // 尝试从各种 Botpress 消息结构中抓取 URL
-        const data = event.data.payload || event.data.value?.payload || event.data;
-        const potentialUrl = data?.url || data?.payload?.url;
-
-        if (potentialUrl && potentialUrl.includes('josephteo79')) {
-            console.log("🎯 抓到底层消息 URL:", potentialUrl);
-            safeRedirect(potentialUrl);
-        }
-    }
-}, false);
-
 document.addEventListener('DOMContentLoaded', function() {
+    // 获取 URL 参数
     const urlParams = new URLSearchParams(window.location.search);
     const firstName = urlParams.get('firstname') || '';
     const email = urlParams.get('email') || '';
 
     // 初始化 Botpress
-    const randomUserId = firstName ? ('user_' + firstName.toLowerCase().replace(/\s/g, '')) : ('guest_' + Math.random().toString(36).substring(2, 7));
-
     window.botpress.init({
         "botId": "a513dc7b-a61b-4a0e-b0c2-79292f0f64b8",
-        "userId": randomUserId,
         "clientId": "a77753bd-2319-48dd-a782-9d6ba282b204",
         "selector": "#webchat",
-        "configuration": { "botName": "Integrated Retail Support Agent", "color": "#044181", "variant": "solid" }
+        "configuration": {
+            "botName": "Integrated Retail Support Agent",
+            "color": "#044181"
+        }
     });
 
-    window.botpress.on('webchat:initialized', () => {
-        console.log('✅ Botpress Session 连通');
-        window.botpress.updateUser({ data: { email, firstname: firstName, page_name: "FootfallCam" } });
+    // 重点：当 Webchat 准备就绪时
+    window.botpress.on('webchat:ready', () => {
+        console.log("🤖 Botpress 已就绪，正在注入拦截逻辑...");
+        
+        // 强制开启对话框
+        window.botpress.open();
 
-        // 官方事件双保险
-        window.botpress.on('webchat:event', (event) => {
-            console.log("🤖 收到 Bot 事件:", event.type, event.payload);
-            const url = event.payload?.url || event.payload?.payload?.url;
-            if (url) safeRedirect(url);
+        // 核心拦截逻辑：监听所有事件
+        window.botpress.on('*', (event) => {
+            // 调试：看看点击按钮时，这里会不会打印出任何东西
+            console.log("🔍 实时捕捉事件:", event.type, event.payload);
+
+            // 无论你是 Postback 还是触发了特定的 Trigger
+            const data = event.payload;
+            const url = data?.url || data?.payload?.url;
+
+            if (url && url.includes('josephteo79')) {
+                console.log("✅ 拦截成功，准备跳转...");
+                safeRedirect(url);
+            }
         });
     });
 
-    window.botpress.on("webchat:ready", () => { window.botpress.open(); });
-  
-  // Hamburger drawer
-  const hamburger = document.getElementById('hamburger');
-  const drawer = document.getElementById('mobile-drawer');
-  if (hamburger && drawer) {
-    hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
-  }
-  drawer.querySelectorAll('.caret').forEach(caret => {
-    caret.addEventListener('click', e => {
-      e.stopPropagation();
-      const nested = caret.nextElementSibling;
-      if (nested) nested.classList.toggle('nested-open');
-    });
-  });
-  drawer.querySelectorAll('a.nav-link').forEach(link => {
-    link.addEventListener('click', () => drawer.classList.remove('open'));
-  });
-/*
-  // Botpress Button
-  const botButton = document.getElementById('bot-button');
-  const botIframe = document.getElementById('bot-iframe');
-  const botUrl = "https://cdn.botpress.cloud/webchat/v3.5/shareable.html?configUrl=https://files.bpcontent.cloud/2025/12/22/00/20251222001942-XSX123E9.json";
-  let botLoaded = false;
-  botButton.addEventListener('click', () => {
-    if (botIframe.style.display === 'none') {
-      if (!botLoaded) { botIframe.src = botUrl; botLoaded = true; }
-      botIframe.s
-      
-      tyle.display = 'block';
-    } else {
-      botIframe.style.display = 'none';
+    // 移动端菜单
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('mobile-drawer');
+    if (hamburger && drawer) {
+        hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
     }
-  });
-*/
 });
 </script>
 
