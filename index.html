@@ -140,24 +140,27 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 
 <script>
 
-const originalWindowOpen = window.open;
-window.open = function(url, name, specs) {
-    const isTargetSite = [
-        'integratedretail.com',
-        'TestFootFallCam',
-        'Allegory'
+// 【第一步：抢占最高优先级拦截】
+// 必须在任何其他 JS 运行前重写，确保 Botpress 调用时已经被我们接管
+(function() {
+    const originalOpen = window.open;
+    window.open = function(url, name, specs) {
+        const targetKeywords = [
+            'integratedretail.com',
+            'TestFootFallCam',
+            'Allegory'
+        ];
         
-    ].some(keyword => url && url.includes(keyword));
-
-    if (isTargetSite) {
-        // 强制所有目标网站进入同一个命名窗口
-        console.log("拦截到跳转请求，强制合并窗口:", url);
-        return originalWindowOpen.call(window, url, "Integrated_Retail_Support_Portal");
-    }
-    // 其他不相关的跳转按原样处理
-    return originalWindowOpen.call(window, url, name, specs);
-};
-
+        const isTarget = targetKeywords.some(key => url && url.includes(key));
+        
+        if (isTarget) {
+            console.log("🛡️ 系统拦截：强制跳转至支持门户窗口 ->", url);
+            // 强制赋予固定的窗口名称，实现“同 Tab 刷新”
+            return originalOpen.call(window, url, "Integrated_Retail_Support_Portal");
+        }
+        return originalOpen.call(window, url, name, specs);
+    };
+})();
    
 document.addEventListener('DOMContentLoaded', function() {
 
