@@ -258,9 +258,9 @@ document.addEventListener('click', function(event) {
     
     // 注意：如果你希望机器人记住用户，不要每次都 generate randomUserId
     // 建议：只有当 URL 里没有 firstname 时才清空，或者干脆保留 session
-  //  if (!firstName) {
+    if (!firstName) {
         localStorage.clear(); 
-  //  }
+    }
 // 如果不想全删，可以用循环只删 bp 开头的项：
 // Object.keys(localStorage).forEach(key => { if(key.includes('bp')) localStorage.removeItem(key); });
 const randomUserId = firstName ? ('user_' + firstName.toLowerCase()) : ('guest_' + Math.random().toString(36).substring(2, 7));
