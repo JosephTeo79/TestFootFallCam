@@ -141,24 +141,33 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 /**
  * 1. 核心跳转函数：负责参数接力
  */
+/**
+ * 1. 核心跳转函数：负责清理 URL 并带参数接力
+ */
 function safeRedirect(targetUrl) {
     if (!targetUrl || targetUrl === '#' || targetUrl.startsWith('javascript')) return;
 
     try {
-        const currentParams = new URLSearchParams(window.location.search);
-        const newUrl = new URL(targetUrl, window.location.origin);
+        // --- 核心修复：清理末尾的 JSON 碎片 ---
+        // 去掉末尾可能存在的 ” } ) ' " 等符号
+        let cleanUrl = targetUrl.split(/[”"'}）)]/)[0]; 
+        // 去掉可能存在的反斜杠转义
+        cleanUrl = cleanUrl.replace(/\\/g, '');
 
-        // 核心：把当前的 firstname, email 等参数带过去
+        const currentParams = new URLSearchParams(window.location.search);
+        const newUrl = new URL(cleanUrl, window.location.origin);
+
+        // 带上 firstname, email 等参数
         currentParams.forEach((value, key) => {
             newUrl.searchParams.set(key, value);
         });
 
-        console.log("🚀 发现目标 URL，正在执行原地跳转:", newUrl.toString());
-        // 覆盖整个浏览器标签页
+        console.log("🚀 最终跳转地址 (已清理):", newUrl.toString());
         window.top.location.href = newUrl.toString();
     } catch (e) {
-        console.error("Redirect Error:", e);
-        window.top.location.href = targetUrl;
+        // 如果 URL 还是解析失败，尝试直接清理后跳转
+        let backupUrl = targetUrl.replace(/[”"'}）)]/g, '').replace(/\\/g, '');
+        window.top.location.href = backupUrl;
     }
 }
 
