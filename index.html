@@ -139,42 +139,33 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 <script>
 /**
- * 1. 核心跳转函数：负责清理 URL 并带参数接力
+ * 核心跳转：只做最简单的字符清理，确保不崩溃
  */
 function safeRedirect(rawUrl) {
-    if (!rawUrl || typeof rawUrl !== 'string') return;
+    if (!rawUrl) return;
 
     try {
-        console.log("🔍 原始捕获 URL:", rawUrl);
+        console.log("🔍 原始抓取:", rawUrl);
 
-        // --- 强力清洗逻辑 ---
-        // 1. 去掉所有反斜杠 (Botpress 经常带这个)
-        let cleanUrl = rawUrl.replace(/\\/g, '');
-        
-        // 2. 找到 http 的开头，并切断后面所有的引号、括号、大括号
-        // 我们只保留从 http 开始到第一个引号或括号之前的内容
-        const match = cleanUrl.match(/https?:\/\/[^\s"“'”’\}）\]]+/);
-        if (match) {
-            cleanUrl = match[0];
+        // 1. 暴力清理：只去掉反斜杠和常见的 JSON 干扰符
+        let cleanUrl = rawUrl.replace(/\\/g, '')
+                             .replace(/[“”"'}）\]]/g, '')
+                             .trim();
+
+        // 2. 拼接当前页面的参数
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.toString()) {
+            // 如果原本 URL 已经有问号了，用 & 接，否则用 ? 接
+            const connector = cleanUrl.includes('?') ? '&' : '?';
+            cleanUrl += connector + urlParams.toString();
         }
 
-        // 3. 构建新的 URL 并注入当前页面参数
-        const urlParams = new URLSearchParams(window.location.search);
-        const newUrl = new URL(cleanUrl);
-        
-        urlParams.forEach((value, key) => {
-            newUrl.searchParams.set(key, value);
-        });
-
-        console.log("🚀 最终清洗并接力参数:", newUrl.toString());
-        
-        // 强制使用最顶层窗口跳转
-        window.top.location.href = newUrl.toString();
+        console.log("🚀 准备跳转至:", cleanUrl);
+        // 使用 window.top 强制顶级窗口跳转
+        window.top.location.href = cleanUrl;
     } catch (e) {
-        console.error("跳转执行失败:", e);
-        // 最后的兜底：如果上面都失败了，直接尝试用原始地址最暴力的方式跳
-        const fallback = rawUrl.replace(/[^\x21-\x7E]+/g, ''); // 只保留 ASCII 字符
-        window.top.location.href = fallback;
+        console.error("跳转失败:", e);
+        window.top.location.href = rawUrl; // 最后的保底
     }
 }
 
@@ -191,39 +182,36 @@ document.addEventListener('DOMContentLoaded', function() {
         "configuration": { "botName": "Integrated Retail Support Agent", "color": "#044181" }
     });
 
-    // 重点：注入监听器
+    // --- 核心修改：监听器独立出来，不嵌套在 ready 里 ---
+    window.botpress.on('*', (event) => {
+        const p = event.payload;
+        let target = null;
+
+        // 无论什么事件，只要 payload 包含网址就抓
+        if (p?.url) {
+            target = p.url;
+        } else if (p?.payload) {
+            if (typeof p.payload === 'string' && p.payload.includes('http')) {
+                target = p.payload;
+            } else if (p.payload.url) {
+                target = p.payload.url;
+            }
+        }
+
+        if (target && target.includes('josephteo79')) {
+            safeRedirect(target);
+        }
+    });
+
     window.botpress.on('webchat:ready', () => {
-        console.log("🤖 Botpress 监听器已就绪...");
         window.botpress.open();
-
-        window.botpress.on('*', (event) => {
-            // 只要捕获到包含网址的消息，就尝试跳转
-            const p = event.payload;
-            let target = null;
-
-            if (p?.url) {
-                target = p.url;
-            } else if (p?.payload) {
-                // 处理 Postback 里的字符串
-                if (typeof p.payload === 'string' && p.payload.includes('http')) {
-                    target = p.payload;
-                } else if (p.payload.url) {
-                    target = p.payload.url;
-                }
-            }
-
-            // 针对任何包含关键字的事件进行拦截
-            if (target && target.includes('josephteo79')) {
-                safeRedirect(target);
-            }
-        });
     });
 
     window.botpress.on('webchat:initialized', () => {
         window.botpress.updateUser({ data: { email, firstname: firstName } });
     });
 
-    // 基础 UI 逻辑
+    // 移动端菜单
     const hamburger = document.getElementById('hamburger');
     const drawer = document.getElementById('mobile-drawer');
     if (hamburger && drawer) {
