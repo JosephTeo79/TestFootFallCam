@@ -144,33 +144,103 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 /**
  * 1. 核心跳转函数：负责清理 URL 并带参数接力
  */
-function safeRedirect(targetUrl) {
-    if (!targetUrl || targetUrl === '#' || targetUrl.startsWith('javascript')) return;
+<script>
+/**
+ * 1. 核心跳转函数：负责清理 URL 碎片并带参数接力
+ */
+function safeRedirect(rawUrl) {
+    if (!rawUrl || rawUrl === '#' || rawUrl.startsWith('javascript')) return;
 
     try {
-        // --- 核心修复：清理末尾的 JSON 碎片 ---
-        // 去掉末尾可能存在的 ” } ) ' " 等符号
-        let cleanUrl = targetUrl.split(/[”"'}）)]/)[0]; 
-        // 去掉可能存在的反斜杠转义
-        cleanUrl = cleanUrl.replace(/\\/g, '');
+        // --- 核心修复：强力清理 URL 末尾的各种干扰字符 ---
+        // 1. 去掉反斜杠转义
+        let cleanUrl = rawUrl.replace(/\\/g, '');
+        // 2. 切掉所有可能的 JSON 结尾符号：双引号、单引号、大括号、中括号、中文引号
+        // 使用正则截取第一个出现的非法字符之前的内容
+        cleanUrl = cleanUrl.split(/[“”"'}）\] ]/)[0];
 
-        const currentParams = new URLSearchParams(window.location.search);
-        const newUrl = new URL(cleanUrl, window.location.origin);
+        const urlParams = new URLSearchParams(window.location.search);
+        // 尝试构建新的 URL 对象
+        const newUrl = new URL(cleanUrl);
 
-        // 带上 firstname, email 等参数
-        currentParams.forEach((value, key) => {
+        // 将当前页面的参数（firstname, email 等）附加到新页面
+        urlParams.forEach((value, key) => {
             newUrl.searchParams.set(key, value);
         });
 
-        console.log("🚀 最终跳转地址 (已清理):", newUrl.toString());
+        console.log("🚀 最终清洗后的跳转地址:", newUrl.toString());
+        // 覆盖整个浏览器标签页
         window.top.location.href = newUrl.toString();
     } catch (e) {
-        // 如果 URL 还是解析失败，尝试直接清理后跳转
-        let backupUrl = targetUrl.replace(/[”"'}）)]/g, '').replace(/\\/g, '');
-        window.top.location.href = backupUrl;
+        // 降级处理：如果 URL 构建失败，尝试手动清理后跳转
+        console.error("URL 格式化失败，尝试暴力跳转:", rawUrl);
+        let fallbackUrl = rawUrl.replace(/[“”"'}）\] ]/g, '').replace(/\\/g, '');
+        window.top.location.href = fallbackUrl;
     }
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const firstName = urlParams.get('firstname') || '';
+    const email = urlParams.get('email') || '';
+
+    // 初始化 Botpress
+    window.botpress.init({
+        "botId": "a513dc7b-a61b-4a0e-b0c2-79292f0f64b8",
+        "clientId": "a77753bd-2319-48dd-a782-9d6ba282b204",
+        "selector": "#webchat",
+        "configuration": { "botName": "Integrated Retail Support Agent", "color": "#044181" }
+    });
+
+    window.botpress.on('webchat:ready', () => {
+        console.log("🤖 Botpress 监听器就绪");
+        window.botpress.open();
+
+        // 拦截所有 Botpress 事件
+        window.botpress.on('*', (event) => {
+            let extractedUrl = null;
+            const p = event.payload;
+
+            // 深度提取逻辑
+            if (p?.url) {
+                extractedUrl = p.url;
+            } else if (p?.payload) {
+                // 处理 Postback 里的 JSON 字符串或直接 URL
+                if (typeof p.payload === 'string') {
+                    if (p.payload.includes('http')) {
+                        extractedUrl = p.payload;
+                    } else if (p.payload.includes('{')) {
+                        try {
+                            const inner = JSON.parse(p.payload);
+                            extractedUrl = inner.url;
+                        } catch (err) { }
+                    }
+                } else if (p.payload.url) {
+                    extractedUrl = p.payload.url;
+                }
+            }
+
+            // 如果提取到了 URL，且包含你的域名
+            if (extractedUrl && extractedUrl.includes('josephteo79')) {
+                console.log("🎯 发现信号，开始清洗跳转...");
+                safeRedirect(extractedUrl);
+            }
+        });
+    });
+
+    // 用户信息更新
+    window.botpress.on('webchat:initialized', () => {
+        window.botpress.updateUser({ data: { email, firstname: firstName } });
+    });
+
+    // 移动端菜单
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('mobile-drawer');
+    if (hamburger && drawer) {
+        hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
+    }
+});
+</script>
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const firstName = urlParams.get('firstname') || '';
