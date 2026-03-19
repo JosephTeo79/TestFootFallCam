@@ -248,6 +248,27 @@ document.addEventListener('DOMContentLoaded', function() {
         window.botpress.updateUser({
             data: { email, phone, firstname: firstName, lastname: lastName, page_name: "FootfallCam", timestamp: new Date().toISOString() }
         });
+
+
+// 核心：监听所有来自 Botpress 的事件
+  window.botpress.on('webchat:event', (event) => {
+    // 捕获所有类型的跳转信号 (Open URL 或 Postback)
+    const payload = event.payload;
+    const url = payload?.url || payload?.payload?.url;
+
+    if (url) {
+      console.log("🛡️ 拦截到 Bot 内部跳转:", url);
+      // 阻止默认行为 (如果可能)
+      if (event.preventDefault) event.preventDefault();
+      
+      // 强制在【当前顶级窗口】执行带参数跳转
+      safeRedirect(url);
+    }
+
+
+
+
+       
     });
 
     // 🧠 捕获 Botpress 的点击事件 (双保险)
