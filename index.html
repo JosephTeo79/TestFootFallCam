@@ -139,168 +139,125 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 
 <script>
+/**
+ * 核心逻辑：原地跳转并携带所有参数
+ */
+function safeRedirect(targetUrl) {
+    if (!targetUrl || targetUrl === '#' || targetUrl.startsWith('javascript')) return;
 
+    try {
+        const currentParams = new URLSearchParams(window.location.search);
+        // 允许相对路径跳转
+        const newUrl = new URL(targetUrl, window.location.origin);
 
+        // 将当前页面的所有参数（firstname, email等）附加到新URL
+        currentParams.forEach((value, key) => {
+            newUrl.searchParams.set(key, value);
+        });
+
+        console.log("🔗 原地携带参数跳转至:", newUrl.toString());
+        window.location.href = newUrl.toString();
+    } catch (e) {
+        console.error("Redirect Error:", e);
+        window.location.href = targetUrl; // 降级处理
+    }
+}
+
+// 1. 拦截页面上的所有链接点击
 document.addEventListener('click', function(event) {
     const link = event.target.closest('a');
-    
-    if (link) {
-        const url = link.href;
+    if (!link) return;
 
-        const isTargetSite = [
-            'integratedretail.com',
-            'TestFootFallCam',
-            'Allegory'
-        ].some(keyword => url.includes(keyword));
+    // 优先读取 data-url (针对菜单/快捷方式)，其次读取 href
+    const url = link.getAttribute('data-url') || link.href;
+    const isTargetSite = [
+        'integratedretail.com',
+        'TestFootFallCam',
+        'Allegory',
+        'LeadManagement'
+    ].some(keyword => url && url.includes(keyword));
 
-        if (isTargetSite) {
-            event.preventDefault(); // 🛑 阻止新 tab
-            
-         //   const portalWin =
-               window.location.href = url
-         //   if (portalWin) {
-           //     portalWin.focus();
-            //}
-
-            console.log("🔗 强制同 tab 打开:", url);
-        }
+    if (isTargetSite && !link.getAttribute('data-tab-name')) {
+        event.preventDefault(); 
+        safeRedirect(url);
     }
-}, true); // ⚠️ 一定要 true（capture）
-   
-// 1. 监听来自 Botpress Iframe 的底层通信
-window.addEventListener('message', function(event) {
-    // 调试：取消注释可以看到所有 Botpress 传出的信号
-    // console.log("Incoming Signal:", event.data);
+}, true);
 
-    // Botpress 发送跳转指令时，通常会携带 url
+// 2. 监听来自 Botpress 的跳转指令
+window.addEventListener('message', function(event) {
     if (event.data && event.data.payload && event.data.payload.url) {
         const url = event.data.payload.url;
         const targetKeywords = ['integratedretail.com', 'TestFootFallCam', 'Allegory'];
 
-        const isTarget = targetKeywords.some(key => url.includes(key));
-
-        if (isTarget) {
-            console.log("🛡️ 捕获到 Iframe 跳转请求:", url);
-            
-            // 🛑 核心黑科技：阻止 iframe 自己打开窗口 (如果可能)
-            // 然后由父窗口（主页面）接管打开动作
+        if (targetKeywords.some(key => url.includes(key))) {
+            console.log("🤖 捕获 Iframe 跳转请求");
             event.preventDefault(); 
-            
-            // 强制在命名窗口打开，实现同 Tab 覆盖
-           // window.open(url, "Integrated_Retail_Support_Portal");
-           window.location.href = url
+            safeRedirect(url);
         }
     }
 }, false);
 
-   
 document.addEventListener('DOMContentLoaded', function() {
+    // --- 初始化 Tab ---
+    if (typeof openTab === 'function') openTab('Introduction', 'introduction.html');
 
-  
-  // --- 初始化 Introduction tab ---
-  openTab('Introduction', 'introduction.html');
-
-
-/*
-  // Tidio
-  window.tidioChatApi = window.tidioChatApi || {};
-  window.tidioChatApi.display = true;
-  (function() {
-    var tidioScript = document.createElement("script");
-    tidioScript.src = "https://code.tidio.co/el1smokzuytb5rnzo3sfug7mgtwdxcry.js";
-    tidioScript.async = true;
-    document.body.appendChild(tidioScript);
-  })();
-*/
-
-
- window.botpress.on("webchat:ready", () => {
-    window.botpress.open();
-  });
-
-  // --- 逻辑 A: 获取 URL 参数 (来自 Botpress 的传值) ---
+    // --- 获取参数 ---
     const urlParams = new URLSearchParams(window.location.search);
     const firstName = urlParams.get('firstname') || '';
     const lastName = urlParams.get('lastname') || '';
     const email = urlParams.get('email') || '';
     const phone = urlParams.get('phone') || '';
 
-    
-
-    // --- 逻辑 B: Botpress 初始化 ---
-    
-    // 注意：如果你希望机器人记住用户，不要每次都 generate randomUserId
-    // 建议：只有当 URL 里没有 firstname 时才清空，或者干脆保留 session
-    if (!firstName) {
+    // --- Botpress 初始化 ---
+    // 只有在完全没有用户信息的情况下才清除，否则保留 Session
+    if (!firstName && !email) {
         localStorage.clear(); 
     }
-// 如果不想全删，可以用循环只删 bp 开头的项：
-// Object.keys(localStorage).forEach(key => { if(key.includes('bp')) localStorage.removeItem(key); });
-const randomUserId = firstName ? ('user_' + firstName.toLowerCase()) : ('guest_' + Math.random().toString(36).substring(2, 7));
 
-  window.botpress.init({
-  "botId": "a513dc7b-a61b-4a0e-b0c2-79292f0f64b8",
-  "userId": randomUserId,
-  "configuration": {
-    "version": "v2",
-    "botName": "Integrated Retail Support Agent",
-    "botAvatar": "https://files.bpcontent.cloud/2026/01/04/10/20260104100855-WL4YT8WH.png",
-    "botDescription": "",
-    "website": {},
-    "email": {},
-    "phone": {},
-    "termsOfService": {},
-    "privacyPolicy": {},
-    "color": "#044181",
-    "variant": "solid",
-    "headerVariant": "glass",
-    "themeMode": "light",
-    "fontFamily": "inter",
-    "radius": 2,
-    "feedbackEnabled": false,
-    "footer": "[⚡ by Botpress](https://botpress.com/?from=webchat)",
-    "soundEnabled": false,
-    "proactiveMessageEnabled": false,
-    "proactiveBubbleMessage": "Hi! 👋 Need help?",
-    "proactiveBubbleTriggerType": "afterDelay",
-    "proactiveBubbleDelayTime": 10
-  },
-  "clientId": "a77753bd-2319-48dd-a782-9d6ba282b204",
-  "selector": "#webchat"
-});
+    // 使用稳定的 randomUserId (只要 firstName 不变，ID 就不变)
+    const randomUserId = firstName ? ('user_' + firstName.toLowerCase().replace(/\s/g, '')) : ('guest_' + Math.random().toString(36).substring(2, 7));
 
-  // When webchat is ready
-    window.botpress.on('webchat:initialized', () => {
-      console.log('✅ Webchat initialized');
-
-      // STEP 1: Upd2ate User with data
-      window.botpress.updateUser({
-        data: {
-         email: urlParams.get('email') || "",
-          phone:urlParams.get('phone') || "",
-          firstname:urlParams.get('firstname') || "",
-          lastname:urlParams.get('lastname') || "",
-          page_name: "Footfallcam",
-          category: "general",
-          timestamp: new Date().toISOString()
-        }
-      });
+    window.botpress.init({
+        "botId": "a513dc7b-a61b-4a0e-b0c2-79292f0f64b8",
+        "userId": randomUserId,
+        "configuration": {
+            "version": "v2",
+            "botName": "Integrated Retail Support Agent",
+            "botAvatar": "https://files.bpcontent.cloud/2026/01/04/10/20260104100855-WL4YT8WH.png",
+            "color": "#044181",
+            "variant": "solid",
+            "headerVariant": "glass",
+            "themeMode": "light",
+            "fontFamily": "inter",
+            "radius": 2,
+            "feedbackEnabled": false,
+            "footer": "[⚡ by Botpress](https://botpress.com/?from=webchat)",
+            "soundEnabled": false,
+            "proactiveMessageEnabled": false
+        },
+        "clientId": "a77753bd-2319-48dd-a782-9d6ba282b204",
+        "selector": "#webchat"
     });
-  
 
-  window.botpress.on('webchat:event', (event) => {
-  const payload = event?.payload;
+    window.botpress.on("webchat:ready", () => {
+        window.botpress.open();
+    });
 
-  // 🧠 捕获 Botpress 的 open_url
-  if (payload?.type === 'open_IRSupportTag' && payload?.url) {
-    const url = payload.url;
+    window.botpress.on('webchat:initialized', () => {
+        console.log('✅ Botpress Session 连通');
+        window.botpress.updateUser({
+            data: { email, phone, firstname: firstName, lastname: lastName, page_name: "FootfallCam", timestamp: new Date().toISOString() }
+        });
+    });
 
-    console.log("🧠 Bot 控制跳转:", url);
-
-    // 💥 强制同 tab
-    window.location.href = url;
-  }
-});
+    // 🧠 捕获 Botpress 的点击事件 (双保险)
+    window.botpress.on('webchat:event', (event) => {
+        const payload = event?.payload;
+        if ((payload?.type === 'open_IRSupportTag' || payload?.type === 'postback') && payload?.url) {
+            console.log("🧠 Bot 触发原地跳转");
+            safeRedirect(payload.url);
+        }
+    });
   
   // Hamburger drawer
   const hamburger = document.getElementById('hamburger');
@@ -327,7 +284,9 @@ const randomUserId = firstName ? ('user_' + firstName.toLowerCase()) : ('guest_'
   botButton.addEventListener('click', () => {
     if (botIframe.style.display === 'none') {
       if (!botLoaded) { botIframe.src = botUrl; botLoaded = true; }
-      botIframe.style.display = 'block';
+      botIframe.s
+      
+      tyle.display = 'block';
     } else {
       botIframe.style.display = 'none';
     }
