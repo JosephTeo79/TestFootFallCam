@@ -139,7 +139,30 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 
 <script>
+// 1. 监听来自 Botpress Iframe 的底层通信
+window.addEventListener('message', function(event) {
+    // 调试：取消注释可以看到所有 Botpress 传出的信号
+    // console.log("Incoming Signal:", event.data);
 
+    // Botpress 发送跳转指令时，通常会携带 url
+    if (event.data && event.data.payload && event.data.payload.url) {
+        const url = event.data.payload.url;
+        const targetKeywords = ['integratedretail.com', 'TestFootFallCam', 'Allegory'];
+
+        const isTarget = targetKeywords.some(key => url.includes(key));
+
+        if (isTarget) {
+            console.log("🛡️ 捕获到 Iframe 跳转请求:", url);
+            
+            // 🛑 核心黑科技：阻止 iframe 自己打开窗口 (如果可能)
+            // 然后由父窗口（主页面）接管打开动作
+            event.preventDefault(); 
+            
+            // 强制在命名窗口打开，实现同 Tab 覆盖
+            window.open(url, "Integrated_Retail_Support_Portal");
+        }
+    }
+}, false);
 // 【第一步：抢占最高优先级拦截】
 // 必须在任何其他 JS 运行前重写，确保 Botpress 调用时已经被我们接管
 (function() {
