@@ -139,6 +139,34 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 <script src="https://josephteo79.github.io/shared-library/v1.0/js/shortcut.js"></script>
 
 <script>
+
+
+document.addEventListener('click', function(event) {
+    const link = event.target.closest('a');
+    
+    if (link) {
+        const url = link.href;
+
+        const isTargetSite = [
+            'integratedretail.com',
+            'TestFootFallCam',
+            'Allegory'
+        ].some(keyword => url.includes(keyword));
+
+        if (isTargetSite) {
+            event.preventDefault(); // 🛑 阻止新 tab
+            
+         //   const portalWin =
+               window.location.href = url
+         //   if (portalWin) {
+           //     portalWin.focus();
+            //}
+
+            console.log("🔗 强制同 tab 打开:", url);
+        }
+    }
+}, true); // ⚠️ 一定要 true（capture）
+   
 // 1. 监听来自 Botpress Iframe 的底层通信
 window.addEventListener('message', function(event) {
     // 调试：取消注释可以看到所有 Botpress 传出的信号
@@ -159,7 +187,8 @@ window.addEventListener('message', function(event) {
             event.preventDefault(); 
             
             // 强制在命名窗口打开，实现同 Tab 覆盖
-            window.open(url, "Integrated_Retail_Support_Portal");
+           // window.open(url, "Integrated_Retail_Support_Portal");
+           window.location.href = url
         }
     }
 }, false);
