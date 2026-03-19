@@ -148,13 +148,13 @@ function safeRedirect(targetUrl) {
         const currentParams = new URLSearchParams(window.location.search);
         const newUrl = new URL(targetUrl, window.location.origin);
 
-        // 将当前页面的 firstname, email 等参数带到新页面
+        // 核心：把当前的 firstname, email 等参数带过去
         currentParams.forEach((value, key) => {
             newUrl.searchParams.set(key, value);
         });
 
-        console.log("🚀 准备执行参数接力跳转:", newUrl.toString());
-        // 使用 window.top 强制覆盖当前浏览器标签页
+        console.log("🚀 发现目标 URL，正在执行原地跳转:", newUrl.toString());
+        // 覆盖整个浏览器标签页
         window.top.location.href = newUrl.toString();
     } catch (e) {
         console.error("Redirect Error:", e);
@@ -163,102 +163,82 @@ function safeRedirect(targetUrl) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 获取 URL 参数用于同步
     const urlParams = new URLSearchParams(window.location.search);
     const firstName = urlParams.get('firstname') || '';
     const email = urlParams.get('email') || '';
 
-    /**
-     * 2. 初始化 Botpress
-     */
-    const randomUserId = firstName ? ('user_' + firstName.toLowerCase().replace(/\s/g, '')) : ('guest_' + Math.random().toString(36).substring(2, 7));
-
+    // 初始化 Botpress
     window.botpress.init({
         "botId": "a513dc7b-a61b-4a0e-b0c2-79292f0f64b8",
         "clientId": "a77753bd-2319-48dd-a782-9d6ba282b204",
-        "userId": randomUserId,
         "selector": "#webchat",
-        "configuration": {
-            "botName": "Integrated Retail Support Agent",
-            "color": "#044181",
-            "variant": "solid"
-        }
+        "configuration": { "botName": "Integrated Retail Support Agent", "color": "#044181" }
     });
 
-    /**
-     * 3. 核心拦截逻辑
-     */
     window.botpress.on('webchat:ready', () => {
-        console.log("🤖 Botpress 已就绪，监听器启动...");
-        window.botpress.open(); // 自动打开聊天窗口
+        console.log("🤖 Botpress 已就绪，深度监听器启动...");
+        window.botpress.open();
 
-        // 监听所有 Botpress 发出的信号
+        // 【核心修改】深度拦截逻辑
         window.botpress.on('*', (event) => {
-            console.log("🔍 实时捕捉事件:", event.type, event.payload);
+            console.log("🔍 捕捉事件:", event.type, event.payload);
 
-            let targetUrl = null;
+            let extractedUrl = null;
 
-            // 路径 A: 如果是标准的 webchat:event 或 postback
-            if (event.type === 'webchat:event' || event.type === 'postback') {
-                targetUrl = event.payload?.url || event.payload?.payload?.url;
-            } 
-            // 路径 B: 针对你 Log 里的 message 类型进行深度扫描
-            else if (event.type === 'message') {
-                const msg = event.payload;
-                
-                // 扫描嵌套在 message 中的各种 URL 可能性
-                targetUrl = msg?.payload?.url || 
-                            msg?.data?.url || 
-                            msg?.action?.url;
+            // 无论什么类型的事件，我们都去翻它的 payload
+            const p = event.payload;
 
-                // 如果 payload 内部嵌套了字符串化的 JSON
-                if (!targetUrl && msg?.payload?.payload) {
+            // 路径 1: 直接在 payload 里 (Open URL 模式)
+            if (p?.url) extractedUrl = p.url;
+            
+            // 路径 2: 嵌套在 payload.payload 里 (Postback 模式)
+            else if (p?.payload) {
+                // 如果 payload 内部是 JSON 字符串
+                if (typeof p.payload === 'string' && p.payload.includes('{')) {
                     try {
-                        const innerPayload = JSON.parse(msg.payload.payload);
-                        targetUrl = innerPayload.url;
-                    } catch (e) {
-                        // 如果不是 JSON，直接看是不是 URL 字符串
-                        if (msg.payload.payload.includes('http')) {
-                            targetUrl = msg.payload.payload;
-                        }
-                    }
+                        const inner = JSON.parse(p.payload);
+                        extractedUrl = inner.url;
+                    } catch (e) { }
+                } 
+                // 如果 payload 直接就是 URL 字符串
+                else if (typeof p.payload === 'string' && p.payload.includes('http')) {
+                    extractedUrl = p.payload;
+                }
+                // 如果是对象
+                else if (p.payload.url) {
+                    extractedUrl = p.payload.url;
                 }
             }
 
-            // 执行拦截跳转
-            if (targetUrl && (targetUrl.includes('josephteo79') || targetUrl.includes('integratedretail'))) {
-                console.log("✅ 成功截获跳转信号:", targetUrl);
-                safeRedirect(targetUrl);
+            // 路径 3: 暴力扫描（如果以上都失效，直接检查整个 payload 字符串）
+            if (!extractedUrl && p) {
+                const strPayload = JSON.stringify(p);
+                if (strPayload.includes('josephteo79.github.io')) {
+                    // 用正则抓取网址
+                    const match = strPayload.match(/https?:\/\/[^\s"']+/);
+                    if (match) extractedUrl = match[0].replace(/\\/g, ''); // 去掉转义斜杠
+                }
+            }
+
+            // 执行跳转
+            if (extractedUrl && extractedUrl.includes('josephteo79')) {
+                console.log("🎯 成功截获目标 URL:", extractedUrl);
+                safeRedirect(extractedUrl);
             }
         });
     });
 
-    // 4. 用户信息更新
+    // 用户信息更新
     window.botpress.on('webchat:initialized', () => {
-        window.botpress.updateUser({
-            data: { email, firstname: firstName, page_name: "FootfallCam" }
-        });
+        window.botpress.updateUser({ data: { email, firstname: firstName } });
     });
 
-    /**
-     * 5. 基础 UI 交互逻辑 (移动端菜单)
-     */
+    // 移动端菜单逻辑
     const hamburger = document.getElementById('hamburger');
     const drawer = document.getElementById('mobile-drawer');
     if (hamburger && drawer) {
         hamburger.addEventListener('click', () => drawer.classList.toggle('open'));
     }
-
-    // 拦截页面上普通的 <a> 标签点击
-    document.addEventListener('click', function(e) {
-        const link = e.target.closest('a');
-        if (!link) return;
-        const href = link.getAttribute('data-url') || link.href;
-        if (href && href.includes('josephteo79') && !link.getAttribute('data-tab-name')) {
-            e.preventDefault();
-            safeRedirect(href);
-        }
-    }, true);
 });
 </script>
 </body>
