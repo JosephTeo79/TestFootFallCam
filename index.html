@@ -192,69 +192,13 @@ window.addEventListener('message', function(event) {
         }
     }
 }, false);
-// 【第一步：抢占最高优先级拦截】
-// 必须在任何其他 JS 运行前重写，确保 Botpress 调用时已经被我们接管
-(function() {
-    const originalOpen = window.open;
-    window.open = function(url, name, specs) {
-        const targetKeywords = [
-            'integratedretail.com',
-            'TestFootFallCam',
-            'Allegory'
-        ];
-        
-        const isTarget = targetKeywords.some(key => url && url.includes(key));
-        
-        if (isTarget) {
-            console.log("🛡️ 系统拦截：强制跳转至支持门户窗口 ->", url);
-            // 强制赋予固定的窗口名称，实现“同 Tab 刷新”
-            return originalOpen.call(window, url, "Integrated_Retail_Support_Portal");
-        }
-        return originalOpen.call(window, url, name, specs);
-    };
-})();
+
    
 document.addEventListener('DOMContentLoaded', function() {
 
   
   // --- 初始化 Introduction tab ---
   openTab('Introduction', 'introduction.html');
-/*// 1. 定义你的支持门户窗口名称
-const SUPPORT_WINDOW_NAME = "Integrated_Retail_Support_Portal";
-
-// 2. 监听全局点击事件
-document.addEventListener('click', function(event) {
-    // 寻找点击的目标是否是链接
-    const link = event.target.closest('a');
-    
-    if (link) {
-        const url = link.href;
-        
-        // 3. 检查是否属于你的 5 个目标网站之一
-        const isTargetSite = [
-            'integratedretail.com',
-            'TestFootFallCam',
-            'Allegory'
-        ].some(keyword => url.includes(keyword));
-
-        if (isTargetSite) {
-            // 🚀 核心逻辑：阻止默认的 _blank (新标签) 行为
-            event.preventDefault();
-            
-            // 4. 在同一个命名窗口中打开/刷新
-            const portalWin = window.open(url, SUPPORT_WINDOW_NAME);
-            
-            // 5. 尝试将窗口带到最前 (Focus)
-            if (portalWin) {
-                portalWin.focus();
-            }
-            
-            console.log(`🔗 Redirecting to ${url} in shared tab: ${SUPPORT_WINDOW_NAME}`);
-        }
-    }
-}, true); // 使用 Capture 模式确保在 Botpress 内部逻辑前拦截
-
-*/
 
 
 /*
@@ -344,6 +288,19 @@ const randomUserId = firstName ? ('user_' + firstName.toLowerCase()) : ('guest_'
     });
   
 
+  window.botpress.on('webchat:event', (event) => {
+  const payload = event?.payload;
+
+  // 🧠 捕获 Botpress 的 open_url
+  if (payload?.type === 'open_url' && payload?.url) {
+    const url = payload.url;
+
+    console.log("🧠 Bot 控制跳转:", url);
+
+    // 💥 强制同 tab
+    window.location.href = url;
+  }
+});
   
   // Hamburger drawer
   const hamburger = document.getElementById('hamburger');
